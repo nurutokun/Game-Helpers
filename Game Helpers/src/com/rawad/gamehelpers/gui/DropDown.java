@@ -8,7 +8,7 @@ import com.rawad.gamehelpers.game.Game;
 import com.rawad.gamehelpers.game.GameManager;
 import com.rawad.gamehelpers.input.MouseEvent;
 import com.rawad.gamehelpers.resources.ResourceManager;
-import com.rawad.gamehelpers.util.DrawableString;
+import com.rawad.gamehelpers.util.strings.DrawableString;
 
 public class DropDown extends Button {
 	
@@ -87,7 +87,7 @@ public class DropDown extends Button {
 			setMenuDown(false);
 		}
 		
-		text.setContent(getId() + ":" + DrawableString.LINE_SEPERATOR + currentSelected);
+		text.setContent(getId() + ":" + DrawableString.NL + currentSelected);
 		
 	}
 	
@@ -99,7 +99,7 @@ public class DropDown extends Button {
 			menu.render(g);
 		}
 		
-		this.text.render(g, Color.WHITE, TRANSPARENT, new Rectangle(x, y, width - (width/3), height));
+		this.text.render(g, Color.WHITE, TRANSPARENT, TRANSPARENT, new Rectangle(x, y, width - (width/3), height), centerText);
 		
 		Game game = GameManager.getGame();
 		

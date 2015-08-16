@@ -28,7 +28,14 @@ public class EventHandler implements MouseMotionListener, MouseListener, MouseWh
 	}
 	
 	@Override
-	public void keyTyped(KeyEvent e) {}
+	public void keyTyped(KeyEvent e) {
+		
+		char c = e.getKeyChar();
+		
+//		Logger.log(Logger.DEBUG, "Typed: " + String.valueOf(c));
+		
+		KeyboardInput.addTypedKey(c);
+	}
 	
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
@@ -110,7 +117,7 @@ public class EventHandler implements MouseMotionListener, MouseListener, MouseWh
 		MouseInput.setButtonClicked(MouseInput.RIGHT_MOUSE_BUTTON, false);
 		MouseInput.setButtonClicked(MouseInput.LEFT_MOUSE_BUTTON, false);
 		
-//		Logger.log(Logger.DEBUG, "Got x,y: " + e.getX() + ", " + e.getY());
+//		Logger.log(Logger.DEBUG, "Mouse Moved x,y: " + e.getX() + ", " + e.getY());
 		
 	}
 	

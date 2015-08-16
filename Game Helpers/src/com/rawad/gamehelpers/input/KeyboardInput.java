@@ -6,15 +6,21 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import com.rawad.gamehelpers.log.Logger;
+
 public class KeyboardInput {
 	
 	private static HashMap<Integer, Boolean> keyStates;
+	
+	private static ArrayList<String> typedKeys;
 	
 	private static boolean setKeyBackUp;
 	
 	static {
 		
 		keyStates = new HashMap<Integer, Boolean>();
+		
+		typedKeys = new ArrayList<String>();
 		
 		setKeyBackUp = true;
 		
@@ -63,7 +69,8 @@ public class KeyboardInput {
 	}
 	
 	/**
-	 * Returns an iterable set of {@code Entry} objects that can be efficiently iterated over to check for all the keys that are down.
+	 * Returns an integers representing which keys are currently down; makes them easy to iterate over.
+	 * Also 'consumes' depending on whether or not {@code setKeyBackUp} is on or not.
 	 * 
 	 * @return
 	 */
@@ -74,7 +81,16 @@ public class KeyboardInput {
 		
 		while(it.hasNext()) {
 			
-			list.add(it.next().getKey());
+			Entry<Integer, Boolean> curEntry = it.next();
+			
+			if(curEntry.getValue()) {// For the non-null, but false values.
+				list.add(curEntry.getKey());
+				
+				if(setKeyBackUp) {
+					keyStates.put(curEntry.getKey(), false);
+				}
+				
+			}
 			
 			it.remove();
 		}
@@ -88,8 +104,38 @@ public class KeyboardInput {
 		return values;
 	}
 	
+	public static void addTypedKey(char typedKey) {
+		typedKeys.add(String.valueOf(typedKey));
+	}
+	
+	public static String[] getTypedKeys() {
+		
+		String[] re = new String[typedKeys.size()];
+		
+		for(int i = 0; i < typedKeys.size(); i++) {
+			
+			try {
+				re[i] = typedKeys.get(i);
+			} catch(ArrayIndexOutOfBoundsException ex) {
+				Logger.log(Logger.SEVERE, "Got array idnex out of bounds while trying to get which keys are typed. Index: " + i);
+			}
+			
+		}
+		
+		if(setKeyBackUp) {
+			KeyboardInput.clearTypedKeysBuffer();
+		}
+		
+		return re;
+		
+	}
+	
+	public static void clearTypedKeysBuffer() {
+		typedKeys.clear();
+	}
+	
 	/**
-	 * Returns an iterable buffer of all the keys pressed down since last time this method was called/keys were updated.
+	 * Returns an iterable buffer of all the keys pressed down since last time this method was called/keys were updated. 
 	 * 
 	 * @return
 	 */
@@ -121,6 +167,7 @@ public class KeyboardInput {
 			
 			if(keyStates.get(i)) {
 				buffer[i] = keyStates.get(i);
+				
 			}
 			
 			it.remove();

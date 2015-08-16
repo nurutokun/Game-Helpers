@@ -48,7 +48,7 @@ public class Button extends TextContainer {
 			super.update(e);
 			
 			if(!intersects(e.getX(), e.getY()) && !e.isButtonDown()) {
-				mouseReleased();
+				mouseReleased(e);
 			}
 		}
 		
@@ -100,20 +100,22 @@ public class Button extends TextContainer {
 	}
 	
 	@Override
-	protected void mouseClicked() {
+	protected void mouseClicked(MouseEvent e) {
 		pressed = false;
 		clicked = true;
 		
 	}
 	
 	@Override
-	protected void mousePressed() {
+	protected void mousePressed(MouseEvent e) {
+		super.mousePressed(e);
+		
 		pressed = true;
 		
 	}
 	
 	@Override
-	protected void mouseReleased() {
+	protected void mouseReleased(MouseEvent e) {
 		pressed = false;
 	}
 	

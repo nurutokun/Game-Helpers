@@ -23,8 +23,6 @@ public class DisplayManager {
 	
 	private static int FULLSCREEN_WIDTH = SCREEN_WIDTH;
 	private static int FULLSCREEN_HEIGHT = SCREEN_HEIGHT;
-	
-	private static int FPS_SAMPLE_COUNT = 25;
 	// ^^^
 	
 	private static DisplayMode currentDisplayMode;
@@ -225,7 +223,7 @@ public class DisplayManager {
 		
 		public void run() {
 			
-			int i = 0;
+			int frames = 0;
 			int totalTime = 0;
 			
 			prevTime = System.currentTimeMillis();// To keep the initial value limited to zero, just in case.
@@ -238,17 +236,15 @@ public class DisplayManager {
 				
 				timePassed = (deltaTime <= 0? 1:deltaTime);
 				
-				totalTime += (1000 / timePassed);
+				totalTime += timePassed;
 				
-//				averageFrameRate = (timePassed);
+				frames++;
 				
-				i++;
-				
-				if(i >= FPS_SAMPLE_COUNT) {
+				if(frames >= REFRESH_RATE) {
 					
-					averageFrameRate = totalTime/i;
+					averageFrameRate = frames * 1000 / totalTime;
 					
-					i = 0;
+					frames = 0;
 					totalTime = 0;
 					
 				}

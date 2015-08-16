@@ -3,7 +3,8 @@ package com.rawad.gamehelpers.gui;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
-import com.rawad.gamehelpers.util.DrawableString;
+import com.rawad.gamehelpers.input.MouseEvent;
+import com.rawad.gamehelpers.util.strings.DrawableString;
 
 public abstract class TextContainer extends GuiComponent {
 	
@@ -13,6 +14,9 @@ public abstract class TextContainer extends GuiComponent {
 	
 	protected Color textBackground;
 	protected Color textForeground;
+	protected Color cursorColor;
+	
+	protected boolean centerText;
 	
 	public TextContainer(String id, String text, int x, int y, int width, int height) {
 		super(id, x, y, width, height);
@@ -21,6 +25,9 @@ public abstract class TextContainer extends GuiComponent {
 		
 		textBackground = TRANSPARENT;
 		textForeground = Color.BLACK;
+		cursorColor = Color.BLACK;
+		
+		centerText = true;
 		
 	}
 	
@@ -38,19 +45,17 @@ public abstract class TextContainer extends GuiComponent {
 	}
 	
 	@Override
+	public void update(MouseEvent e) {
+		super.update(e);
+		
+	}
+	
+	@Override
 	public void render(Graphics2D g) {
 		super.render(g);
 		
-		text.render(g, textForeground, textBackground, hitbox);
+		text.render(g, textForeground, textBackground, cursorColor, hitbox, centerText);
 		
-	}
-	
-	public void append(String s) {
-		text.append(s);
-	}
-	
-	public void delete(int charactersToRemove) {
-		text.delete(charactersToRemove);
 	}
 	
 	public String getText() {
@@ -59,6 +64,10 @@ public abstract class TextContainer extends GuiComponent {
 	
 	public void setText(String text) {
 		this.text.setContent(text);
+	}
+	
+	public DrawableString getTextObject() {
+		return text;
 	}
 	
 }

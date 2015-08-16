@@ -3,6 +3,7 @@ package com.rawad.gamehelpers.gamestates;
 import java.awt.Graphics2D;
 import java.util.HashMap;
 
+import com.rawad.gamehelpers.input.KeyboardInput;
 import com.rawad.gamehelpers.log.Logger;
 
 public class StateManager {
@@ -21,6 +22,8 @@ public class StateManager {
 		
 		try {
 			currentState.update();
+			
+			KeyboardInput.clearTypedKeysBuffer();
 			
 		} catch(NullPointerException ex) {
 			Logger.log(Logger.DEBUG, "Current state is null for updating");

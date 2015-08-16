@@ -31,8 +31,8 @@ public abstract class GuiComponent {
 	protected int height;
 	//
 	
-	private int prevMouseX;
-	private int prevMouseY;
+	protected int prevMouseX;
+	protected int prevMouseY;
 	
 	protected boolean mouseDragged;
 	
@@ -60,14 +60,6 @@ public abstract class GuiComponent {
 		
 	}
 	
-//	public GuiComponent(String id, Color backgroundColor, Color foregroundColor, int x, int y, int width, int height) {
-//		this(id, getMonotoneImage(backgroundColor, width, height), getMonotoneImage(foregroundColor, width, height), x, y);
-//	}
-//	
-//	public GuiComponent(String id, BufferedImage background, BufferedImage foreground, int x, int y, int width, int height) {
-//		this(id, getScaledImage(background, width, height), getScaledImage(foreground, width, height), x, y);
-//	}
-	
 	/**
 	 * Update position and/or highlighted-status and/or typing cursor etc.
 	 * 
@@ -80,7 +72,7 @@ public abstract class GuiComponent {
 		
 	}
 	
-	@SuppressWarnings("unused")
+	@SuppressWarnings("unused") @Deprecated
 	private void simpleUpdate(MouseEvent e) {
 		
 		int x = e.getX();
@@ -90,7 +82,7 @@ public abstract class GuiComponent {
 		
 		if(intersects(x, y) && mouseButtonDown) {
 			
-			mouseClicked();
+			mouseClicked(e);
 			
 			e.consume();
 		}
@@ -113,7 +105,7 @@ public abstract class GuiComponent {
 			if(mouseButtonDown && hovered) {
 				
 				if(!pressed && !mouseDragged) {// If not already pressed
-					mousePressed();
+					mousePressed(e);
 					
 				}
 				
@@ -122,10 +114,10 @@ public abstract class GuiComponent {
 			} else {
 				
 				if(pressed) {
-					mouseReleased();
+					mouseReleased(e);
 					
 					if(intersects(prevMouseX, prevMouseY) && !mouseDragged) {
-						mouseClicked();
+						mouseClicked(e);
 						
 					}
 					
@@ -180,13 +172,13 @@ public abstract class GuiComponent {
 		g.drawRect(hitbox.x - 1, hitbox.y - 1, hitbox.width + 1, hitbox.height + 1);
 	}
 	
-	protected void mouseClicked() {}
+	protected void mouseClicked(MouseEvent e) {}// MouseEvent mainly to get mouse position, for now.
 	
-	protected void mousePressed() {
+	protected void mousePressed(MouseEvent e) {
 		focused = true;
 	}
 	
-	protected void mouseReleased() {}
+	protected void mouseReleased(MouseEvent e) {}
 	
 	protected void mouseEntered() {}
 	

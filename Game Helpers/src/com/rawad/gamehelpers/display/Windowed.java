@@ -84,6 +84,7 @@ public class Windowed extends DisplayMode {
 		frame.setIgnoreRepaint(true);
 		
 		frame.pack();
+//		frame.setLocationRelativeTo(null);// maybe...
 		frame.setVisible(true);
 		
 	}
