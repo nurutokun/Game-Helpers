@@ -14,9 +14,6 @@ public class DrawableString {
 	
 	public static final String DEL = "\b";
 	
-//	public static final String UNIVERSAL_LINE_SEPERATOR = "\n\r";// try with "\n\r", just "\r" deletes when theres a bunch of them before 
-	// any other character and that character is deleted (all of the "\r" delete).
-	
 	/**
 	 * Used to put vertical padding between seperate lines of text.
 	 * 
@@ -36,10 +33,16 @@ public class DrawableString {
 	
 	private ArrayList<Rectangle> hitboxes;
 	
+	/** Really don't like this... But we need it to wrap text. */
+	private FontMetrics fm;
+	
 	private int caretPosition;
 	private int lineIndexCaretIsOn;
 	/** Mainly used for highlighting text. */
 	private int markedPosition;
+	/** For making {@code String}s that are too long for their bounding box be rendered better. */
+	private int minimumPositionToDrawFrom;
+	private int maximumPositionToDrawTo;
 	
 	public DrawableString(String content) {
 		
@@ -54,46 +57,166 @@ public class DrawableString {
 		lineIndexCaretIsOn = -1;
 		markedPosition = -1;
 		
+		minimumPositionToDrawFrom = 0;
+		maximumPositionToDrawTo = 0;
+		
 	}
 	
 	public DrawableString() {
 		this("");
 	}
 	
-	public void render(Graphics2D g, Color textColor, Color backgroundColor, Color caretColor, 
-			Rectangle boundingBox, boolean center) {
+	public void render(Graphics2D g, Color textColor, Color backgroundColor, Color caretColor, Rectangle boundingBox, 
+			boolean center, boolean hideOutOfBounds) {
 		
 		FontMetrics fm = g.getFontMetrics();
+		
+		this.fm = fm;
+		
+		Rectangle prevClip = g.getClipBounds();
+		
+		if(hideOutOfBounds) {
+			g.setClip(boundingBox);
+		}
 		
 		int sections = lines.length <= 1? 2:lines.length;// For single-lines texts, it keeps it centered this way.
 		
 		int stringX = boundingBox.x;
-		int stringY = boundingBox.y + (boundingBox.height/sections);
+		int stringY = boundingBox.y;
 		
 		int stringHeight = fm.getHeight();
 		
+		int totalHeightOfLines = lines.length * stringHeight;
+		
+		if(center) {
+			stringY += (boundingBox.height/sections) + (stringHeight/2);
+			
+		} else {
+			stringY += (stringHeight*3/4);
+			
+			if(totalHeightOfLines >= boundingBox.height) {
+				stringY -= (totalHeightOfLines - boundingBox.height)*3/4;
+			}
+			
+		}
+		
 		for(int i = 0; i < lines.length; i++) {
 			
-			String line = lines[i];// + (i+1 >= lines.length? "":UNIVERSAL_LINE_SEPERATOR);// Add the "\r" character only at the end of 
-			// lines that need it.
+			String line = lines[i];
 			
 			int stringWidth = fm.stringWidth(line);
 			
+			int y = stringY + ((i) * (stringHeight*3/4));
+			
 			if(center) {
 				stringX = boundingBox.x + (boundingBox.width/2) - (stringWidth/2);
+				y += (i * VERTICAL_PADDING);
 			}
 			
-			drawLine(g, textColor, backgroundColor, caretColor, line, stringX, 
-					stringY + (stringHeight/4 * (i+1)) + (i * VERTICAL_PADDING), caretPosition, lineIndexCaretIsOn, i);
+			drawLine(g, textColor, backgroundColor, caretColor, line, stringX, y, caretPosition, lineIndexCaretIsOn, 
+					i, boundingBox.width, hideOutOfBounds);
 			
+		}
+		
+		if(hideOutOfBounds) {
+			g.setClip(prevClip);
 		}
 		
 	}
 	
-	public void drawLine(Graphics2D g, Color textColor, Color backgroundColor, Color caretColor, String line, int x, 
-			int y, int caretPosition, int lineCaretIsOn, int lineIndex) {
+	public void drawLine(Graphics2D g, Color textColor, Color backgroundColor, Color caretColor, String line, int startX, 
+			int y, int caretPosition, int lineCaretIsOn, int lineIndex, int maxWidth, boolean hideOutOfBounds) {
 		
 		FontMetrics fm = g.getFontMetrics();
+		
+		int offset = 0;// Substracted from x below.
+		
+		String subLine = "";
+		
+		int indexToFindWidthUpTo = caretPosition;
+		
+		if(hideOutOfBounds && lineCaretIsOn == lineIndex) {
+			try {
+				subLine = line.substring(0, caretPosition - 1);// +1 so that the caret can also be shown
+				
+			} catch(Exception ex) {
+				subLine = line;
+				
+			}
+			
+			if(fm.stringWidth(subLine) > maxWidth) {
+				
+				int cumulativeWidth = 0;
+				
+				for(int i = caretPosition + 1; i >= 1; i--) {// Count down the caret position, until we reach the far left of the 
+					// bounding box.
+					
+					try {
+						cumulativeWidth += fm.stringWidth(line.substring(i - 1, i));
+					} catch(Exception ex) {
+						cumulativeWidth += getCharacterWidth(NL, fm);// Must mean we're at the end of line
+					}
+					
+					if(cumulativeWidth > maxWidth) {
+						indexToFindWidthUpTo = i;
+						break;
+					}
+					
+				}
+				
+				try {
+					offset = fm.stringWidth(line.substring(0, indexToFindWidthUpTo));
+				} catch(Exception ex) {// Should never happen, but just to be safe...
+					offset = fm.stringWidth(line);
+					ex.printStackTrace();
+				}
+				
+			}
+			
+		}
+		
+		/*/
+		
+		int start = 0;
+		int end = line.length();
+		
+		if(hideOutOfBounds && fm.stringWidth(line) > maxWidth) {
+			
+			String subLine = "";
+			
+			try {
+				subLine = line.substring(minimumPositionToDrawFrom, maximumPositionToDrawTo);
+			} catch(Exception ex) {
+				
+			}
+			
+			if(subLine.length() > maximumPositionToDrawTo - minimumPositionToDrawFrom + 1) {
+				
+				if(caretPosition <= minimumPositionToDrawFrom) {// Shift the "viewport" left
+					minimumPositionToDrawFrom = caretPosition;
+					
+					maximumPositionToDrawTo = minimumPositionToDrawFrom + 
+							line.substring(minimumPositionToDrawFrom, caretPosition).length() - 1;
+					
+				} else if(caretPosition >= maximumPositionToDrawTo) {// Shift the "viewport" right
+					maximumPositionToDrawTo = caretPosition;
+					
+					minimumPositionToDrawFrom = maximumPositionToDrawTo - 
+							line.substring(caretPosition, maximumPositionToDrawTo).length() + 1;
+					
+				}
+				
+//				if() {
+//					start += 1;
+//					minimumPositionToDrawFrom = maximumPositionToDrawTo - subLine.length();
+//				} else if() {
+//					end = subLine.length();
+//				}
+			}
+			
+		}/**/
+		
+		int x = startX - offset;
 		
 		for(int i = 0; i < line.length(); i++) {
 			
@@ -101,7 +224,17 @@ public class DrawableString {
 			
 			int characterWidth = getCharacterWidth(character, fm);
 			
-			drawCharacter(g, textColor, backgroundColor, caretColor, character, x, y, caretPosition, lineCaretIsOn, i, lineIndex);
+			boolean shouldRenderChar = true;
+			
+//			if(hideOutOfBounds) {
+//				if(x + characterWidth < startX + maxWidth) {// Keep this here until we remove the "setClip" in the render method.
+//					shouldRenderChar = false;
+//				}
+//			}
+			
+			if(shouldRenderChar) {
+				drawCharacter(g, textColor, backgroundColor, caretColor, character, x, y, caretPosition, lineCaretIsOn, i, lineIndex);
+			}
 			
 			x += characterWidth;
 			
@@ -127,6 +260,14 @@ public class DrawableString {
 		
 		if(characterPosition == caretPosition && lineIndex == lineCaretIsOn) {
 			drawCaret(g, caretColor, highlightColor, x, y, height);
+		}
+		
+		if(characterPosition == minimumPositionToDrawFrom) {
+//			drawCaret(g, Color.RED, highlightColor, x, y, height);
+		}
+		
+		if(characterPosition == maximumPositionToDrawTo) {
+//			drawCaret(g, Color.BLUE, highlightColor, x, y, height);
 		}
 		
 	}
@@ -197,11 +338,23 @@ public class DrawableString {
 	}
 	
 	public void moveCaretRight() {
+		
 		moveCaretHorizontally(Direction.RIGHT);
+		
+		if(caretPosition > maximumPositionToDrawTo) {
+			maximumPositionToDrawTo = caretPosition;
+		}
+		
 	}
 	
 	public void moveCaretLeft() {
+		
 		moveCaretHorizontally(Direction.LEFT);
+		
+		if(caretPosition < minimumPositionToDrawFrom) {
+			minimumPositionToDrawFrom = caretPosition;
+		}
+		
 	}
 	
 	public void moveCaretHorizontally(Direction dir) {
@@ -275,6 +428,10 @@ public class DrawableString {
 		
 	}
 	
+	public void add(String contentToAdd) {
+		this.add(contentToAdd, this.caretPosition, this.lineIndexCaretIsOn);
+	}
+	
 	public void add(String contentToAdd, int positionInLine, int line) {
 		
 		DirectionHolder directionToMoveCaret = new DirectionHolder(null);
@@ -293,14 +450,17 @@ public class DrawableString {
 			
 		} else if(contentToAdd.equals(DEL)) {
 			
-			int newLineCount = addDelete(tempLines, lines, lineCaretIsOn, positionInLine, line, directionToMoveCaret);
-			lines = new String[newLineCount];
-			
-			moveCaretLeft();
+			if(!getContent().equals("")) {
+				int newLineCount = addDelete(tempLines, lines, lineCaretIsOn, positionInLine, line, directionToMoveCaret);
+				lines = new String[newLineCount];
+				
+				moveCaretLeft();
+			}
 			
 		} else {
 			
-			String newLineContent = addContent(tempLines, lines, lineCaretIsOn, contentToAdd, positionInLine, line, directionToMoveCaret);
+			String newLineContent = addContent(tempLines, lines, lineCaretIsOn, contentToAdd, 
+					positionInLine, line, directionToMoveCaret);
 			
 			tempLines.set(line, newLineContent);
 			
@@ -423,10 +583,18 @@ public class DrawableString {
 		
 	}
 	
-	public void setContent(String content) {
+	public void setContent(String content, int maxWidth, boolean wrapContent) {
 		lines = parseLines(content, NL);
 		
+		if(fm != null && wrapContent) {
+			lines = wrapLines(lines, fm, maxWidth);
+		}
+		
 		this.content = content;
+	}
+	
+	public void setContent(String content) {
+		this.setContent(content, 0, false);
 	}
 	
 	public String getContent() {
@@ -439,6 +607,61 @@ public class DrawableString {
 	
 	public int getLineCaretIsOn() {
 		return lineIndexCaretIsOn;
+	}
+	
+	private String[] wrapLines(String[] lines, FontMetrics fm, int maxWidth) {
+		
+		ArrayList<String> newLines = new ArrayList<String>(Arrays.asList(lines));
+		
+		int lineOffset = 0;
+		
+		for(int lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+			
+			String line = lines[lineIndex];
+			String currentLongLine = line;// modified everytime a new line is created; it becomes that new line.
+			
+			int currentMaxLineWidth = fm.stringWidth(line);
+			
+			int runCount = 0;
+			
+			do {
+				
+				int cumulativeWidth = 0;
+				
+				for(int characterIndex = 0; characterIndex < currentLongLine.length(); characterIndex++) {
+					
+					String currentChar = String.valueOf(currentLongLine.charAt(characterIndex));
+					
+					cumulativeWidth += fm.stringWidth(currentChar);
+					
+					if(cumulativeWidth > maxWidth) {
+						// There must be a way to to it so we don't add runCount every single time...
+						newLines.add(lineOffset + runCount, "");// To prevent index out of bounds
+						
+						newLines.set(lineOffset + runCount, currentLongLine.substring(0, characterIndex));// Shorten previous line
+						
+						newLines.set(lineOffset + runCount + 1, currentLongLine.substring(characterIndex));
+						
+						currentLongLine = currentLongLine.substring(characterIndex);
+						
+						currentMaxLineWidth = fm.stringWidth(currentLongLine);
+						
+						runCount++;
+						
+					}
+					
+				}
+				
+				runCount++;
+				
+			} while(currentMaxLineWidth > maxWidth);
+			
+			lineOffset += runCount;// Add to the line offset the number of lines previously added
+			
+		}
+		
+		return newLines.toArray(new String[newLines.size()]);
+		
 	}
 	
 	/**
@@ -510,7 +733,7 @@ public class DrawableString {
 	 * 
 	 * @return
 	 */
-	public int toContentIndex(int caretPositon, int lineCaretIsOn) {
+	private int toContentIndex(int caretPositon, int lineCaretIsOn) {
 		
 		return -1;
 		

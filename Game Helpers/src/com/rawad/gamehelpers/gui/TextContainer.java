@@ -3,7 +3,8 @@ package com.rawad.gamehelpers.gui;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
-import com.rawad.gamehelpers.input.MouseEvent;
+import com.rawad.gamehelpers.input.event.KeyboardEvent;
+import com.rawad.gamehelpers.input.event.MouseEvent;
 import com.rawad.gamehelpers.util.strings.DrawableString;
 
 public abstract class TextContainer extends GuiComponent {
@@ -17,6 +18,8 @@ public abstract class TextContainer extends GuiComponent {
 	protected Color cursorColor;
 	
 	protected boolean centerText;
+	protected boolean hideOutOfBoundsText;
+	protected boolean wrapText;
 	
 	public TextContainer(String id, String text, int x, int y, int width, int height) {
 		super(id, x, y, width, height);
@@ -28,6 +31,8 @@ public abstract class TextContainer extends GuiComponent {
 		cursorColor = Color.BLACK;
 		
 		centerText = true;
+		hideOutOfBoundsText = false;
+		wrapText = false;
 		
 	}
 	
@@ -45,8 +50,8 @@ public abstract class TextContainer extends GuiComponent {
 	}
 	
 	@Override
-	public void update(MouseEvent e) {
-		super.update(e);
+	public void update(MouseEvent me, KeyboardEvent ke) {
+		super.update(me, ke);
 		
 	}
 	
@@ -54,7 +59,7 @@ public abstract class TextContainer extends GuiComponent {
 	public void render(Graphics2D g) {
 		super.render(g);
 		
-		text.render(g, textForeground, textBackground, cursorColor, hitbox, centerText);
+		text.render(g, textForeground, textBackground, cursorColor, hitbox, centerText, hideOutOfBoundsText);
 		
 	}
 	
@@ -68,6 +73,18 @@ public abstract class TextContainer extends GuiComponent {
 	
 	public DrawableString getTextObject() {
 		return text;
+	}
+	
+	public void setHideText(boolean hideOutOfBoundsText) {
+		this.hideOutOfBoundsText = hideOutOfBoundsText;
+	}
+	
+	public void setCenterText(boolean centerText) {
+		this.centerText = centerText;
+	}
+	
+	public void setWrapText(boolean wrapText) {
+		this.wrapText = wrapText;
 	}
 	
 }

@@ -7,7 +7,8 @@ import com.rawad.gamehelpers.display.DisplayManager;
 import com.rawad.gamehelpers.gui.Button;
 import com.rawad.gamehelpers.gui.GuiComponent;
 import com.rawad.gamehelpers.gui.GuiManager;
-import com.rawad.gamehelpers.input.MouseEvent;
+import com.rawad.gamehelpers.input.event.KeyboardEvent;
+import com.rawad.gamehelpers.input.event.MouseEvent;
 
 /**
  * Much like fragments for Android applications; re-usable interfaces.
@@ -67,8 +68,8 @@ public class Overlay {
 		return guiManager;
 	}
 	
-	public void update(MouseEvent e) {
-		guiManager.update(e);
+	public void update(MouseEvent me, KeyboardEvent ke) {
+		guiManager.update(me, ke);
 	}
 	
 	public void render(Graphics2D g) {

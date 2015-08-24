@@ -7,7 +7,8 @@ import java.util.Arrays;
 import com.rawad.gamehelpers.display.DisplayManager;
 import com.rawad.gamehelpers.gui.Button;
 import com.rawad.gamehelpers.gui.GuiComponent;
-import com.rawad.gamehelpers.input.MouseEvent;
+import com.rawad.gamehelpers.input.event.KeyboardEvent;
+import com.rawad.gamehelpers.input.event.MouseEvent;
 
 public class PauseOverlay extends Overlay {
 	
@@ -47,10 +48,10 @@ public class PauseOverlay extends Overlay {
 	}
 	
 	@Override
-	public void update(MouseEvent e) {
+	public void update(MouseEvent me, KeyboardEvent ke) {
 		
 		if(isPaused()) {
-			super.update(e);
+			super.update(me, ke);
 		}
 		
 	}

@@ -3,7 +3,8 @@ package com.rawad.gamehelpers.gui;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 
-import com.rawad.gamehelpers.input.MouseEvent;
+import com.rawad.gamehelpers.input.event.KeyboardEvent;
+import com.rawad.gamehelpers.input.event.MouseEvent;
 
 public class GuiManager {
 	
@@ -22,11 +23,13 @@ public class GuiManager {
 		
 	}
 	
-	public void update(MouseEvent e) {
+	public void update(MouseEvent me, KeyboardEvent ke) {
 		
 		for(GuiComponent comp: components) {
 			
-			comp.update(e);
+			if(comp.shouldUpdate()) {
+				comp.update(me, ke);
+			}
 			
 		}
 		
@@ -53,7 +56,7 @@ public class GuiManager {
 				
 				if(drop.isMenuDown()) {
 					// Tell the drop down menu to select an item.
-					drop.calculateSelectedItem(e.getY());
+					drop.calculateSelectedItem(me.getY());
 					drop.setMenuDown(false);
 					
 					currentSelectedDropDown = drop;
@@ -104,6 +107,7 @@ public class GuiManager {
 		int index = size <= 0? 0:size - 1;
 		
 		this.addComponent(comp, index);// Appends it to end by default
+		
 	}
 	
 	public ArrayList<GuiComponent> getComponents() {

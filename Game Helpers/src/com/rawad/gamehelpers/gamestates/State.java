@@ -8,8 +8,8 @@ import com.rawad.gamehelpers.gui.GuiComponent;
 import com.rawad.gamehelpers.gui.GuiManager;
 import com.rawad.gamehelpers.gui.overlay.Overlay;
 import com.rawad.gamehelpers.gui.overlay.OverlayManager;
-import com.rawad.gamehelpers.input.MouseEvent;
-import com.rawad.gamehelpers.input.MouseInput;
+import com.rawad.gamehelpers.input.event.KeyboardEvent;
+import com.rawad.gamehelpers.input.event.MouseEvent;
 
 public abstract class State {
 	
@@ -20,7 +20,8 @@ public abstract class State {
 	
 	protected StateManager sm;
 	
-	private MouseEvent e;
+	private MouseEvent me;
+	private KeyboardEvent ke;
 	
 	public State(StateEnum stateType) {
 		this.stateType = stateType;
@@ -35,22 +36,23 @@ public abstract class State {
 	 */
 	public void update() {
 		
-		e = new MouseEvent(MouseInput.getX(), MouseInput.getY(), MouseInput.LEFT_MOUSE_BUTTON);
+		me = new MouseEvent();
+		ke = new KeyboardEvent();
 		
-		this.update(e);
+		this.update(me, ke);
 		
 	}
 	
 	/**
 	 * Optional in case different values want to be used. e.g. when mouse is clamped, maybe use coordinates of an on-screen object.
 	 * 
-	 * @param x
-	 * @param y
-	 * @param mouseButtonDown
+	 * @param me
+	 * @param ke
+	 * 
 	 */
-	public void update(MouseEvent e) {
+	public void update(MouseEvent me, KeyboardEvent ke) {
 		
-		guiManager.update(e);
+		guiManager.update(me, ke);
 		
 		Button butt = guiManager.getCurrentClickedButton();
 		
@@ -68,9 +70,9 @@ public abstract class State {
 		
 	}
 	
-	public void updateOverlays(MouseEvent e) {
+	public void updateOverlays(MouseEvent me, KeyboardEvent ke) {
 		
-		overlayManager.update(e);
+		overlayManager.update(me, ke);
 		
 		Button butt = overlayManager.getClickedButton();
 		

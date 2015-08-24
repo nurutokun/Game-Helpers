@@ -4,9 +4,8 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
-import com.rawad.gamehelpers.game.Game;
-import com.rawad.gamehelpers.game.GameManager;
-import com.rawad.gamehelpers.input.MouseEvent;
+import com.rawad.gamehelpers.input.event.KeyboardEvent;
+import com.rawad.gamehelpers.input.event.MouseEvent;
 import com.rawad.gamehelpers.resources.ResourceManager;
 import com.rawad.gamehelpers.util.strings.DrawableString;
 
@@ -62,13 +61,13 @@ public class DropDown extends Button {
 	}
 	
 	@Override
-	public void update(MouseEvent e) {
-		super.update(e);
+	public void update(MouseEvent me, KeyboardEvent ke) {
+		super.update(me, ke);
 		
-		int x = e.getX();
-		int y = e.getY();
+		int x = me.getX();
+		int y = me.getY();
 		
-		boolean mouseButtonDown = e.isButtonDown();
+		boolean mouseButtonDown = me.isButtonDown();
 		
 		if(isMenuDown()) {
 			hitbox.setBounds(menu.getX(), menu.getY(), menu.getWidth(), menu.getHeight());
@@ -99,13 +98,10 @@ public class DropDown extends Button {
 			menu.render(g);
 		}
 		
-		this.text.render(g, Color.WHITE, TRANSPARENT, TRANSPARENT, new Rectangle(x, y, width - (width/3), height), centerText);
+		this.text.render(g, Color.WHITE, TRANSPARENT, TRANSPARENT, new Rectangle(x, y, width - (width/3), height), centerText, 
+				hideOutOfBoundsText);
 		
-		Game game = GameManager.getGame();
-		
-		if(game != null && game.isDebug()) {
-			super.drawHitbox(g);
-		}
+		super.drawHitbox(g);
 		
 	}
 	/*/

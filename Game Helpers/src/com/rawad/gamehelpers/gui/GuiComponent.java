@@ -9,19 +9,24 @@ import java.io.File;
 
 import javax.imageio.ImageIO;
 
+import com.rawad.gamehelpers.game.Game;
 import com.rawad.gamehelpers.game.GameManager;
-import com.rawad.gamehelpers.input.MouseEvent;
+import com.rawad.gamehelpers.input.event.KeyboardEvent;
+import com.rawad.gamehelpers.input.event.MouseEvent;
 import com.rawad.gamehelpers.log.Logger;
 import com.rawad.gamehelpers.resources.ResourceManager;
 
 public abstract class GuiComponent {
 	
-	protected static final String BASE_FOLDER_PATH = ResourceManager.getString("GameHelpers.res") + ResourceManager.getString("Gui.base");
-	protected static final String TEXTURE_FILE_EXTENSION = ResourceManager.getString("GameHelpers.ext");
+	private static final String BASE_FOLDER_PATH = ResourceManager.getString("GameHelpers.res") + 
+			ResourceManager.getString("Gui.base");// Both should be accessed through the load texture method only.
+	private static final String TEXTURE_FILE_EXTENSION = ResourceManager.getString("GameHelpers.ext");
 	
 	protected String id;
 	
 	protected Rectangle hitbox;// For hit-detection with mouse; dynamic
+	
+	protected int texture;
 	
 	// Used for drawing, exclusively
 	protected int x;
@@ -36,10 +41,10 @@ public abstract class GuiComponent {
 	
 	protected boolean mouseDragged;
 	
-	/** Previously pressed. */
-	private boolean pressed;
+	private boolean prevPressed;
 	private boolean hovered;
-	private boolean focused;
+	
+	private boolean update;
 	
 	public GuiComponent(String id, int x, int y, int width, int height) {
 		
@@ -54,9 +59,12 @@ public abstract class GuiComponent {
 		this.hitbox = new Rectangle();
 		updateHitbox();
 		
-		pressed = false;
+		prevPressed = false;
 		hovered = false;
-		focused = false;
+		
+		update = true;
+		
+		texture = ResourceManager.loadTexture("");// Loads unknown texture.
 		
 	}
 	
@@ -64,11 +72,11 @@ public abstract class GuiComponent {
 	 * Update position and/or highlighted-status and/or typing cursor etc.
 	 * 
 	 */
-	public void update(MouseEvent e) {
+	public void update(MouseEvent me, KeyboardEvent ke) {
 		
-		complexUpdate(e);
+		complexUpdate(me, ke);
 		
-//		simpleUpdate(e);
+//		simpleUpdate(me);
 		
 	}
 	
@@ -89,40 +97,40 @@ public abstract class GuiComponent {
 		
 	}
 	
-	private void complexUpdate(MouseEvent e) {
+	private void complexUpdate(MouseEvent me, KeyboardEvent ke) {
 		
-		int x = e.getX();
-		int y = e.getY();
+		int x = me.getX();
+		int y = me.getY();
 		
-		boolean mouseButtonDown = e.isButtonDown();
+		boolean mouseButtonDown = me.isButtonDown();
 		
 		if(!intersects(x, y) && mouseButtonDown && prevMouseX != x && prevMouseY != y) {// Mouse dragged outside component
 			mouseDragged = true;
 		}
 		
-		if(intersects(x, y) && !e.isConsumed()) {
+		if(intersects(x, y) && !me.isConsumed()) {
 			
 			if(mouseButtonDown && hovered) {
 				
-				if(!pressed && !mouseDragged) {// If not already pressed
-					mousePressed(e);
+				if(!prevPressed && !mouseDragged) {// If not already pressed
+					mousePressed(me);
 					
 				}
 				
-				pressed = true;
+				prevPressed = true;
 				
 			} else {
 				
-				if(pressed) {
-					mouseReleased(e);
+				if(prevPressed) {
+					mouseReleased(me);
 					
 					if(intersects(prevMouseX, prevMouseY) && !mouseDragged) {
-						mouseClicked(e);
+						mouseClicked(me);
 						
 					}
 					
 					mouseDragged = false;
-					pressed = false;
+					prevPressed = false;
 					
 				}
 				
@@ -136,7 +144,7 @@ public abstract class GuiComponent {
 				
 			}
 			
-			e.consume();// Yes.
+			me.consume();// Yes.
 			
 		} else {
 			
@@ -150,7 +158,7 @@ public abstract class GuiComponent {
 				mouseDragged = false;
 			}
 			
-			pressed = false;
+			prevPressed = false;
 			
 		}
 		
@@ -161,22 +169,24 @@ public abstract class GuiComponent {
 	
 	public void render(Graphics2D g) {
 		
-		if(GameManager.getGame().isDebug()) {
-			drawHitbox(g);
-		}
+		drawHitbox(g);
 		
 	}
 	
 	protected void drawHitbox(Graphics2D g) {
-		g.setColor(Color.BLACK);
-		g.drawRect(hitbox.x - 1, hitbox.y - 1, hitbox.width + 1, hitbox.height + 1);
+		
+		Game game = GameManager.getGame();
+		
+		if(game != null && game.isDebug()) {
+			g.setColor(Color.BLACK);
+			g.drawRect(hitbox.x - 1, hitbox.y - 1, hitbox.width + 1, hitbox.height + 1);
+		}
+		
 	}
 	
 	protected void mouseClicked(MouseEvent e) {}// MouseEvent mainly to get mouse position, for now.
 	
-	protected void mousePressed(MouseEvent e) {
-		focused = true;
-	}
+	protected void mousePressed(MouseEvent e) {}
 	
 	protected void mouseReleased(MouseEvent e) {}
 	
@@ -206,16 +216,37 @@ public abstract class GuiComponent {
 		this.width = width;
 	}
 	
+	public int getWidth() {
+		return width;
+	}
+	
 	public void setHeight(int height) {
 		this.height = height;
 	}
 	
-	public void updateHitbox() {
-		hitbox.setBounds(x, y, width, height);
+	public int getHeight() {
+		return height;
 	}
 	
-	public boolean isFocused() {
-		return focused;
+	public void setUpdate(boolean update) {
+		this.update = update;
+	}
+	
+	public boolean shouldUpdate() {
+		return update;
+	}
+	
+	/**
+	 * Temporary. Mainly used for TextLabel right now.
+	 * 
+	 * @param texture
+	 */
+	public void setTexture(int texture) {
+		this.texture = texture;
+	}
+	
+	public void updateHitbox() {
+		hitbox.setBounds(x, y, width, height);
 	}
 	
 	public boolean isHovered() {
@@ -265,20 +296,19 @@ public abstract class GuiComponent {
 		
 	}
 	
-	protected static int loadTexture(String textureFolder, String textureFileName) {
+	public static int loadTexture(String textureFolder, String textureFileName) {
 		
 		String filePath = BASE_FOLDER_PATH + textureFolder + textureFileName + TEXTURE_FILE_EXTENSION;
 		
 		return ResourceManager.loadTexture(filePath);
 	}
 	
+	@Deprecated
 	protected static BufferedImage[] loadTextures(String textureFolder, String[] textureFileNames) {
 		
 		BufferedImage[] loadedImages = new BufferedImage[textureFileNames.length];
 		
 		for(int i = 0; i < loadedImages.length; i++) {
-			
-			
 			
 			BufferedImage temp = null;
 			
@@ -299,6 +329,7 @@ public abstract class GuiComponent {
 		return loadedImages;
 	}
 	
+	@Deprecated
 	protected static BufferedImage[] loadTextures(String textureFolder) {
 		return loadTextures(textureFolder, new String[]{ResourceManager.getString("Gui.background"),
 				ResourceManager.getString("Gui.foreground"), ResourceManager.getString("Gui.onclick")});

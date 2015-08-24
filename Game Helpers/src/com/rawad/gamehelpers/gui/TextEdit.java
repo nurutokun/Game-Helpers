@@ -7,8 +7,9 @@ import java.awt.event.KeyEvent;
 
 import com.rawad.gamehelpers.display.Cursors;
 import com.rawad.gamehelpers.input.KeyboardInput;
-import com.rawad.gamehelpers.input.MouseEvent;
 import com.rawad.gamehelpers.input.MouseInput;
+import com.rawad.gamehelpers.input.event.KeyboardEvent;
+import com.rawad.gamehelpers.input.event.MouseEvent;
 
 public class TextEdit extends TextContainer {
 	
@@ -17,6 +18,9 @@ public class TextEdit extends TextContainer {
 	private Font font;
 	
 	private int counter;
+	
+	private boolean focused;
+	private boolean newLineOnEnter;
 	private boolean increasing;
 	
 	public TextEdit(String id, String text, int x, int y, int width, int height) {
@@ -29,6 +33,9 @@ public class TextEdit extends TextContainer {
 		this.text.setCaretPosition(0, 0);
 		
 		centerText = false;
+		hideOutOfBoundsText = true;
+		focused = false;
+		newLineOnEnter = true;
 		
 	}
 	
@@ -38,13 +45,19 @@ public class TextEdit extends TextContainer {
 	}
 	
 	@Override
-	public void update(MouseEvent e) {
+	public void update(MouseEvent me, KeyboardEvent ke) {
 		
-		if(isHovered()) {
+		if(isHovered() && !me.isConsumed()) {
 			MouseInput.setCursor(Cursors.TEXT);
+		} else {
+			
+			if(me.isButtonDown()) {// Mouse pressed outside of component
+				focused = false;
+			}
+			
 		}
 		
-		if(isFocused()) { 
+		if(focused) {
 			
 			if(counter >= CURSOR_BLINK_SPEED) {
 				increasing = false;
@@ -62,14 +75,27 @@ public class TextEdit extends TextContainer {
 			
 			cursorColor = new Color(cursorColor.getRed(), cursorColor.getGreen(), cursorColor.getBlue(), alpha);
 			
-			handleKeyInput(KeyboardInput.getTypedKeys());
+			if(!ke.isConsumed() ) {
+				
+				handleKeyInput(ke.getTypedKeys());
+				
+				highlightByKeyboard();
+				
+				ke.consume();
+				
+			}
 			
-			highlightByKeyboard();
-			highlightByMouse(e);
+			if(!me.isConsumed()) {
+				highlightByMouse(me);
+				
+			}
 			
+		} else {
+			cursorColor = new Color(cursorColor.getRed(), cursorColor.getGreen(), cursorColor.getBlue(), 0);// Make cursor (caret) 
+			// invisible when this component isn't highlighted.
 		}
 		
-		super.update(e);
+		super.update(me, ke);
 		
 	}
 	
@@ -82,11 +108,7 @@ public class TextEdit extends TextContainer {
 		
 		if(up || down || right || left) {
 			
-			KeyboardInput.setConsumeAfterRequest(false);// Ew...
-			
-			boolean highlight = KeyboardInput.isKeyDown(KeyEvent.VK_SHIFT);
-			
-			KeyboardInput.setConsumeAfterRequest(true);
+			boolean highlight = KeyboardInput.isKeyDown(KeyEvent.VK_SHIFT, false);
 			
 			if(up) {
 				text.moveCaretUp();
@@ -122,6 +144,8 @@ public class TextEdit extends TextContainer {
 			if(highlight && prevMouseX != x && prevMouseY != y) {
 //				text.setCaretPositionByCoordinates(e.getX(), e.getY());
 //				text.updateHighlights(Color.BLUE);
+				
+				e.consume();
 			}
 		}
 		
@@ -133,11 +157,7 @@ public class TextEdit extends TextContainer {
 		
 //		text.setCaretPositionByCoordinates(e.getX(), e.getY());
 		
-		KeyboardInput.setConsumeAfterRequest(false);
-		
-		boolean highlight = KeyboardInput.isKeyDown(KeyEvent.VK_SHIFT);
-		
-		KeyboardInput.setConsumeAfterRequest(true);
+		boolean highlight = KeyboardInput.isKeyDown(KeyEvent.VK_SHIFT, false);
 		
 		if(highlight) {
 			
@@ -147,6 +167,14 @@ public class TextEdit extends TextContainer {
 //			text.setMarkedPosition(text.getCaretPosition());
 //			text.clearHighlights();
 		}
+		
+	}
+	
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		super.mouseClicked(e);
+		
+		focused = true;
 		
 	}
 	
@@ -161,7 +189,7 @@ public class TextEdit extends TextContainer {
 		g.fill(hitbox);
 		
 		g.setColor(Color.LIGHT_GRAY);
-		g.draw(hitbox);
+		g.drawRect(hitbox.x, hitbox.y, hitbox.width - 1, hitbox.height - 1);
 		
 		super.render(g);
 		
@@ -191,15 +219,18 @@ public class TextEdit extends TextContainer {
 		case "\n\r":
 		case "\r\n":
 			
-			text.newLine();
+			if(newLineOnEnter) {
+				text.newLine();
+			}
 			
 			break;
 		
 		case "\f":
+		case "\t":
 			break;
 			
 		default:
-			text.add(typedKey, text.getCaretPosition(), text.getLineCaretIsOn());
+			text.add(typedKey);
 			break;
 		
 		}
@@ -207,6 +238,23 @@ public class TextEdit extends TextContainer {
 		counter = CURSOR_BLINK_SPEED;
 		increasing = false;
 		
+	}
+	
+	/**
+	 * Sets whether or not a new line should be created after pressing the enter button.
+	 * 
+	 * @param newLineOnEnter
+	 */
+	public void setNewLineOnEnter(boolean newLineOnEnter) {
+		this.newLineOnEnter = newLineOnEnter;
+	}
+	
+	public boolean isFocused() {
+		return focused;
+	}
+	
+	public void setFocused(boolean focused) {
+		this.focused = focused;
 	}
 	
 }

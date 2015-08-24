@@ -3,7 +3,8 @@ package com.rawad.gamehelpers.gui;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
-import com.rawad.gamehelpers.input.MouseEvent;
+import com.rawad.gamehelpers.input.event.KeyboardEvent;
+import com.rawad.gamehelpers.input.event.MouseEvent;
 import com.rawad.gamehelpers.resources.ResourceManager;
 
 public class Button extends TextContainer {
@@ -18,11 +19,15 @@ public class Button extends TextContainer {
 	protected boolean pressed;
 	protected boolean enabled;
 	
-	public Button(String text, int x, int y, int width, int height) {
-		super(text, x, y, width, height);
+	public Button(String id, String text, int x, int y, int width, int height) {
+		super(id, text, x, y, width, height);
 		
 		enabled = true;
 		
+	}
+	
+	public Button(String textAndId, int x, int y, int width, int height) {
+		this(textAndId, textAndId, x, y, width, height);
 	}
 	
 	public Button(String text, int x, int y) {
@@ -42,13 +47,13 @@ public class Button extends TextContainer {
 	}
 	
 	@Override
-	public void update(MouseEvent e) {
+	public void update(MouseEvent me, KeyboardEvent ke) {
 		
 		if(enabled) {
-			super.update(e);
+			super.update(me, ke);
 			
-			if(!intersects(e.getX(), e.getY()) && !e.isButtonDown()) {
-				mouseReleased(e);
+			if(!intersects(me.getX(), me.getY()) && !me.isButtonDown()) {
+				mouseReleased(me);
 			}
 		}
 		

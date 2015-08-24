@@ -32,7 +32,9 @@ public class EventHandler implements MouseMotionListener, MouseListener, MouseWh
 		
 		char c = e.getKeyChar();
 		
-//		Logger.log(Logger.DEBUG, "Typed: " + String.valueOf(c));
+		if((int) c == KeyEvent.VK_ESCAPE) {// Stupid escape.
+			return;
+		}
 		
 		KeyboardInput.addTypedKey(c);
 	}

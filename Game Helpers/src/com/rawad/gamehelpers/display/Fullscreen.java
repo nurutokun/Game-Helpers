@@ -80,7 +80,7 @@ public class Fullscreen extends com.rawad.gamehelpers.display.DisplayMode {
 	@Override
 	public void repaint() {
 		
-		if(KeyboardInput.isKeyDown(KeyEvent.VK_F11)) {
+		if(KeyboardInput.isKeyDown(KeyEvent.VK_F11, true)) {
 			DisplayManager.setDisplayMode(DisplayManager.Mode.WINDOWED);
 			
 			return;

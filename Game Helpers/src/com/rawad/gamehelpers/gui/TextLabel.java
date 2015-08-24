@@ -5,6 +5,7 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 import com.rawad.gamehelpers.resources.ResourceManager;
+import com.rawad.gamehelpers.util.strings.DrawableString;
 
 public class TextLabel extends TextContainer {
 	
@@ -14,6 +15,8 @@ public class TextLabel extends TextContainer {
 		super(text, x, y, width, height);
 		
 		textForeground = Color.WHITE;
+		
+		texture = BACKGROUND_LOCATION;
 		
 	}
 	
@@ -32,10 +35,19 @@ public class TextLabel extends TextContainer {
 	@Override
 	public void render(Graphics2D g) {
 		
-		g.drawImage(ResourceManager.getTexture(BACKGROUND_LOCATION).getScaledInstance(width, height, BufferedImage.SCALE_FAST), x, y, null);
+		g.drawImage(ResourceManager.getTexture(texture).getScaledInstance(width, height, BufferedImage.SCALE_FAST), x, y, null);
 		
 		super.render(g);
 		
+	}
+	
+	/**
+	 * Appends a new line of text to this object's text, with the {@code DrawableString.NL} character appened to the end.
+	 * 
+	 * @param text
+	 */
+	public void addNewLine(String line) {
+		this.text.setContent(getText() + line, width, wrapText);
 	}
 	
 }

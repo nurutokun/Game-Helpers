@@ -3,7 +3,8 @@ package com.rawad.gamehelpers.gui.overlay;
 import java.util.ArrayList;
 
 import com.rawad.gamehelpers.gui.Button;
-import com.rawad.gamehelpers.input.MouseEvent;
+import com.rawad.gamehelpers.input.event.KeyboardEvent;
+import com.rawad.gamehelpers.input.event.MouseEvent;
 
 public class OverlayManager {
 	
@@ -17,10 +18,10 @@ public class OverlayManager {
 		
 	}
 	
-	public void update(MouseEvent e) {
+	public void update(MouseEvent me, KeyboardEvent ke) {
 		
 		for(Overlay over: overlays) {
-			over.update(e);
+			over.update(me, ke);
 		}
 		
 		for(Overlay over: overlays) {

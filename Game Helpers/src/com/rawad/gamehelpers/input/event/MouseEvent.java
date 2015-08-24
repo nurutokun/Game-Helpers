@@ -1,6 +1,8 @@
-package com.rawad.gamehelpers.input;
+package com.rawad.gamehelpers.input.event;
 
-public class MouseEvent {
+import com.rawad.gamehelpers.input.MouseInput;
+
+public class MouseEvent extends InputEvent {
 	
 	private int x;
 	private int y;
@@ -8,16 +10,14 @@ public class MouseEvent {
 	private int button;
 	
 	private boolean mouseButtonDown;
-	private boolean consumed;
 	
 	public MouseEvent(int x, int y, int button) {
+		super();
 		
 		this.x = x;
 		this.y = y;
 		
 		this.button = button;
-		
-		consumed = false;
 		
 		this.mouseButtonDown = MouseInput.isButtonDown(button);
 		
@@ -25,6 +25,10 @@ public class MouseEvent {
 	
 	public MouseEvent(int x, int y) {
 		this(x, y, MouseInput.LEFT_MOUSE_BUTTON);
+	}
+	
+	public MouseEvent() {
+		this(MouseInput.getX(), MouseInput.getY());
 	}
 	
 	public void setX(int x) {
@@ -49,18 +53,6 @@ public class MouseEvent {
 	
 	public boolean isButtonDown() {
 		return mouseButtonDown;
-	}
-	
-	/**
-	 * Mainly to be used by a gui component to indicate that it has "control" over the mouse input, in case it is overlaying another component
-	 * or in case that kind of behaviour is required.
-	 */
-	public void consume() {
-		consumed = true;
-	}
-	
-	public boolean isConsumed() {
-		return consumed;
 	}
 	
 }
