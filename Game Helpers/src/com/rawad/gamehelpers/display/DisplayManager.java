@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.util.ArrayList;
 
-import com.rawad.gamehelpers.game.GameManager;
+import com.rawad.gamehelpers.game_manager.GameManager;
 import com.rawad.gamehelpers.input.MouseInput;
 import com.rawad.gamehelpers.log.Logger;
 
@@ -27,7 +27,7 @@ public class DisplayManager {
 	
 	private static DisplayMode currentDisplayMode;
 	
-	private static Thread workerThread = new Thread(new WorkerThread(), "DisplayManager Worker Thread");
+	private static Thread workerThread;
 	
 	private static long prevTime;
 	private static long timePassed;
@@ -37,7 +37,13 @@ public class DisplayManager {
 	private static boolean running;
 	private static boolean closeRequested;
 	
+	private DisplayManager() {
+		
+	}
+	
 	public static void setDisplayMode(Mode mode) {
+		
+		workerThread = new Thread(new WorkerThread(), "DisplayManager Worker Thread");
 		
 		if(currentDisplayMode != null) {
 			running = false;// Helps (a lot) to avoid null exceptions
@@ -46,7 +52,7 @@ public class DisplayManager {
 		
 		currentDisplayMode = mode.getDisplayMode();
 		
-		currentDisplayMode.create();
+		currentDisplayMode.create(GameManager.instance().getCurrentGame());
 		
 		running = true;
 		
@@ -68,9 +74,7 @@ public class DisplayManager {
 		
 		workerThread = null;
 		currentDisplayMode = null;
-		
-		System.exit(0);
-		
+		 
 	}
 	
 	public static String[] getCompatibleDisplayModeResolutions() {
@@ -194,6 +198,10 @@ public class DisplayManager {
 		DisplayManager.running = running;
 	}
 	
+	public static boolean isRunning() {
+		return running;
+	}
+	
 	public static Component getCurrentWindowComponent() {
 		return currentDisplayMode.getCurrentWindow();
 	}
@@ -253,12 +261,14 @@ public class DisplayManager {
 				
 				MouseInput.update(getCurrentWindowComponent(), getDeltaTime());
 				
-				GameManager.getGame().update(DisplayManager.getDeltaTime());
+				currentDisplayMode.game.update(DisplayManager.getDeltaTime());// TODO: Might merge the update and repaint into the 
+				// DisplayMode class.
 				
 				currentDisplayMode.repaint();
 				
 				if(DisplayManager.isCloseRequested()) {
 					DisplayManager.destroyWindow();
+					
 					closeRequested = false;
 				}
 				

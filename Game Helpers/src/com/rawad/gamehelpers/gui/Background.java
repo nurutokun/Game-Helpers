@@ -1,22 +1,19 @@
 package com.rawad.gamehelpers.gui;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.io.File;
 
-import javax.imageio.ImageIO;
-
-import com.rawad.gamehelpers.log.Logger;
+import com.rawad.gamehelpers.resources.ResourceManager;
 
 public class Background {
 	
-	private static final BufferedImage DEFAULT_TEXTURE;
+	private static final String DEFAULT_TEXTURE_PATH = "Game Helpers/res/textures/game_background.png";
 	
-	private static final String DEFAULT_TEXTURE_PATH = "res/game_background.png";
+	private static final int DEFAULT_TEXTURE;
+	private static final int DEFAULT_FLIPPED_TEXTURE;
 	
-	private BufferedImage texture;
-	private BufferedImage flippedTexture;
+	private int texture;
+	private int flippedTexture;
 	
 	private int x;
 	private int secondX;
@@ -25,11 +22,11 @@ public class Background {
 	
 	public Background() {
 		
-		this.texture = DEFAULT_TEXTURE;
+		texture = DEFAULT_TEXTURE;
 		
-		flippedTexture = getHorizontallyFlippedImage(texture);
+		flippedTexture = DEFAULT_FLIPPED_TEXTURE;
 		
-		this.maxWidth = texture.getWidth();
+		maxWidth = ResourceManager.getTexture(texture).getWidth();
 		
 		x = 0;
 		secondX = -maxWidth;
@@ -38,19 +35,12 @@ public class Background {
 	
 	static {
 		
-		BufferedImage temp = null;
+		DEFAULT_TEXTURE = ResourceManager.loadTexture(DEFAULT_TEXTURE_PATH);
 		
-		try {
-			
-			temp = ImageIO.read(new File(DEFAULT_TEXTURE_PATH));
-			
-		} catch(Exception ex) {
-			
-			Logger.log(Logger.DEBUG, ex.getLocalizedMessage() + "; couldn't laod background image.");
-			
-		} finally {
-			DEFAULT_TEXTURE = temp;
-		}
+		BufferedImage temp = ResourceManager.getTexture(DEFAULT_TEXTURE);
+		
+		DEFAULT_FLIPPED_TEXTURE = ResourceManager.loadTexture(ResourceManager.getTextureObject(DEFAULT_TEXTURE).getPath() + "(flipped)", 
+				getHorizontallyFlippedImage(temp)).getLocation();
 		
 	}
 	
@@ -58,42 +48,42 @@ public class Background {
 		
 		int delta = (int) timePassed/16;// The smaller the overall delta value the more accurate the display is.
 		
-		x += delta;// Having these two down here works much better.
+		int offset = x - secondX;
+		
+		if(Math.abs(offset) - maxWidth > 0) {
+			
+			if(offset > 0) {
+				secondX = x - maxWidth;
+			} else if(offset < 0) {
+				x = secondX - maxWidth;
+			}
+			
+		}
+		
+		x += delta;
 		secondX += delta;
 		
 		if(x >= maxWidth) {
-			x = -maxWidth;
+			x = 0 - maxWidth;
 		}
 		
-		if(secondX >= maxWidth) {
+		if(secondX > maxWidth) {
 			secondX = x - maxWidth;
-		}
-		
-		int displacement = x - secondX;
-		
-		if(displacement > 0) {
-			
-			secondX = x - maxWidth;
-			
-		} else if(displacement < 0) {
-			
-			x = secondX - maxWidth;
-			
 		}
 		
 	}
 	
 	public void render(Graphics2D g) {
 		
-		g.setColor(Color.RED);
+//		g.setColor(Color.RED);
 		
-		g.drawImage(texture, x, 0, null);
+		g.drawImage(ResourceManager.getTexture(texture), x, 0, null);
 //		g.drawRect(x, 0, texture.getWidth() - 1, texture.getHeight() - 1);
 //		g.drawString("original: " + (x+maxWidth), x, 10);
 		
-		g.setColor(Color.BLACK);
+//		g.setColor(Color.BLACK);
 		
-		g.drawImage(flippedTexture, secondX, 0, null);
+		g.drawImage(ResourceManager.getTexture(flippedTexture), secondX, 0, null);
 //		g.drawRect(secondX, 0, texture.getWidth() - 1, texture.getHeight() - 1);
 //		g.drawString("flipped: " + (secondX + maxWidth), secondX, 10);
 		

@@ -1,8 +1,9 @@
-package com.rawad.gamehelpers.game;
+package com.rawad.gamehelpers.game_manager;
 
 import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 
-import com.rawad.gamehelpers.gamestates.StateManager;
+import com.rawad.gamehelpers.game_states.StateManager;
 
 public abstract class Game {
 	
@@ -24,6 +25,8 @@ public abstract class Game {
 	public abstract void update(long timePassed);
 	
 	public abstract void render(Graphics2D g);
+	
+	public abstract BufferedImage getIcon();
 	
 	public boolean isDebug() {
 		return debug;

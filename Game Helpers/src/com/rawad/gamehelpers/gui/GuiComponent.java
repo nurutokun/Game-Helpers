@@ -9,8 +9,8 @@ import java.io.File;
 
 import javax.imageio.ImageIO;
 
-import com.rawad.gamehelpers.game.Game;
-import com.rawad.gamehelpers.game.GameManager;
+import com.rawad.gamehelpers.game_manager.Game;
+import com.rawad.gamehelpers.game_manager.GameManager;
 import com.rawad.gamehelpers.input.event.KeyboardEvent;
 import com.rawad.gamehelpers.input.event.MouseEvent;
 import com.rawad.gamehelpers.log.Logger;
@@ -18,7 +18,7 @@ import com.rawad.gamehelpers.resources.ResourceManager;
 
 public abstract class GuiComponent {
 	
-	private static final String BASE_FOLDER_PATH = ResourceManager.getString("GameHelpers.res") + 
+	private static final String BASE_FOLDER_PATH = "Game Helpers/" + ResourceManager.getString("GameHelpers.res") + 
 			ResourceManager.getString("Gui.base");// Both should be accessed through the load texture method only.
 	private static final String TEXTURE_FILE_EXTENSION = ResourceManager.getString("GameHelpers.ext");
 	
@@ -175,9 +175,9 @@ public abstract class GuiComponent {
 	
 	protected void drawHitbox(Graphics2D g) {
 		
-		Game game = GameManager.getGame();
+		Game game = GameManager.instance().getCurrentGame();
 		
-		if(game != null && game.isDebug()) {
+		if(game.isDebug()) {
 			g.setColor(Color.BLACK);
 			g.drawRect(hitbox.x - 1, hitbox.y - 1, hitbox.width + 1, hitbox.height + 1);
 		}

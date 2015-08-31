@@ -12,7 +12,8 @@ import java.awt.image.BufferedImage;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import com.rawad.gamehelpers.game.GameManager;
+import com.rawad.gamehelpers.game_manager.Game;
+import com.rawad.gamehelpers.game_manager.GameManager;
 import com.rawad.gamehelpers.input.KeyboardInput;
 
 public class Windowed extends DisplayMode {
@@ -25,9 +26,10 @@ public class Windowed extends DisplayMode {
 	}
 	
 	@Override
-	public void create() {
+	public void create(Game game) {
+		super.create(game);
 		
-		frame = new JFrame(GameManager.getGame().toString());
+		frame = new JFrame(GameManager.instance().getCurrentGame().toString());
 		panel = new JPanel() {
 			
 			/**
@@ -49,7 +51,7 @@ public class Windowed extends DisplayMode {
 				g2.setColor(DisplayManager.DEFAULT_BACKGROUND_COLOR);
 				g2.fillRect(0, 0, DisplayManager.getScreenWidth(), DisplayManager.getScreenHeight());
 				
-				GameManager.getGame().render(g2);
+				Windowed.this.game.render(g2);
 				
 				int displayWidth = DisplayManager.getDisplayWidth() == 0? 1:DisplayManager.getDisplayWidth();
 				int displayHeight = DisplayManager.getDisplayHeight() == 0? 1:DisplayManager.getDisplayHeight();

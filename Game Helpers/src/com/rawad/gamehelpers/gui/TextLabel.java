@@ -5,7 +5,6 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 import com.rawad.gamehelpers.resources.ResourceManager;
-import com.rawad.gamehelpers.util.strings.DrawableString;
 
 public class TextLabel extends TextContainer {
 	

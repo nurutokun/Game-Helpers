@@ -1,4 +1,4 @@
-package com.rawad.gamehelpers.gamestates;
+package com.rawad.gamehelpers.game_states;
 
 import java.awt.Graphics2D;
 
@@ -13,7 +13,7 @@ import com.rawad.gamehelpers.input.event.MouseEvent;
 
 public abstract class State {
 	
-	private final StateEnum stateType;
+	private final String stateId;
 	
 	private GuiManager guiManager;
 	private OverlayManager overlayManager;
@@ -23,12 +23,16 @@ public abstract class State {
 	private MouseEvent me;
 	private KeyboardEvent ke;
 	
-	public State(StateEnum stateType) {
-		this.stateType = stateType;
+	public State(String stateId) {
+		this.stateId = stateId;
 		
 		guiManager = new GuiManager();
 		overlayManager = new OverlayManager();
 		
+	}
+	
+	public State(Object stateIdHolder) {
+		this(stateIdHolder.toString());
 	}
 	
 	/**
@@ -125,8 +129,8 @@ public abstract class State {
 		this.sm = sm;
 	}
 	
-	public final StateEnum getStateType() {
-		return stateType;
+	public final String getStateId() {
+		return stateId;
 	}
 	
 }

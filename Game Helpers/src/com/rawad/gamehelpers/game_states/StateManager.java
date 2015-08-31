@@ -1,4 +1,4 @@
-package com.rawad.gamehelpers.gamestates;
+package com.rawad.gamehelpers.game_states;
 
 import java.awt.Graphics2D;
 import java.util.HashMap;
@@ -8,13 +8,13 @@ import com.rawad.gamehelpers.log.Logger;
 
 public class StateManager {
 	
-	private HashMap<StateEnum, State> states;
+	private HashMap<String, State> states;
 	
 	private State currentState;
 	
 	public StateManager() {
 		
-		states = new HashMap<StateEnum, State>();
+		states = new HashMap<String, State>();
 		
 	}
 	
@@ -44,7 +44,7 @@ public class StateManager {
 	
 	public void addState(State state) {
 		
-		states.put(state.getStateType(), state);
+		states.put(state.getStateId(), state);
 		
 		currentState = state;
 		
@@ -52,16 +52,20 @@ public class StateManager {
 		
 	}
 	
-	public void setState(StateEnum stateType) {
+	public void setState(Object stateIdHolder) {
+		setState(stateIdHolder.toString());
+	}
+	
+	public void setState(String stateId) {
 		
 		try {
 			
-			currentState = states.get(stateType);
+			currentState = states.get(stateId);
 			currentState.onActivate();
 			
 		} catch(Exception ex) {
 			
-			Logger.log(Logger.WARNING, "The state: " + stateType + " has not been created.");
+			Logger.log(Logger.WARNING, "The state \"" + stateId + "\" couldn't be set as the active state; probably wasn't created.");
 			
 		}
 		

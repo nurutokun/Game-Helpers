@@ -5,11 +5,10 @@ import java.awt.Graphics2D;
 
 import com.rawad.gamehelpers.input.event.KeyboardEvent;
 import com.rawad.gamehelpers.input.event.MouseEvent;
-import com.rawad.gamehelpers.util.strings.DrawableString;
+import com.rawad.gamehelpers.utils.Util;
+import com.rawad.gamehelpers.utils.strings.DrawableString;
 
 public abstract class TextContainer extends GuiComponent {
-	
-	protected static final Color TRANSPARENT = new Color(0, 0, 0, 0);
 	
 	protected DrawableString text;
 	
@@ -26,7 +25,7 @@ public abstract class TextContainer extends GuiComponent {
 		
 		this.text = new DrawableString(text);
 		
-		textBackground = TRANSPARENT;
+		textBackground = Util.TRANSPARENT;
 		textForeground = Color.BLACK;
 		cursorColor = Color.BLACK;
 		

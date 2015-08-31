@@ -12,7 +12,8 @@ import java.awt.image.BufferStrategy;
 
 import javax.swing.JFrame;
 
-import com.rawad.gamehelpers.game.GameManager;
+import com.rawad.gamehelpers.game_manager.Game;
+import com.rawad.gamehelpers.game_manager.GameManager;
 import com.rawad.gamehelpers.input.KeyboardInput;
 import com.rawad.gamehelpers.log.Logger;
 import com.sun.glass.events.KeyEvent;
@@ -43,7 +44,8 @@ public class Fullscreen extends com.rawad.gamehelpers.display.DisplayMode {
 	}
 	
 	@Override
-	public void create() {
+	public void create(Game game) {
+		super.create(game);
 		
 		currentDevice = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
 		
@@ -105,7 +107,7 @@ public class Fullscreen extends com.rawad.gamehelpers.display.DisplayMode {
 			
 			g.scale(scaleX, scaleY);
 			
-			GameManager.getGame().render(g);
+			game.render(g);
 			
 			g.setClip(0, 0, DisplayManager.getDisplayWidth(), DisplayManager.getDisplayHeight());
 			
@@ -171,7 +173,7 @@ public class Fullscreen extends com.rawad.gamehelpers.display.DisplayMode {
 		
 		frame = new JFrame();
 		
-		frame.setTitle(GameManager.getGame().toString());
+		frame.setTitle(GameManager.instance().getCurrentGame().toString());
 		
 		frame.setUndecorated(true);
 		frame.setIgnoreRepaint(true);

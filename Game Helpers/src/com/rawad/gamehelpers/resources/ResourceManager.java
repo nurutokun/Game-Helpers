@@ -2,7 +2,13 @@ package com.rawad.gamehelpers.resources;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
@@ -20,7 +26,11 @@ public class ResourceManager {
 	
 	private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
 	
-	private static final String UNKNOWN_TEXTURE_PATH = "res/textures/unknown.png";
+	private static final String appdataDir = System.getProperty("user.home").replace('\\', '/') + "/AppData/Roaming/My Game Launcher/";
+	// Always use "/" for file paths, they are all replaced to the system-dependant file-seperator in each method.
+	// TODO: Still gotta change that "/AppData/Roaming
+	
+	private static final String UNKNOWN_TEXTURE_PATH = appdataDir + "Game Helpers/res/textures/unknown.png";
 	
 	private static final int UNKNOWN = -1;
 	
@@ -45,8 +55,22 @@ public class ResourceManager {
 	
 	public static String getString(String key) {
 		
+		return getString(RESOURCE_BUNDLE, key);
+		
+	}
+	
+	public static String getString(String bundleName, String key) {
+		
+		ResourceBundle bundle = ResourceBundle.getBundle(bundleName);
+		
+		return getString(bundle, key);
+		
+	}
+	
+	public static String getString(ResourceBundle bundle, String key) {
+		
 		try {
-			return RESOURCE_BUNDLE.getString(key);
+			return bundle.getString(key);
 			
 		} catch (MissingResourceException e) {
 			return '!' + key + '!';
@@ -100,21 +124,13 @@ public class ResourceManager {
 			return UNKNOWN;
 		}
 		
-		int loc = getLowestResourceLocation(textures);
+		imagePath = (appdataDir + imagePath).replace('/', File.separatorChar);
 		
 		try {
 			
-			Texture texture = getTextureByPath(imagePath);
+			Texture texture = loadTexture(imagePath, ImageIO.read(new File(imagePath)));
 			
-			if(texture == null) {
-				texture = new Texture(ImageIO.read(new File(imagePath)), imagePath, loc);
-				Logger.log(Logger.DEBUG, "Loaded new texture at location: " + loc + ", with path: " + imagePath);
-			} else {
-				Logger.log(Logger.DEBUG, "Found texture matching this one at location: " + texture.getLocation());
-				return texture.getLocation();
-			}
-			
-			textures.put(loc, texture);
+			int loc = texture.getLocation();
 			
 			return loc;
 			
@@ -122,6 +138,27 @@ public class ResourceManager {
 			Logger.log(Logger.SEVERE, ex.getLocalizedMessage() + "; resource manager couldn't load image from \"" + imagePath + "\"");
 			return UNKNOWN;
 		}
+		
+	}
+	
+	public static Texture loadTexture(String imagePath, BufferedImage image) {
+		
+		int loc = getLowestResourceLocation(textures);
+		
+		Texture texture = getTextureByPath(imagePath);
+		
+		if(texture == null) {
+			texture = new Texture(image, imagePath, loc);
+			Logger.log(Logger.DEBUG, "Loaded new texture at location: " + loc + ", with path: " + imagePath);
+			
+		} else {
+			Logger.log(Logger.DEBUG, "Found texture matching this one at location: " + texture.getLocation());
+			
+		}
+		
+		textures.put(loc, texture);
+		
+		return texture;
 		
 	}
 	
@@ -195,11 +232,66 @@ public class ResourceManager {
 		return textures.get(location).getTexture();
 	}
 	
+	public static Texture getTextureObject(int location) {
+		
+		if(location == UNKNOWN) {
+			return null;
+		}
+		
+		return textures.get(location);
+		
+	}
+	
 	public static void unloadTexture(int location) {
 		textures.put(location, null);
 	}
 	
-	private static class Texture {
+	public static BufferedReader readFile(String filePath) {
+		
+		BufferedReader reader = null;
+		
+		filePath = (appdataDir + filePath).replace('/', File.separatorChar);
+		
+		try {
+			
+			reader = new BufferedReader(new FileReader(filePath));
+			
+		} catch(IOException ex) {
+			
+			try {
+				reader = new BufferedReader(new FileReader(""));
+			} catch (FileNotFoundException e) {
+				
+				Logger.log(Logger.SEVERE, "Buffered Reader for the file at \"" + filePath + "\" couldn't be opened.");
+				e.printStackTrace();
+				
+			}
+			
+		}
+		
+		return reader;
+		
+	}
+	
+	public static void saveFile(String filePath, String content) {
+		
+		filePath = (appdataDir + filePath).replace('/', File.separatorChar);
+		
+		try (	PrintWriter writer = new PrintWriter(new FileWriter(filePath, false), true)// Don't append, start all over every time.
+				) {
+			
+			writer.write(content);
+			
+		} catch(IOException ex) {
+			
+			Logger.log(Logger.SEVERE, "Couldn't write to file at \"" + filePath + "\"");
+			ex.printStackTrace();
+			
+		}
+		
+	}
+	
+	public static class Texture {
 		
 		private final BufferedImage texture;
 		

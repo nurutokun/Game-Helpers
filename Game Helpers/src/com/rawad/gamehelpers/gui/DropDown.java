@@ -7,7 +7,8 @@ import java.awt.Rectangle;
 import com.rawad.gamehelpers.input.event.KeyboardEvent;
 import com.rawad.gamehelpers.input.event.MouseEvent;
 import com.rawad.gamehelpers.resources.ResourceManager;
-import com.rawad.gamehelpers.util.strings.DrawableString;
+import com.rawad.gamehelpers.utils.Util;
+import com.rawad.gamehelpers.utils.strings.DrawableString;
 
 public class DropDown extends Button {
 	
@@ -86,7 +87,7 @@ public class DropDown extends Button {
 			setMenuDown(false);
 		}
 		
-		text.setContent(getId() + ":" + DrawableString.NL + currentSelected);
+		text.setContent(getId() + ":" + Util.NL + currentSelected);
 		
 	}
 	
@@ -98,7 +99,7 @@ public class DropDown extends Button {
 			menu.render(g);
 		}
 		
-		this.text.render(g, Color.WHITE, TRANSPARENT, TRANSPARENT, new Rectangle(x, y, width - (width/3), height), centerText, 
+		this.text.render(g, Color.WHITE, Util.TRANSPARENT, Util.TRANSPARENT, new Rectangle(x, y, width - (width/3), height), centerText, 
 				hideOutOfBoundsText);
 		
 		super.drawHitbox(g);
@@ -164,6 +165,7 @@ public class DropDown extends Button {
 		
 		private static final int STRING_HEIGHT = 20;
 		
+		private DrawableString drawableItems;// TODO: Properly implement this.
 		private String[] items;
 		
 		private int x;
@@ -178,6 +180,16 @@ public class DropDown extends Button {
 		
 		public Menu(String[] items, int x, int y, int width) {
 			this.items = items;
+			drawableItems = new DrawableString();
+			
+			for(int i = 0; i < items.length; i++) {
+				drawableItems.setContent(drawableItems.getContent() + items[i]);
+				
+				if(!(i >= items.length - 1)) {
+					drawableItems.setContent(drawableItems.getContent() + Util.NL);
+				}
+				
+			}
 			
 			this.x = x;
 			this.y = y;
@@ -200,6 +212,8 @@ public class DropDown extends Button {
 			
 			g.setColor(Color.BLACK);
 			g.drawRect(x, y, width, height);
+			
+//			drawableItems.render(g, Color.BLACK, TRANSPARENT, TRANSPARENT, hitbox, false, false);
 			
 			for(int i = 0; i < items.length; i++) {
 				g.drawString(items[i], x + 5, y + (height/items.length * i) + STRING_HEIGHT - 5);

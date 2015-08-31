@@ -1,4 +1,4 @@
-package com.rawad.gamehelpers.util.strings;
+package com.rawad.gamehelpers.utils.strings;
 
 import java.awt.Color;
 import java.awt.FontMetrics;
@@ -8,9 +8,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import com.rawad.gamehelpers.log.Logger;
+import com.rawad.gamehelpers.utils.Util;
+
 public class DrawableString {
-	
-	public static final String NL = System.lineSeparator();
 	
 	public static final String DEL = "\b";
 	
@@ -89,7 +90,7 @@ public class DrawableString {
 		int totalHeightOfLines = lines.length * stringHeight;
 		
 		if(center) {
-			stringY += (boundingBox.height/sections) + (stringHeight/2);
+			stringY += (boundingBox.height/sections) + (stringHeight/4);
 			
 		} else {
 			stringY += (stringHeight*3/4);
@@ -154,7 +155,7 @@ public class DrawableString {
 					try {
 						cumulativeWidth += fm.stringWidth(line.substring(i - 1, i));
 					} catch(Exception ex) {
-						cumulativeWidth += getCharacterWidth(NL, fm);// Must mean we're at the end of line
+						cumulativeWidth += getCharacterWidth(Util.NL, fm);// Must mean we're at the end of line
 					}
 					
 					if(cumulativeWidth > maxWidth) {
@@ -240,7 +241,7 @@ public class DrawableString {
 			
 		}
 		
-		drawCharacter(g, textColor, backgroundColor, caretColor, NL, x, y, caretPosition, lineCaretIsOn, line.length(), lineIndex);
+		drawCharacter(g, textColor, backgroundColor, caretColor, Util.NL, x, y, caretPosition, lineCaretIsOn, line.length(), lineIndex);
 		
 	}
 	
@@ -421,7 +422,7 @@ public class DrawableString {
 	}
 	
 	public void newLine() {
-		this.add(NL, caretPosition, lineIndexCaretIsOn);
+		this.add(Util.NL, caretPosition, lineIndexCaretIsOn);
 		
 		// Resets caret position to beginning of line.
 		setCaretPosition(0, lineIndexCaretIsOn);// This one first so that it fixes any problems with this manual thing.
@@ -442,7 +443,7 @@ public class DrawableString {
 		
 		String lineCaretIsOn = lines[line];
 		
-		if(contentToAdd.equals(NL)) {
+		if(contentToAdd.equals(Util.NL)) {
 			
 			String newLineContent = addNewLine(tempLines, lines, lineCaretIsOn, positionInLine, line, directionToMoveCaret);
 			
@@ -584,7 +585,7 @@ public class DrawableString {
 	}
 	
 	public void setContent(String content, int maxWidth, boolean wrapContent) {
-		lines = parseLines(content, NL);
+		lines = parseLines(content, Util.NL);
 		
 		if(fm != null && wrapContent) {
 			lines = wrapLines(lines, fm, maxWidth);
@@ -640,7 +641,11 @@ public class DrawableString {
 						
 						newLines.set(lineOffset + runCount, currentLongLine.substring(0, characterIndex));// Shorten previous line
 						
-						newLines.set(lineOffset + runCount + 1, currentLongLine.substring(characterIndex));
+						try {
+							newLines.set(lineOffset + runCount + 1, currentLongLine.substring(characterIndex));
+						} catch(Exception ex) {
+							Logger.log(Logger.WARNING, "Message is too long or something...");
+						}
 						
 						currentLongLine = currentLongLine.substring(characterIndex);
 						
@@ -718,7 +723,7 @@ public class DrawableString {
 		String content = "";
 		
 		for(int i = 0; i < lines.length; i++) {
-			content += lines[i] + NL;
+			content += lines[i] + Util.NL;
 		}
 		
 		return content;
@@ -744,7 +749,14 @@ public class DrawableString {
 	}
 	
 	public String getCharacterAsString(String[] lines, int positionOnLine, int line) {
-		return String.valueOf(lines[line].charAt(positionOnLine));
+		
+		try {
+			return String.valueOf(lines[line].charAt(positionOnLine));
+		} catch(StringIndexOutOfBoundsException ex) {
+			Logger.log(Logger.WARNING, "DrawableString, getCharacterAsString, got an idnex out of boudns exception");
+			return "";
+		}
+		
 	}
 	
 	private enum Direction {

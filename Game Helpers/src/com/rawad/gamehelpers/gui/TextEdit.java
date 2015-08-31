@@ -22,6 +22,7 @@ public class TextEdit extends TextContainer {
 	private boolean focused;
 	private boolean newLineOnEnter;
 	private boolean increasing;
+	private boolean prevEdited;
 	
 	public TextEdit(String id, String text, int x, int y, int width, int height) {
 		super(id, text, x, y, width, height);
@@ -36,6 +37,7 @@ public class TextEdit extends TextContainer {
 		hideOutOfBoundsText = true;
 		focused = false;
 		newLineOnEnter = true;
+		prevEdited = false;
 		
 	}
 	
@@ -238,6 +240,8 @@ public class TextEdit extends TextContainer {
 		counter = CURSOR_BLINK_SPEED;
 		increasing = false;
 		
+		prevEdited = true;
+		
 	}
 	
 	/**
@@ -255,6 +259,16 @@ public class TextEdit extends TextContainer {
 	
 	public void setFocused(boolean focused) {
 		this.focused = focused;
+	}
+	
+	public boolean wasPrevEdited() {
+		
+		boolean re = prevEdited;
+		
+		prevEdited = false;
+		
+		return re;
+		
 	}
 	
 }

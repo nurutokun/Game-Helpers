@@ -2,17 +2,22 @@ package com.rawad.gamehelpers.display;
 
 import java.awt.Component;
 
+import com.rawad.gamehelpers.game_manager.Game;
 import com.rawad.gamehelpers.input.EventHandler;
 
 public abstract class DisplayMode {
 	
 	protected EventHandler l;
 	
+	protected Game game;
+	
 	public DisplayMode() {
 		l = new EventHandler();
 	}
 	
-	public abstract void create();
+	public void create(Game game) {
+		this.game = game;
+	}
 	
 	public abstract void destroy();
 	
