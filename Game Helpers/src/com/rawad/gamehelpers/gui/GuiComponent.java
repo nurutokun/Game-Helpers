@@ -9,8 +9,8 @@ import java.io.File;
 
 import javax.imageio.ImageIO;
 
-import com.rawad.gamehelpers.game_manager.Game;
-import com.rawad.gamehelpers.game_manager.GameManager;
+import com.rawad.gamehelpers.gamemanager.Game;
+import com.rawad.gamehelpers.gamemanager.GameManager;
 import com.rawad.gamehelpers.input.event.KeyboardEvent;
 import com.rawad.gamehelpers.input.event.MouseEvent;
 import com.rawad.gamehelpers.log.Logger;
@@ -45,6 +45,7 @@ public abstract class GuiComponent {
 	private boolean hovered;
 	
 	private boolean update;
+	private boolean render;
 	
 	public GuiComponent(String id, int x, int y, int width, int height) {
 		
@@ -63,6 +64,7 @@ public abstract class GuiComponent {
 		hovered = false;
 		
 		update = true;
+		render = true;
 		
 		texture = ResourceManager.loadTexture("");// Loads unknown texture.
 		
@@ -194,6 +196,13 @@ public abstract class GuiComponent {
 	
 	protected void mouseExited() {}
 	
+	/**
+	 * Called right after this {@code GuiComponent} is added to the given {@code manager} object.
+	 * 
+	 * @param manager
+	 */
+	public void onAdd(GuiManager manager) {}
+	
 	public boolean intersects(int x, int y) {
 		
 		return hitbox.contains(x, y);
@@ -234,6 +243,14 @@ public abstract class GuiComponent {
 	
 	public boolean shouldUpdate() {
 		return update;
+	}
+	
+	public void setRender(boolean render) {
+		this.render = render;
+	}
+	
+	public boolean shouldRender() {
+		return render;
 	}
 	
 	/**

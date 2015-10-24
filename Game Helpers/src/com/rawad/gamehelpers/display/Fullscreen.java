@@ -12,8 +12,7 @@ import java.awt.image.BufferStrategy;
 
 import javax.swing.JFrame;
 
-import com.rawad.gamehelpers.game_manager.Game;
-import com.rawad.gamehelpers.game_manager.GameManager;
+import com.rawad.gamehelpers.gamemanager.Game;
 import com.rawad.gamehelpers.input.KeyboardInput;
 import com.rawad.gamehelpers.log.Logger;
 import com.sun.glass.events.KeyEvent;
@@ -57,7 +56,7 @@ public class Fullscreen extends com.rawad.gamehelpers.display.DisplayMode {
 			
 			DisplayMode compatibleMode = getCompatibleMode(DisplayManager.getFullScreenWidth(), DisplayManager.getFullScreenHeight());
 			
-			setFullScreen(compatibleMode);
+			setFullScreen(game, compatibleMode);
 			
 			DisplayManager.setDisplayWidth(compatibleMode.getWidth());
 			DisplayManager.setDisplayHeight(compatibleMode.getHeight());
@@ -82,23 +81,7 @@ public class Fullscreen extends com.rawad.gamehelpers.display.DisplayMode {
 	@Override
 	public void repaint() {
 		
-		if(KeyboardInput.isKeyDown(KeyEvent.VK_F11, true)) {
-			DisplayManager.setDisplayMode(DisplayManager.Mode.WINDOWED);
-			
-			return;
-		}
-		
 		BufferStrategy bufStrat = frame.getBufferStrategy();
-		
-		Graphics2D g = (Graphics2D) bufStrat.getDrawGraphics();
-		
-		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		
-		g.setColor(DisplayManager.DEFAULT_BACKGROUND_COLOR);
-		g.fillRect(0, 0, frame.getWidth(), frame.getHeight());
-		
-		g.setColor(Color.BLACK);
 		
 		if(!bufStrat.contentsLost()) {	
 			
@@ -116,6 +99,30 @@ public class Fullscreen extends com.rawad.gamehelpers.display.DisplayMode {
 		}
 		
 		g.dispose();
+		
+	}
+	
+	@Override
+	public void update(long timePassed) {
+		super.update(timePassed);
+		
+		if(KeyboardInput.isKeyDown(KeyEvent.VK_F11, true)) {
+			DisplayManager.setDisplayMode(DisplayManager.Mode.WINDOWED);
+			
+			return;
+		}
+		
+		BufferStrategy bufStrat = frame.getBufferStrategy();
+		
+		g = (Graphics2D) bufStrat.getDrawGraphics();
+		
+		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		
+		g.setColor(DisplayManager.DEFAULT_BACKGROUND_COLOR);
+		g.fillRect(0, 0, frame.getWidth(), frame.getHeight());
+		
+		g.setColor(Color.BLACK);
 		
 	}
 	
@@ -169,15 +176,17 @@ public class Fullscreen extends com.rawad.gamehelpers.display.DisplayMode {
 		
 	}
 	
-	private void setFullScreen(DisplayMode dm) {
+	private void setFullScreen(Game game, DisplayMode dm) {
 		
 		frame = new JFrame();
 		
-		frame.setTitle(GameManager.instance().getCurrentGame().toString());
+		frame.setTitle(game.toString());
+		frame.setIconImage(game.getIcon());
 		
 		frame.setUndecorated(true);
 		frame.setIgnoreRepaint(true);
 		frame.setResizable(false);
+		frame.setFocusTraversalKeysEnabled(false);// Important for the whole custom text components stuff.
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		frame.addKeyListener(l);

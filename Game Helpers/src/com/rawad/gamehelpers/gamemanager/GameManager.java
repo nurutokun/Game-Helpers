@@ -1,4 +1,4 @@
-package com.rawad.gamehelpers.game_manager;
+package com.rawad.gamehelpers.gamemanager;
 
 import java.util.ArrayList;
 
@@ -11,6 +11,8 @@ public class GameManager {
 	private ArrayList<Game> games;
 	
 	private Game currentGame;
+	
+	private Thread gameThread;
 	
 	private GameManager() {
 		
@@ -32,9 +34,11 @@ public class GameManager {
 		// Make sure that this/another game isn't already running. Could maybe make this game-dependant so multiple different games can be
 		// launched at once.
 		if(!DisplayManager.isRunning()) {
-			currentGame.init();
 			
-			DisplayManager.setDisplayMode(DisplayManager.Mode.WINDOWED);
+			gameThread = new Thread(new GameThread(currentGame), "Game Thread");
+			
+			gameThread.start();
+			
 		}
 		
 	}
@@ -74,6 +78,25 @@ public class GameManager {
 		}
 		
 		return instance;
+		
+	}
+	
+	private class GameThread implements Runnable {
+		
+		private final Game game;
+		
+		public GameThread(Game game) {
+			this.game = game;
+		}
+		
+		@Override
+		public void run() {
+			
+			game.init();
+			
+			DisplayManager.setDisplayMode(DisplayManager.Mode.WINDOWED);// Might put this back in the launchGame method.
+			
+		}
 		
 	}
 	

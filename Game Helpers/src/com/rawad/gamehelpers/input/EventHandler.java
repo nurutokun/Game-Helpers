@@ -32,7 +32,7 @@ public class EventHandler implements MouseMotionListener, MouseListener, MouseWh
 		
 		char c = e.getKeyChar();
 		
-		if((int) c == KeyEvent.VK_ESCAPE) {// Stupid escape.
+		if((int) c == KeyEvent.VK_ESCAPE) {// Stupid escape. Also, this works while e.getKeyCode() doesn't...
 			return;
 		}
 		

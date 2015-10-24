@@ -1,7 +1,8 @@
-package com.rawad.gamehelpers.game_states;
+package com.rawad.gamehelpers.gamestates;
 
 import java.awt.Graphics2D;
 
+import com.rawad.gamehelpers.files.FileParser;
 import com.rawad.gamehelpers.gui.Button;
 import com.rawad.gamehelpers.gui.DropDown;
 import com.rawad.gamehelpers.gui.GuiComponent;
@@ -23,6 +24,9 @@ public abstract class State {
 	private MouseEvent me;
 	private KeyboardEvent ke;
 	
+	/** Mainly for convenience. Other classes will have to get this instance straight from the game class. */
+	protected FileParser fileParser;
+	
 	public State(String stateId) {
 		this.stateId = stateId;
 		
@@ -31,6 +35,11 @@ public abstract class State {
 		
 	}
 	
+	/**
+	 * For convenience.
+	 * 
+	 * @param stateIdHolder
+	 */
 	public State(Object stateIdHolder) {
 		this(stateIdHolder.toString());
 	}
@@ -113,6 +122,8 @@ public abstract class State {
 	
 	protected void onActivate() {}
 	
+	protected void onDeactivate() {}
+	
 	protected final void addGuiComponent(GuiComponent comp) {
 		
 		guiManager.addComponent(comp);
@@ -127,6 +138,9 @@ public abstract class State {
 	
 	protected void setStateManager(StateManager sm) {
 		this.sm = sm;
+		
+		fileParser = sm.getGame().getFileParser();
+		
 	}
 	
 	public final String getStateId() {

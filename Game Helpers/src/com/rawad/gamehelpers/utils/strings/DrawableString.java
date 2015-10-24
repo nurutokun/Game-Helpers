@@ -22,7 +22,7 @@ public class DrawableString {
 	 */
 	private static final int VERTICAL_PADDING = 7;
 	
-	private static final int CARET_WIDTH = 2;
+	private static final int CARET_WIDTH = 1;// 2 is too wide and 1 is just thin enough...
 	
 	private String content;
 	
@@ -297,6 +297,10 @@ public class DrawableString {
 			width = fm.stringWidth(" ");
 			break;
 		
+		case "\t":
+			width = fm.stringWidth("    ");// 4 spaces for tab
+			break;
+			
 		default:
 			width = fm.stringWidth(character);
 			break;
@@ -753,7 +757,7 @@ public class DrawableString {
 		try {
 			return String.valueOf(lines[line].charAt(positionOnLine));
 		} catch(StringIndexOutOfBoundsException ex) {
-			Logger.log(Logger.WARNING, "DrawableString, getCharacterAsString, got an idnex out of boudns exception");
+			Logger.log(Logger.WARNING, "DrawableString, getCharacterAsString(), got an index out of bounds exception");
 			return "";
 		}
 		

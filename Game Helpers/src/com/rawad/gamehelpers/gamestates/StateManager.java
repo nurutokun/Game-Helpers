@@ -1,9 +1,9 @@
-package com.rawad.gamehelpers.game_states;
+package com.rawad.gamehelpers.gamestates;
 
 import java.awt.Graphics2D;
 import java.util.HashMap;
 
-import com.rawad.gamehelpers.input.KeyboardInput;
+import com.rawad.gamehelpers.gamemanager.Game;
 import com.rawad.gamehelpers.log.Logger;
 
 public class StateManager {
@@ -12,9 +12,13 @@ public class StateManager {
 	
 	private State currentState;
 	
-	public StateManager() {
+	private Game game;
+	
+	public StateManager(Game game) {
 		
 		states = new HashMap<String, State>();
+		
+		this.game = game;
 		
 	}
 	
@@ -22,8 +26,6 @@ public class StateManager {
 		
 		try {
 			currentState.update();
-			
-			KeyboardInput.clearTypedKeysBuffer();
 			
 		} catch(NullPointerException ex) {
 			Logger.log(Logger.DEBUG, "Current state is null for updating");
@@ -60,15 +62,30 @@ public class StateManager {
 		
 		try {
 			
-			currentState = states.get(stateId);
-			currentState.onActivate();
+			State newState = states.get(stateId);
+			
+			currentState.onDeactivate();
+			
+			newState.onActivate();// Just so that this is called before any updating/rendering.
+			currentState = newState;
 			
 		} catch(Exception ex) {
 			
-			Logger.log(Logger.WARNING, "The state \"" + stateId + "\" couldn't be set as the active state; probably wasn't created.");
+			Logger.log(Logger.WARNING, "The state \"" + stateId + "\" couldn't be set as the active state; probably wasn't "
+					+ "created.");
+			ex.printStackTrace();
 			
 		}
 		
+	}
+	
+	/**
+	 * Mainly for convenience.
+	 * 
+	 * @return {@code Game} for which this {@code StateManager} is managing {@code State} objects for.
+	 */
+	public Game getGame() {
+		return game;
 	}
 	
 }

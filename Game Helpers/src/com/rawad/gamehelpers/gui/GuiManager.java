@@ -25,10 +25,14 @@ public class GuiManager {
 	
 	public void update(MouseEvent me, KeyboardEvent ke) {
 		
-		for(GuiComponent comp: components) {
+		for(int i = components.size() - 1; i >= 0; i--) {// Makes a lot more sense now: components added the latest are
+			// rendered on top; need to be updated before ones added lower on the list.
+			
+			GuiComponent comp = components.get(i);
 			
 			if(comp.shouldUpdate()) {
 				comp.update(me, ke);
+				
 			}
 			
 		}
@@ -77,10 +81,12 @@ public class GuiManager {
 	
 	public void render(Graphics2D g) {
 		
-		for(int i = components.size() - 1; i >= 0; i--) {
-			GuiComponent comp = components.get(i);
+		for(GuiComponent comp: components) {
 			
-			comp.render(g);
+			if(comp.shouldRender()) {
+				comp.render(g);
+			}
+			
 		}
 		
 	}
@@ -89,24 +95,40 @@ public class GuiManager {
 		
 		// Appends new components to beginning of list so that they are prioritized and are easily loop-able that way.
 		if(comp instanceof DropDown) {
-			dropDowns.add(0, (DropDown) comp);
+			
+			DropDown drop = (DropDown) comp;
+			
+			dropDowns.add(0, drop);
 			
 		} else if(comp instanceof Button) {
-			buttons.add(0, (Button) comp);
+			
+			Button butt = (Button) comp;
+			
+			buttons.add(0, butt);
 			
 		}
 		
 		// Aren't added backwards for updating purposes
 		components.add(index, comp);
 		
+		comp.onAdd(this);// TODO: Last in should be last rendered/first updated but isn't when added like this...
+		
 	}
 	
 	public void addComponent(GuiComponent comp) {
 		
 		int size = components.size();
-		int index = size <= 0? 0:size - 1;
+		int index = size;// <= 0? 0:size - 1;// So, basically, this last part is pointless.
 		
 		this.addComponent(comp, index);// Appends it to end by default
+		
+	}
+	
+	public void addComponents(ArrayList<? extends GuiComponent> comps) {
+		
+		for(GuiComponent comp: comps) {
+			addComponent(comp);
+		}
 		
 	}
 	

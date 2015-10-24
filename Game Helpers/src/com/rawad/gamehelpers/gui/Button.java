@@ -55,6 +55,7 @@ public class Button extends TextContainer {
 			if(!intersects(me.getX(), me.getY()) && !me.isButtonDown()) {
 				mouseReleased(me);
 			}
+			
 		}
 		
 	}
@@ -80,7 +81,7 @@ public class Button extends TextContainer {
 			
 			g.drawImage(background.getScaledInstance(width, height, BufferedImage.SCALE_FAST), x, y, null);
 			
-			if(highlighted) {
+			if(isHovered()) {
 				
 				BufferedImage foreground = ResourceManager.getTexture(foreground_loc);
 				

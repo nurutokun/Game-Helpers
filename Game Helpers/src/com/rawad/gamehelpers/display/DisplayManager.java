@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.util.ArrayList;
 
-import com.rawad.gamehelpers.game_manager.GameManager;
+import com.rawad.gamehelpers.gamemanager.GameManager;
 import com.rawad.gamehelpers.input.MouseInput;
 import com.rawad.gamehelpers.log.Logger;
 
@@ -261,9 +261,7 @@ public class DisplayManager {
 				
 				MouseInput.update(getCurrentWindowComponent(), getDeltaTime());
 				
-				currentDisplayMode.game.update(DisplayManager.getDeltaTime());// TODO: Might merge the update and repaint into the 
-				// DisplayMode class.
-				
+				currentDisplayMode.update(getDeltaTime());
 				currentDisplayMode.repaint();
 				
 				if(DisplayManager.isCloseRequested()) {

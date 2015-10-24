@@ -27,7 +27,7 @@ public class TextEdit extends TextContainer {
 	public TextEdit(String id, String text, int x, int y, int width, int height) {
 		super(id, text, x, y, width, height);
 		
-		font = new Font("Arial", Font.PLAIN, 14);
+		font = new Font("Consolas", Font.PLAIN, 14);
 		
 		increasing = true;
 		
@@ -205,6 +205,8 @@ public class TextEdit extends TextContainer {
 			keyTyped(typedKeys[i]);
 		}
 		
+		KeyboardInput.clearTypedKeysBuffer();
+		
 	}
 	
 	/**
@@ -228,7 +230,6 @@ public class TextEdit extends TextContainer {
 			break;
 		
 		case "\f":
-		case "\t":
 			break;
 			
 		default:

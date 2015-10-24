@@ -22,7 +22,8 @@ public class Logger {
 	
 	public static void log(int code, String message) {
 		
-		String output = "[" + sdf.format(Calendar.getInstance().getTime()) + "] " + Thread.currentThread().getName() + " Code: " + code + " Message: " + message;
+		String output = "[" + sdf.format(Calendar.getInstance().getTime()) + "] " + "[" + Thread.currentThread().getName() + "]" 
+				+ " Code: " + code + " Message: " + message;
 		
 		System.out.println(output);
 		
