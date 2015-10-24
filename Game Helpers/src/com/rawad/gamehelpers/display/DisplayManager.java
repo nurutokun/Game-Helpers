@@ -5,8 +5,6 @@ import java.awt.Component;
 import java.util.ArrayList;
 
 import com.rawad.gamehelpers.gamemanager.GameManager;
-import com.rawad.gamehelpers.input.MouseInput;
-import com.rawad.gamehelpers.log.Logger;
 
 public class DisplayManager {
 	
@@ -27,26 +25,25 @@ public class DisplayManager {
 	
 	private static DisplayMode currentDisplayMode;
 	
-	private static Thread workerThread;
-	
-	private static long prevTime;
-	private static long timePassed;
-	
-	private static long averageFrameRate;
-	
-	private static boolean running;
 	private static boolean closeRequested;
 	
 	private DisplayManager() {
 		
 	}
 	
+	/**
+	 * Renders everything onto the current world.
+	 * 
+	 */
+	public static void update() {
+		
+		currentDisplayMode.repaint();
+		
+	}
+	
 	public static void setDisplayMode(Mode mode) {
 		
-		workerThread = new Thread(new WorkerThread(), "DisplayManager Worker Thread");
-		
 		if(currentDisplayMode != null) {
-			running = false;// Helps (a lot) to avoid null exceptions
 			currentDisplayMode.destroy();
 		}
 		
@@ -54,25 +51,18 @@ public class DisplayManager {
 		
 		currentDisplayMode.create(GameManager.instance().getCurrentGame());
 		
-		running = true;
-		
-		if(!workerThread.isAlive()) {
-			workerThread.start();
-		}
-		
 	}
 	
 	public static void requestClose() {
 		closeRequested = true;
 	}
 	
-	private static void destroyWindow() {
+	public static void destroyWindow() {
 		
-		running = false;
+		closeRequested = false;
 		
 		currentDisplayMode.destroy();
 		
-		workerThread = null;
 		currentDisplayMode = null;
 		 
 	}
@@ -142,14 +132,6 @@ public class DisplayManager {
 		return FULLSCREEN_HEIGHT;
 	}
 	
-	public static long getFPS() {
-		return averageFrameRate;
-	}
-	
-	public static long getDeltaTime() {
-		return timePassed;
-	}
-	
 	/**
 	 * Original width of the screen of the game. Used for GAME LOGIC.
 	 * 
@@ -194,14 +176,6 @@ public class DisplayManager {
 		DISPLAY_HEIGHT = height;
 	}
 	
-	public static void setRunning(boolean running) {
-		DisplayManager.running = running;
-	}
-	
-	public static boolean isRunning() {
-		return running;
-	}
-	
 	public static Component getCurrentWindowComponent() {
 		return currentDisplayMode.getCurrentWindow();
 	}
@@ -223,61 +197,6 @@ public class DisplayManager {
 		
 		public DisplayMode getDisplayMode() {
 			return displayMode;
-		}
-		
-	}
-	
-	private static class WorkerThread implements Runnable {
-		
-		public void run() {
-			
-			int frames = 0;
-			int totalTime = 0;
-			
-			prevTime = System.currentTimeMillis();// To keep the initial value limited to zero, just in case.
-			
-			while(running) {
-				
-				long currentTime = System.currentTimeMillis();
-				
-				long deltaTime = currentTime - prevTime;
-				
-				timePassed = (deltaTime <= 0? 1:deltaTime);
-				
-				totalTime += timePassed;
-				
-				frames++;
-				
-				if(frames >= REFRESH_RATE) {
-					
-					averageFrameRate = frames * 1000 / totalTime;
-					
-					frames = 0;
-					totalTime = 0;
-					
-				}
-				
-				prevTime = currentTime;
-				
-				MouseInput.update(getCurrentWindowComponent(), getDeltaTime());
-				
-				currentDisplayMode.update(getDeltaTime());
-				currentDisplayMode.repaint();
-				
-				if(DisplayManager.isCloseRequested()) {
-					DisplayManager.destroyWindow();
-					
-					closeRequested = false;
-				}
-				
-				try {
-					Thread.sleep(1000/DisplayManager.REFRESH_RATE);
-				} catch(InterruptedException ex) {
-					Logger.log(Logger.SEVERE, "Thread was interrupted");
-				}
-				
-			}
-			
 		}
 		
 	}

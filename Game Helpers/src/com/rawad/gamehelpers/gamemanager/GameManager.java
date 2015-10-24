@@ -3,8 +3,12 @@ package com.rawad.gamehelpers.gamemanager;
 import java.util.ArrayList;
 
 import com.rawad.gamehelpers.display.DisplayManager;
+import com.rawad.gamehelpers.input.MouseInput;
+import com.rawad.gamehelpers.log.Logger;
 
 public class GameManager {
+	
+	private static int FPS = 60;
 	
 	private static GameManager instance;
 	
@@ -13,6 +17,13 @@ public class GameManager {
 	private Game currentGame;
 	
 	private Thread gameThread;
+	
+	private long prevTime;
+	private long timePassed;
+	private long averageFrameRate;
+	
+	/** Represents if a game is running or not. */
+	private boolean running;
 	
 	private GameManager() {
 		
@@ -33,7 +44,9 @@ public class GameManager {
 		
 		// Make sure that this/another game isn't already running. Could maybe make this game-dependant so multiple different games can be
 		// launched at once.
-		if(!DisplayManager.isRunning()) {
+		if(!running) {
+			
+			running = true;
 			
 			gameThread = new Thread(new GameThread(currentGame), "Game Thread");
 			
@@ -96,8 +109,65 @@ public class GameManager {
 			
 			DisplayManager.setDisplayMode(DisplayManager.Mode.WINDOWED);// Might put this back in the launchGame method.
 			
+			int frames = 0;
+			int totalTime = 0;
+			
+			prevTime = System.currentTimeMillis();// To keep the initial value limited to zero, just in case.
+			
+			while(running) {
+				
+				long currentTime = System.currentTimeMillis();
+				
+				long deltaTime = currentTime - prevTime;
+				
+				timePassed = (deltaTime <= 0? 1:deltaTime);
+				
+				totalTime += timePassed;
+				
+				frames++;
+				
+				if(frames >= FPS) {
+					
+					averageFrameRate = frames * 1000 / totalTime;
+					
+					frames = 0;
+					totalTime = 0;
+					
+				}
+				
+				prevTime = currentTime;
+				
+				MouseInput.update(DisplayManager.getCurrentWindowComponent(), getDeltaTime());
+				
+				currentGame.update(getDeltaTime());
+				
+				DisplayManager.update();
+				
+				if(DisplayManager.isCloseRequested()) {
+					running = false;
+					
+					DisplayManager.destroyWindow();
+					
+				}
+				
+				try {
+					Thread.sleep(1000/FPS);
+				} catch(InterruptedException ex) {
+					Logger.log(Logger.SEVERE, "Thread was interrupted");
+				}
+				
+			}
+			
 		}
 		
+	}
+	
+	public long getDeltaTime() {
+		return timePassed;
+	}
+	
+	public long getFPS() {
+		return averageFrameRate;
 	}
 	
 }
