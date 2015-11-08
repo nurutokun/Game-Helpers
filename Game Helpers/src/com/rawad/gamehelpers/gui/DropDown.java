@@ -68,7 +68,7 @@ public class DropDown extends Button {
 		int x = me.getX();
 		int y = me.getY();
 		
-		boolean mouseButtonDown = me.isButtonDown();
+		boolean mouseButtonDown = me.isLeftButtonDown();
 		
 		if(isMenuDown()) {
 			hitbox.setBounds(menu.getX(), menu.getY(), menu.getWidth(), menu.getHeight());
@@ -83,8 +83,10 @@ public class DropDown extends Button {
 			hitbox.setBounds(this.x + (2 * widthSection), this.y, widthSection, height);
 		}
 		
-		if(!intersects(x, y) && !mouseDragged && mouseButtonDown) {
+		if(isMenuDown() && !intersects(x, y) && !mouseDragged && mouseButtonDown) {
 			setMenuDown(false);
+			
+			me.consume();// Makes sense. Still doesn't really work in world editor...
 		}
 		
 		text.setContent(getId() + ":" + Util.NL + currentSelected);

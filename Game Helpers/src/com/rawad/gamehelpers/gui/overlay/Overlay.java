@@ -3,7 +3,7 @@ package com.rawad.gamehelpers.gui.overlay;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
-import com.rawad.gamehelpers.display.DisplayManager;
+import com.rawad.gamehelpers.gamemanager.Game;
 import com.rawad.gamehelpers.gui.Button;
 import com.rawad.gamehelpers.gui.GuiComponent;
 import com.rawad.gamehelpers.gui.GuiManager;
@@ -29,6 +29,8 @@ public class Overlay {
 	protected int width;
 	protected int height;
 	
+	protected boolean render;
+	
 	public Overlay(Color backgroundColor, int x, int y, int width, int height) {
 		
 		guiManager = new GuiManager();
@@ -37,6 +39,8 @@ public class Overlay {
 		
 		this.width = width;
 		this.height = height;
+		
+		render = false;
 		
 	}
 	
@@ -49,11 +53,22 @@ public class Overlay {
 	}
 	
 	public Overlay(Color backgroundColor, int x, int y) {
-		this(backgroundColor, x, y, DisplayManager.getScreenWidth(), DisplayManager.getScreenHeight());
+		this(backgroundColor, x, y, Game.SCREEN_WIDTH, Game.SCREEN_HEIGHT);
 	}
 	
 	public Overlay(Color backgroundColor) {
 		this(backgroundColor, 0, 0);
+	}
+	
+	public void update(MouseEvent me, KeyboardEvent ke) {
+		guiManager.update(me, ke);
+	}
+	
+	public void render(Graphics2D g) {
+		
+		g.setColor(backgroundColor);
+		g.fillRect(x, y, width, height);
+		
 	}
 	
 	public void addComponent(GuiComponent comp, int index) {
@@ -68,17 +83,28 @@ public class Overlay {
 		return guiManager;
 	}
 	
-	public void update(MouseEvent me, KeyboardEvent ke) {
-		guiManager.update(me, ke);
+	public Color getBackground() {
+		return backgroundColor;
 	}
 	
-	public void render(Graphics2D g) {
-		
-		g.setColor(backgroundColor);
-		g.fillRect(x, y, width, height);
-		
-		guiManager.render(g);
-		
+	public int getX() {
+		return x;
+	}
+	
+	public int getY() {
+		return y;
+	}
+	
+	public int getWidth() {
+		return width;
+	}
+	
+	public int getHeight() {
+		return height;
+	}
+	
+	public boolean shouldRender() {
+		return render;
 	}
 	
 	public Button getClickedButton() {

@@ -7,13 +7,19 @@ import java.util.HashMap;
 import com.rawad.gamehelpers.files.FileParser;
 import com.rawad.gamehelpers.files.FileType;
 import com.rawad.gamehelpers.gamestates.StateManager;
+import com.rawad.gamehelpers.renderengine.MasterRender;
 
 public abstract class Game {
+	
+	public static final int SCREEN_WIDTH = 640;// 640
+	public static final int SCREEN_HEIGHT = 480;// 480
 	
 	protected StateManager sm;
 	
 	protected FileParser fileParser;
 	protected HashMap<Class<? extends FileType>, FileType> files;
+	
+	protected MasterRender masterRender;
 	
 	protected boolean debug;
 	
@@ -21,6 +27,8 @@ public abstract class Game {
 		
 		fileParser = new FileParser();
 		files = new HashMap<Class<? extends FileType>, FileType>();
+		
+		masterRender = new MasterRender();
 		
 	}
 	
@@ -48,6 +56,10 @@ public abstract class Game {
 	
 	public HashMap<Class<? extends FileType>, ? extends FileType> getFiles() {
 		return files;
+	}
+	
+	public MasterRender getMasterRender() {
+		return masterRender;
 	}
 	
 	public void setDebug(boolean debug) {

@@ -53,7 +53,7 @@ public class TextEdit extends TextContainer {
 			MouseInput.setCursor(Cursors.TEXT);
 		} else {
 			
-			if(me.isButtonDown()) {// Mouse pressed outside of component
+			if(me.isLeftButtonDown()) {// Mouse pressed outside of component
 				focused = false;
 			}
 			
@@ -138,7 +138,7 @@ public class TextEdit extends TextContainer {
 	private void highlightByMouse(MouseEvent e) {
 		
 		if(!e.isConsumed()) {
-			boolean highlight = e.isButtonDown();
+			boolean highlight = e.isLeftButtonDown();
 			
 			int x = e.getX();
 			int y = e.getY();

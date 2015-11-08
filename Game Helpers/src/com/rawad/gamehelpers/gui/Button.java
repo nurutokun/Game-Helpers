@@ -52,7 +52,7 @@ public class Button extends TextContainer {
 		if(enabled) {
 			super.update(me, ke);
 			
-			if(!intersects(me.getX(), me.getY()) && !me.isButtonDown()) {
+			if(!intersects(me.getX(), me.getY()) && !me.isLeftButtonDown()) {
 				mouseReleased(me);
 			}
 			

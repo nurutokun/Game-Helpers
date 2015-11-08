@@ -89,6 +89,22 @@ public class Background {
 		
 	}
 	
+	public int getX() {
+		return x;
+	}
+	
+	public int getSecondX() {
+		return secondX;
+	}
+	
+	public int getTexture() {
+		return texture;
+	}
+	
+	public int getFlippedTexture() {
+		return flippedTexture;
+	}
+	
 	public static BufferedImage getHorizontallyFlippedImage(BufferedImage original) {
 		
 		BufferedImage flipped = new BufferedImage(original.getWidth(), original.getHeight(), original.getType());

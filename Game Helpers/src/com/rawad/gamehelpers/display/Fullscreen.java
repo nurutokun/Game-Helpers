@@ -1,21 +1,20 @@
 package com.rawad.gamehelpers.display;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.DisplayMode;
 import java.awt.Graphics2D;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
-import java.awt.RenderingHints;
 import java.awt.Window;
 import java.awt.image.BufferStrategy;
+import java.awt.image.BufferedImage;
 
 import javax.swing.JFrame;
 
 import com.rawad.gamehelpers.gamemanager.Game;
-import com.rawad.gamehelpers.input.KeyboardInput;
+import com.rawad.gamehelpers.gamemanager.GameManager;
 import com.rawad.gamehelpers.log.Logger;
-import com.sun.glass.events.KeyEvent;
+import com.rawad.gamehelpers.renderengine.MasterRender;
 
 public class Fullscreen extends com.rawad.gamehelpers.display.DisplayMode {
 	
@@ -43,8 +42,8 @@ public class Fullscreen extends com.rawad.gamehelpers.display.DisplayMode {
 	}
 	
 	@Override
-	public void create(Game game) {
-		super.create(game);
+	public void create(MasterRender render) {
+		super.create(render);
 		
 		currentDevice = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
 		
@@ -56,7 +55,7 @@ public class Fullscreen extends com.rawad.gamehelpers.display.DisplayMode {
 			
 			DisplayMode compatibleMode = getCompatibleMode(DisplayManager.getFullScreenWidth(), DisplayManager.getFullScreenHeight());
 			
-			setFullScreen(game, compatibleMode);
+			setFullScreen(compatibleMode);
 			
 			DisplayManager.setDisplayWidth(compatibleMode.getWidth());
 			DisplayManager.setDisplayHeight(compatibleMode.getHeight());
@@ -65,7 +64,7 @@ public class Fullscreen extends com.rawad.gamehelpers.display.DisplayMode {
 			
 			Logger.log(Logger.SEVERE, ex.getLocalizedMessage() + "; abruptly exited full screen mode.");
 			
-			DisplayManager.setDisplayMode(DisplayManager.Mode.WINDOWED);
+			DisplayManager.setDisplayMode(DisplayManager.Mode.WINDOWED, render);
 			
 		}
 		
@@ -83,14 +82,19 @@ public class Fullscreen extends com.rawad.gamehelpers.display.DisplayMode {
 		
 		BufferStrategy bufStrat = frame.getBufferStrategy();
 		
+		Graphics2D g = (Graphics2D) bufStrat.getDrawGraphics();
+		
 		if(!bufStrat.contentsLost()) {	
 			
-			double scaleX = (double) DisplayManager.getDisplayWidth()/(double) DisplayManager.getScreenWidth();
-			double scaleY = (double) DisplayManager.getDisplayHeight()/(double) DisplayManager.getScreenHeight();
+			
+			double scaleX = (double) DisplayManager.getDisplayWidth()/(double) Game.SCREEN_WIDTH;
+			double scaleY = (double) DisplayManager.getDisplayHeight()/(double) Game.SCREEN_HEIGHT;
+			
+			BufferedImage buffer = render.getBuffer();
 			
 			g.scale(scaleX, scaleY);
 			
-			game.render(g);
+			g.drawImage(buffer, 0, 0, null);
 			
 			g.setClip(0, 0, DisplayManager.getDisplayWidth(), DisplayManager.getDisplayHeight());
 			
@@ -99,30 +103,6 @@ public class Fullscreen extends com.rawad.gamehelpers.display.DisplayMode {
 		}
 		
 		g.dispose();
-		
-	}
-	
-	@Override
-	public void update(long timePassed) {
-		super.update(timePassed);
-		
-		if(KeyboardInput.isKeyDown(KeyEvent.VK_F11, true)) {
-			DisplayManager.setDisplayMode(DisplayManager.Mode.WINDOWED);
-			
-			return;
-		}
-		
-		BufferStrategy bufStrat = frame.getBufferStrategy();
-		
-		g = (Graphics2D) bufStrat.getDrawGraphics();
-		
-		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		
-		g.setColor(DisplayManager.DEFAULT_BACKGROUND_COLOR);
-		g.fillRect(0, 0, frame.getWidth(), frame.getHeight());
-		
-		g.setColor(Color.BLACK);
 		
 	}
 	
@@ -176,7 +156,9 @@ public class Fullscreen extends com.rawad.gamehelpers.display.DisplayMode {
 		
 	}
 	
-	private void setFullScreen(Game game, DisplayMode dm) {
+	private void setFullScreen(DisplayMode dm) {
+		
+		Game game = GameManager.instance().getCurrentGame();
 		
 		frame = new JFrame();
 		
@@ -205,6 +187,7 @@ public class Fullscreen extends com.rawad.gamehelpers.display.DisplayMode {
 		}
 		
 		frame.createBufferStrategy(2);
+		
 	}
 	
 	private void exitFullScreen() {

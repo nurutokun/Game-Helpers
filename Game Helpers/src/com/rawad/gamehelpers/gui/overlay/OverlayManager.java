@@ -1,5 +1,6 @@
 package com.rawad.gamehelpers.gui.overlay;
 
+import java.awt.Graphics2D;
 import java.util.ArrayList;
 
 import com.rawad.gamehelpers.gui.Button;
@@ -35,8 +36,25 @@ public class OverlayManager {
 		
 	}
 	
+	public void render(Graphics2D g) {
+		
+		for(Overlay over: overlays) {
+			
+			if(over.shouldRender()) {
+				over.render(g);
+				over.getGuiManager().render(g);
+			}
+			
+		}
+		
+	}
+	
 	public void addOverlay(Overlay over) {
 		overlays.add(over);
+	}
+	
+	public ArrayList<Overlay> getOverlays() {
+		return overlays;
 	}
 	
 	public Button getClickedButton() {

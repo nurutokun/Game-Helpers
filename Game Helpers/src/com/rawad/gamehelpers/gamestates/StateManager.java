@@ -5,8 +5,11 @@ import java.util.HashMap;
 
 import com.rawad.gamehelpers.gamemanager.Game;
 import com.rawad.gamehelpers.log.Logger;
+import com.rawad.gamehelpers.renderengine.gui.GuiRender;
 
 public class StateManager {
+	
+	private GuiRender guiRender;
 	
 	private HashMap<String, State> states;
 	
@@ -15,6 +18,8 @@ public class StateManager {
 	private Game game;
 	
 	public StateManager(Game game) {
+		
+		guiRender = (GuiRender) game.getMasterRender().getRender(GuiRender.class);
 		
 		states = new HashMap<String, State>();
 		
@@ -27,8 +32,12 @@ public class StateManager {
 		try {
 			currentState.update();
 			
+			guiRender.setGuiManager(currentState.getGuiManager());
+			guiRender.setOverlayManager(currentState.getOverlayManager());
+			
 		} catch(NullPointerException ex) {
 			Logger.log(Logger.DEBUG, "Current state is null for updating");
+			ex.printStackTrace();
 		}
 		
 	}
@@ -36,7 +45,11 @@ public class StateManager {
 	public void render(Graphics2D g) {
 		
 		try {
+			
 			currentState.render(g);
+			
+			currentState.getGuiManager().render(g);
+			currentState.getOverlayManager().render(g);
 			
 		} catch(NullPointerException ex) {
 			Logger.log(Logger.DEBUG, "Current state is null for rendering");

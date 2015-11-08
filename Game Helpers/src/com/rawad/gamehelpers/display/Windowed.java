@@ -4,15 +4,14 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.RenderingHints;
-import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import com.rawad.gamehelpers.gamemanager.Game;
-import com.rawad.gamehelpers.input.KeyboardInput;
+import com.rawad.gamehelpers.gamemanager.GameManager;
+import com.rawad.gamehelpers.renderengine.MasterRender;
 
 public class Windowed extends DisplayMode {
 	
@@ -24,8 +23,10 @@ public class Windowed extends DisplayMode {
 	}
 	
 	@Override
-	public void create(Game game) {
-		super.create(game);
+	public void create(MasterRender render) {
+		super.create(render);
+		
+		Game game = GameManager.instance().getCurrentGame();
 		
 		frame = new JFrame(game.toString());
 		panel = new JPanel() {
@@ -35,40 +36,28 @@ public class Windowed extends DisplayMode {
 			 */
 			private static final long serialVersionUID = 7964464010671011714L;
 			
-			public void paintComponent(Graphics g1) {
-				super.paintComponent(g1);
+			public void paintComponent(Graphics g) {
+				super.paintComponent(g);
 				
 				int displayWidth = DisplayManager.getDisplayWidth() == 0? 1:DisplayManager.getDisplayWidth();
 				int displayHeight = DisplayManager.getDisplayHeight() == 0? 1:DisplayManager.getDisplayHeight();
 				
-				g1.setClip(0, 0, displayWidth, displayHeight);
+				g.setClip(0, 0, displayWidth, displayHeight);
 				
-				// All of this has to be done here....
-				buffer = new BufferedImage(DisplayManager.getScreenWidth(), DisplayManager.getScreenHeight(), 
-						BufferedImage.TYPE_INT_ARGB);
+				BufferedImage buffer = Windowed.this.render.getBuffer();
 				
-				g = buffer.createGraphics();
-				
-				g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-				g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-				
-				g.setColor(DisplayManager.DEFAULT_BACKGROUND_COLOR);
-				g.fillRect(0, 0, DisplayManager.getScreenWidth(), DisplayManager.getScreenHeight());
-				// Down to here...
-				
-				Windowed.this.game.render(g);
-				
-				g1.drawImage(Windowed.this.buffer.getScaledInstance(displayWidth, displayHeight, BufferedImage.SCALE_FAST),
+				g.drawImage(buffer.getScaledInstance(displayWidth, displayHeight, BufferedImage.SCALE_FAST),
 						0, 0, null);
 				
-				g1.dispose();
 				g.dispose();
+				
+//				Windowed.this.render.clearBuffer();// Why this can't be done here, I don't know...
 				
 			}
 			
 		};
 		
-		panel.setPreferredSize(new Dimension(DisplayManager.getScreenWidth(), DisplayManager.getScreenHeight()));
+		panel.setPreferredSize(new Dimension(Game.SCREEN_WIDTH, Game.SCREEN_HEIGHT));
 		
 		frame.add(panel, BorderLayout.CENTER);
 		
@@ -102,19 +91,6 @@ public class Windowed extends DisplayMode {
 		
 		frame = null;
 		panel = null;
-		
-	}
-	
-	@Override
-	public void update(long timePassed) {
-		super.update(timePassed);
-		
-		if(KeyboardInput.isKeyDown(KeyEvent.VK_F11, true)) {
-			DisplayManager.setDisplayMode(DisplayManager.Mode.FULLSCREEN);
-			
-			return;
-		}
-		
 		
 	}
 	

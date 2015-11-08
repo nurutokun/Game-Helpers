@@ -13,6 +13,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 import com.rawad.gamehelpers.display.DisplayManager;
+import com.rawad.gamehelpers.gamemanager.Game;
 
 public class EventHandler implements MouseMotionListener, MouseListener, MouseWheelListener,
 		KeyListener, ComponentListener, WindowListener {
@@ -106,8 +107,8 @@ public class EventHandler implements MouseMotionListener, MouseListener, MouseWh
 	@Override
 	public void mouseMoved(MouseEvent e) {
 		
-		double xScale = (double) DisplayManager.getScreenWidth()/(double) e.getComponent().getWidth();
-		double yScale = (double) DisplayManager.getScreenHeight()/(double) e.getComponent().getHeight();
+		double xScale = (double) Game.SCREEN_WIDTH/(double) e.getComponent().getWidth();
+		double yScale = (double) Game.SCREEN_HEIGHT/(double) e.getComponent().getHeight();
 		
 		int newX = (int) (((double) e.getX()) * xScale);
 		int newY = (int) (((double) e.getY()) * yScale);

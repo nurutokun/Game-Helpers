@@ -4,15 +4,13 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import com.rawad.gamehelpers.display.DisplayManager;
+import com.rawad.gamehelpers.gamemanager.Game;
 import com.rawad.gamehelpers.gui.Button;
 import com.rawad.gamehelpers.gui.GuiComponent;
 import com.rawad.gamehelpers.input.event.KeyboardEvent;
 import com.rawad.gamehelpers.input.event.MouseEvent;
 
 public class PauseOverlay extends Overlay {
-	
-	private boolean paused;
 	
 	public PauseOverlay(Color backgroundColor, int x, int y, int width, int height) {
 		super(backgroundColor, x, y, width, height);
@@ -28,7 +26,7 @@ public class PauseOverlay extends Overlay {
 	}
 	
 	public PauseOverlay(Color backgroundColor, int x, int y) {
-		this(backgroundColor, x, y, DisplayManager.getScreenWidth(), DisplayManager.getScreenHeight());
+		this(backgroundColor, x, y, Game.SCREEN_WIDTH, Game.SCREEN_HEIGHT);
 		
 	}
 	
@@ -108,11 +106,11 @@ public class PauseOverlay extends Overlay {
 	}
 	
 	public void setPaused(boolean paused) {
-		this.paused = paused;
+		this.render = paused;
 	}
 	
 	public boolean isPaused() {
-		return paused;
+		return render;
 	}
 	
 }

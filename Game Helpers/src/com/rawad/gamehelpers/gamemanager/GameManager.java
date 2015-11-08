@@ -5,8 +5,12 @@ import java.util.ArrayList;
 import com.rawad.gamehelpers.display.DisplayManager;
 import com.rawad.gamehelpers.input.MouseInput;
 import com.rawad.gamehelpers.log.Logger;
+import com.rawad.gamehelpers.renderengine.MasterRender;
 
 public class GameManager {
+	
+	public static final int SCREEN_WIDTH = 640;//640
+	public static final int SCREEN_HEIGHT = 480;//480
 	
 	private static int FPS = 60;
 	
@@ -25,15 +29,21 @@ public class GameManager {
 	/** Represents if a game is running or not. */
 	private boolean running;
 	
+	private boolean useOldRendering;
+	
 	private GameManager() {
 		
 		games = new ArrayList<Game>();
 		
+		running = false;
+		
+		useOldRendering = false;
+		
 	}
 	
 	/**
-	 * Registers the given {@code gameToLaunch} object, then it calls the {@code init()} method inherited in the {@code Game} class and starts
-	 * the {@code DisplayManager}.
+	 * Registers the given {@code gameToLaunch} object, then it calls the {@code init()} method inherited in 
+	 * the {@code Game} class and starts the {@code DisplayManager}.
 	 * 
 	 * @param gameToLaunch
 	 * @see #registerGame(Game)
@@ -98,8 +108,13 @@ public class GameManager {
 		
 		private final Game game;
 		
+		private final MasterRender masterRender;
+		
 		public GameThread(Game game) {
 			this.game = game;
+			
+			masterRender = game.getMasterRender();
+			
 		}
 		
 		@Override
@@ -107,7 +122,8 @@ public class GameManager {
 			
 			game.init();
 			
-			DisplayManager.setDisplayMode(DisplayManager.Mode.WINDOWED);// Might put this back in the launchGame method.
+			DisplayManager.setDisplayMode(DisplayManager.Mode.WINDOWED, masterRender);// Might put this back
+			// in the launchGame method.
 			
 			int frames = 0;
 			int totalTime = 0;
@@ -139,9 +155,17 @@ public class GameManager {
 				
 				MouseInput.update(DisplayManager.getCurrentWindowComponent(), getDeltaTime());
 				
-				currentGame.update(getDeltaTime());
+				game.update(getDeltaTime());
+				
+				if(useOldRendering) {
+					game.render(masterRender.getGraphics());
+				} else {
+					masterRender.render();
+				}
 				
 				DisplayManager.update();
+				
+				masterRender.clearBuffer();
 				
 				if(DisplayManager.isCloseRequested()) {
 					running = false;
@@ -168,6 +192,14 @@ public class GameManager {
 	
 	public long getFPS() {
 		return averageFrameRate;
+	}
+	
+	public void changeUseOldRendering() {
+		useOldRendering = !useOldRendering;
+	}
+	
+	public boolean shouldUseOldRendering() {
+		return useOldRendering;
 	}
 	
 }

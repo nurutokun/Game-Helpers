@@ -7,24 +7,24 @@ public class MouseEvent extends InputEvent {
 	private int x;
 	private int y;
 	
-	private int button;
+	private boolean leftMouseButtonDown;
+	private boolean rightMouseButtonDown;
 	
-	private boolean mouseButtonDown;
-	
-	public MouseEvent(int x, int y, int button) {
+	public MouseEvent(int x, int y, boolean leftMouseButtonDown, boolean rightMouseButtonDown) {
 		super();
 		
 		this.x = x;
 		this.y = y;
 		
-		this.button = button;
-		
-		this.mouseButtonDown = MouseInput.isButtonDown(button);
+		this.leftMouseButtonDown = leftMouseButtonDown;
+		this.rightMouseButtonDown = rightMouseButtonDown;
 		
 	}
 	
 	public MouseEvent(int x, int y) {
-		this(x, y, MouseInput.LEFT_MOUSE_BUTTON);
+		this(x, y, MouseInput.isButtonDown(MouseInput.LEFT_MOUSE_BUTTON), 
+				MouseInput.isButtonDown(MouseInput.RIGHT_MOUSE_BUTTON));
+		
 	}
 	
 	public MouseEvent() {
@@ -47,12 +47,12 @@ public class MouseEvent extends InputEvent {
 		return y;
 	}
 	
-	public int getButton() {
-		return button;
+	public boolean isLeftButtonDown() {
+		return !isConsumed() && leftMouseButtonDown;
 	}
 	
-	public boolean isButtonDown() {
-		return mouseButtonDown;
+	public boolean isRightButtonDown() {
+		return !isConsumed() && rightMouseButtonDown;
 	}
 	
 }

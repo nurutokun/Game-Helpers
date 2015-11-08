@@ -1,26 +1,21 @@
 package com.rawad.gamehelpers.display;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.util.ArrayList;
 
-import com.rawad.gamehelpers.gamemanager.GameManager;
+import com.rawad.gamehelpers.gamemanager.Game;
+import com.rawad.gamehelpers.renderengine.MasterRender;
 
 public class DisplayManager {
-	
-	public static final Color DEFAULT_BACKGROUND_COLOR = new Color(202, 212, 227);
-	
-	private static final int SCREEN_WIDTH = 640;//640
-	private static final int SCREEN_HEIGHT = 480;//480
 	
 	// vvv All of these should be changeable to what the user desires
 	public static int REFRESH_RATE = 60;
 	
-	private static int DISPLAY_WIDTH = SCREEN_WIDTH;// not final; changes with the resizing of the window
-	private static int DISPLAY_HEIGHT = SCREEN_HEIGHT;
+	private static int DISPLAY_WIDTH = Game.SCREEN_WIDTH;// not final; changes with the resizing of the window
+	private static int DISPLAY_HEIGHT = Game.SCREEN_HEIGHT;
 	
-	private static int FULLSCREEN_WIDTH = SCREEN_WIDTH;
-	private static int FULLSCREEN_HEIGHT = SCREEN_HEIGHT;
+	private static int FULLSCREEN_WIDTH = Game.SCREEN_WIDTH;
+	private static int FULLSCREEN_HEIGHT = Game.SCREEN_HEIGHT;
 	// ^^^
 	
 	private static DisplayMode currentDisplayMode;
@@ -32,7 +27,7 @@ public class DisplayManager {
 	}
 	
 	/**
-	 * Renders everything onto the current world.
+	 * Renders everything onto the current buffer.
 	 * 
 	 */
 	public static void update() {
@@ -41,7 +36,7 @@ public class DisplayManager {
 		
 	}
 	
-	public static void setDisplayMode(Mode mode) {
+	public static void setDisplayMode(Mode mode, MasterRender render) {
 		
 		if(currentDisplayMode != null) {
 			currentDisplayMode.destroy();
@@ -49,7 +44,7 @@ public class DisplayManager {
 		
 		currentDisplayMode = mode.getDisplayMode();
 		
-		currentDisplayMode.create(GameManager.instance().getCurrentGame());
+		currentDisplayMode.create(render);
 		
 	}
 	
@@ -133,24 +128,6 @@ public class DisplayManager {
 	}
 	
 	/**
-	 * Original width of the screen of the game. Used for GAME LOGIC.
-	 * 
-	 * @return
-	 */
-	public static int getScreenWidth() {
-		return SCREEN_WIDTH;
-	}
-	
-	/**
-	 * Original height of the screen of the game. Used for GAME LOGIC.
-	 * 
-	 * @return
-	 */
-	public static int getScreenHeight() {
-		return SCREEN_HEIGHT;
-	}
-	
-	/**
 	 * Display width which is scaled up/down to from the original screen width.
 	 * 
 	 * @return
@@ -184,6 +161,10 @@ public class DisplayManager {
 		return closeRequested;
 	}
 	
+	public static Mode getDisplayMode() {
+		return Mode.getMode(currentDisplayMode);
+	}
+	
 	public static enum Mode {
 		
 		WINDOWED(new Windowed()),
@@ -197,6 +178,22 @@ public class DisplayManager {
 		
 		public DisplayMode getDisplayMode() {
 			return displayMode;
+		}
+		
+		public static Mode getMode(DisplayMode displayMode) {
+			
+			Mode[] modes = Mode.values();
+			
+			for(Mode mode: modes) {
+				
+				if(mode.getDisplayMode().equals(displayMode)) {
+					return mode;
+				}
+				
+			}
+			
+			return WINDOWED;// Default
+			
 		}
 		
 	}

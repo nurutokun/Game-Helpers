@@ -88,7 +88,7 @@ public abstract class GuiComponent {
 		int x = e.getX();
 		int y = e.getY();
 		
-		boolean mouseButtonDown = e.isButtonDown();
+		boolean mouseButtonDown = e.isLeftButtonDown();
 		
 		if(intersects(x, y) && mouseButtonDown) {
 			
@@ -104,7 +104,7 @@ public abstract class GuiComponent {
 		int x = me.getX();
 		int y = me.getY();
 		
-		boolean mouseButtonDown = me.isButtonDown();
+		boolean mouseButtonDown = me.isLeftButtonDown();
 		
 		if(!intersects(x, y) && mouseButtonDown && prevMouseX != x && prevMouseY != y) {// Mouse dragged outside component
 			mouseDragged = true;

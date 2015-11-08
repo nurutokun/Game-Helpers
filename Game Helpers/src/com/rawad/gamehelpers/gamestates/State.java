@@ -47,7 +47,7 @@ public abstract class State {
 	/**
 	 * Should be called by subclass whenever anything GUI-related is being done
 	 */
-	public void update() {
+	public final void update() {
 		
 		me = new MouseEvent();
 		ke = new KeyboardEvent();
@@ -98,7 +98,7 @@ public abstract class State {
 	
 	public void render(Graphics2D g) {
 		
-		guiManager.render(g);
+//		guiManager.render(g);// Should have never had it here
 		
 	}
 	
@@ -145,6 +145,14 @@ public abstract class State {
 	
 	public final String getStateId() {
 		return stateId;
+	}
+	
+	public GuiManager getGuiManager() {
+		return guiManager;
+	}
+	
+	public OverlayManager getOverlayManager() {
+		return overlayManager;
 	}
 	
 }

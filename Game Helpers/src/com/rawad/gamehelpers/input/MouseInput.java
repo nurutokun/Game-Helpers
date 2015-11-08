@@ -9,6 +9,7 @@ import java.util.HashMap;
 
 import com.rawad.gamehelpers.display.Cursors;
 import com.rawad.gamehelpers.display.DisplayManager;
+import com.rawad.gamehelpers.gamemanager.Game;
 import com.rawad.gamehelpers.log.Logger;
 
 public class MouseInput {
@@ -67,8 +68,8 @@ public class MouseInput {
 			
 			setCursor(Cursors.BLANK);
 			
-			double xScale = (double) window.getWidth()/(double) DisplayManager.getScreenWidth();
-			double yScale = (double) window.getHeight()/(double) DisplayManager.getScreenHeight();
+			double xScale = (double) window.getWidth()/(double) Game.SCREEN_WIDTH;
+			double yScale = (double) window.getHeight()/(double) Game.SCREEN_HEIGHT;
 			
 			int scaledClampX = (int) (((double) clampX) * xScale);
 			int scaledClampY = (int) (((double) clampY) * yScale);
@@ -123,6 +124,7 @@ public class MouseInput {
 		
 	}
 	
+	@Deprecated
 	public static boolean isButtonClicked(int key) {
 		
 		try {
