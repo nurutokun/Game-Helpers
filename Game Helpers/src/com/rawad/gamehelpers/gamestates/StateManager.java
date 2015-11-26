@@ -32,8 +32,8 @@ public class StateManager {
 		try {
 			currentState.update();
 			
-			guiRender.setGuiManager(currentState.getGuiManager());
-			guiRender.setOverlayManager(currentState.getOverlayManager());
+			guiRender.addGuiComponents(currentState.getGuiManager().getComponents());
+			guiRender.addOverlays(currentState.getOverlayManager().getOverlays());
 			
 		} catch(NullPointerException ex) {
 			Logger.log(Logger.DEBUG, "Current state is null for updating");

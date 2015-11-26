@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JFrame;
@@ -11,6 +12,7 @@ import javax.swing.JPanel;
 
 import com.rawad.gamehelpers.gamemanager.Game;
 import com.rawad.gamehelpers.gamemanager.GameManager;
+import com.rawad.gamehelpers.input.KeyboardInput;
 import com.rawad.gamehelpers.renderengine.MasterRender;
 
 public class Windowed extends DisplayMode {
@@ -98,6 +100,10 @@ public class Windowed extends DisplayMode {
 	public synchronized void repaint() {
 		
 		panel.repaint();
+		
+		if(KeyboardInput.isKeyDown(KeyEvent.VK_F11)) {
+			DisplayManager.setDisplayMode(DisplayManager.Mode.FULLSCREEN, render);
+		}
 		
 	}
 	

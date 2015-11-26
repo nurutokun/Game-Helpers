@@ -70,4 +70,13 @@ public abstract class Game {
 		return debug;
 	}
 	
+	/**
+	 * Can be optionally overriden.
+	 * 
+	 * @return
+	 */
+	public String getSettingsFileName() {
+		return "settings";
+	}
+	
 }

@@ -98,8 +98,6 @@ public abstract class State {
 	
 	public void render(Graphics2D g) {
 		
-//		guiManager.render(g);// Should have never had it here
-		
 	}
 	
 	/**

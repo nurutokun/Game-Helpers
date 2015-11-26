@@ -1,6 +1,5 @@
 package com.rawad.gamehelpers.files;
 
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -56,10 +55,6 @@ public abstract class FileType {
 	
 	protected void handleData(String key, String value) {}
 	
-	public void saveFile(PrintWriter writer) {
-		writer.write(getContent());
-	}
-	
 	/** 
 	 * For saving the file.
 	 * 
@@ -87,5 +82,5 @@ public abstract class FileType {
 		return content;
 		
 	}
-		
+	
 }

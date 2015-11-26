@@ -45,9 +45,9 @@ public class DropDown extends Button {
 		this(id, x, y, width, height, options[0], options);
 	}
 	
-	public DropDown(String id, int x, int y, String... options) {
+	public DropDown(String id, int x, int y, int defaultOption, String... options) {
 		this(id, x, y, ResourceManager.getTexture(BACKGROUND_LOCATION).getWidth(),
-				ResourceManager.getTexture(BACKGROUND_LOCATION).getHeight(), options);
+				ResourceManager.getTexture(BACKGROUND_LOCATION).getHeight(), options[defaultOption], options);
 	}
 	
 	static {
@@ -148,6 +148,19 @@ public class DropDown extends Button {
 	public void calculateSelectedItem(int y) {
 		
 		currentSelected = menu.getItemAt(y);
+		
+	}
+	
+	public void setCurrentSelectedItem(String selection) {
+		
+		for(String item: menu.getItems()) {
+			
+			if(item.equals(selection)) {
+				currentSelected = selection;// Just to make sure it can be selected.
+				break;
+			}
+			
+		}
 		
 	}
 	
@@ -258,6 +271,10 @@ public class DropDown extends Button {
 		
 		public int getHeight() {
 			return height;
+		}
+		
+		public String[] getItems() {
+			return items;
 		}
 		
 	}

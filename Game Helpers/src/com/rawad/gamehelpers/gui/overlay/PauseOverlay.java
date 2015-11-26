@@ -21,7 +21,7 @@ public class PauseOverlay extends Overlay {
 		addComponent(new Button("Resume", centerX, verticalSections * 3));
 		addComponent(new Button("Main Menu", centerX, verticalSections * 4));
 		
-//		alignComponents();
+		alignComponents();
 		
 	}
 	
@@ -71,28 +71,18 @@ public class PauseOverlay extends Overlay {
 		
 		GuiComponent[] components = Arrays.copyOf(comps.toArray(), comps.size(), GuiComponent[].class);
 		
+		int size = components.length;
+		
 		int x = this.width/2;
 		
 		final int sections = 7;
 		int verticalSections = this.height/sections;// Could change.
 		
-		for(int i = 1; i <= components.length; i++) {
+		for(int i = 0; i < components.length; i++) {
 			
-			GuiComponent comp = components[i-1];
+			GuiComponent comp = components[i];
 			
-			int index = 0;//(? i/-2:(i == 1? 1:i/2));
-			
-			if(i%2 == 0) {
-				
-				index = i/2;
-				
-			} else {
-				
-				index = i/-2;
-				
-			}
-			
-			int y = verticalSections * (sections/2 + index) + 32;
+			int y = ((sections/2) - (size - 1) + i + 1) * verticalSections;
 			
 			comp.setX(x);
 			comp.setY(y);

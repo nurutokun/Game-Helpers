@@ -6,6 +6,7 @@ import java.awt.Graphics2D;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Window;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 
@@ -13,6 +14,7 @@ import javax.swing.JFrame;
 
 import com.rawad.gamehelpers.gamemanager.Game;
 import com.rawad.gamehelpers.gamemanager.GameManager;
+import com.rawad.gamehelpers.input.KeyboardInput;
 import com.rawad.gamehelpers.log.Logger;
 import com.rawad.gamehelpers.renderengine.MasterRender;
 
@@ -103,6 +105,10 @@ public class Fullscreen extends com.rawad.gamehelpers.display.DisplayMode {
 		}
 		
 		g.dispose();
+		
+		if(KeyboardInput.isKeyDown(KeyEvent.VK_F11)) {
+			DisplayManager.setDisplayMode(DisplayManager.Mode.WINDOWED, render);
+		}
 		
 	}
 	

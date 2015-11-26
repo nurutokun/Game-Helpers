@@ -4,9 +4,7 @@ import java.awt.Graphics2D;
 import java.util.ArrayList;
 
 import com.rawad.gamehelpers.gui.GuiComponent;
-import com.rawad.gamehelpers.gui.GuiManager;
 import com.rawad.gamehelpers.gui.overlay.Overlay;
-import com.rawad.gamehelpers.gui.overlay.OverlayManager;
 import com.rawad.gamehelpers.renderengine.Render;
 import com.rawad.gamehelpers.renderengine.gui.overlay.OverlayRender;
 
@@ -14,29 +12,31 @@ public class GuiRender extends Render {
 	
 	private OverlayRender overlayRender;
 	
-	private GuiManager guiManager;
-	private OverlayManager overlayManager;
+	private ArrayList<GuiComponent> components;
+	private ArrayList<Overlay> overlays;
 	
 	public GuiRender() {
 		
 		overlayRender = new OverlayRender();
+		
+		components = new ArrayList<GuiComponent>();
+		overlays = new ArrayList<Overlay>();
 		
 	}
 	
 	@Override
 	public void render(Graphics2D g) {
 		
-		if(guiManager != null) {
-			renderComponents(g, guiManager.getComponents());
-		}
+		renderGuiComponents(g, components);
 		
-		if(overlayManager != null) {	
-			renderOverlayManager(g, overlayManager);
-		}
+		renderOverlays(g, overlays);
+		
+		components.clear();
+		overlays.clear();
 		
 	}
 	
-	private void renderComponents(Graphics2D g, ArrayList<GuiComponent> components) {
+	public void renderGuiComponents(Graphics2D g, ArrayList<GuiComponent> components) {
 		
 		for(GuiComponent comp: components) {
 			
@@ -48,28 +48,44 @@ public class GuiRender extends Render {
 		
 	}
 	
-	public void renderOverlayManager(Graphics2D g, OverlayManager overlayManager) {
-		
-		ArrayList<Overlay> overlays = overlayManager.getOverlays();
+	public void renderOverlays(Graphics2D g, ArrayList<Overlay> overlays) {
 		
 		for(Overlay overlay: overlays) {
 			
-			if(!overlay.shouldRender()) continue;
-			
-			overlayRender.render(g, overlay);
-			
-			renderComponents(g, overlay.getGuiManager().getComponents());
+			if(overlay.shouldRender()) {
+				
+				overlayRender.render(g, overlay);
+				
+				renderGuiComponents(g, overlay.getGuiManager().getComponents());
+				
+			}
 			
 		}
 		
 	}
 	
-	public void setGuiManager(GuiManager guiManager) {
-		this.guiManager = guiManager;
+	public void addGuiComponents(ArrayList<GuiComponent> components) {
+		
+		for(GuiComponent comp: components) {
+			addGuiComponent(comp);
+		}
+		
 	}
 	
-	public void setOverlayManager(OverlayManager overlayManager) {
-		this.overlayManager = overlayManager;
+	public void addGuiComponent(GuiComponent comp) {
+		components.add(comp);
+	}
+	
+	public void addOverlays(ArrayList<Overlay> overlays) {
+		
+		for(Overlay overlay: overlays) {
+			addOverlay(overlay);
+		}
+		
+	}
+	
+	public void addOverlay(Overlay overlay) {
+		overlays.add(overlay);
 	}
 	
 }
