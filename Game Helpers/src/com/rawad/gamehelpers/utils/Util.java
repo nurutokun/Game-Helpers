@@ -66,4 +66,17 @@ public final class Util {
 		
 	}
 	
+	/**
+	 * Should only give an error at the level of another class using this method. Putting a log on that shows that
+	 * it's casting to the same object...
+	 * 
+	 * @param obj
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T extends A,A> T cast(A obj) {
+//		Logger.log(Logger.DEBUG, "Casted: " + obj + ", to: " + ((T) obj));
+		return (T) obj;
+	}
+	
 }

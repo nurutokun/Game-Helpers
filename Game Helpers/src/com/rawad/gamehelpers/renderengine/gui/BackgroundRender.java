@@ -3,10 +3,10 @@ package com.rawad.gamehelpers.renderengine.gui;
 import java.awt.Graphics2D;
 
 import com.rawad.gamehelpers.gui.Background;
-import com.rawad.gamehelpers.renderengine.Render;
+import com.rawad.gamehelpers.renderengine.LayeredRender;
 import com.rawad.gamehelpers.resources.ResourceManager;
 
-public class BackgroundRender extends Render {
+public class BackgroundRender extends LayeredRender {
 	
 	private Background background;
 	

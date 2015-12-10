@@ -17,10 +17,5 @@ public class OverlayRender extends Render {
 		g.fillRect(overlay.getX(), overlay.getY(), overlay.getWidth(), overlay.getHeight());
 		
 	}
-
-	@Override
-	public void render(Graphics2D g) {
-		
-	}
 	
 }

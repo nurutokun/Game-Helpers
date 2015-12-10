@@ -22,11 +22,9 @@ public class FileParser {
 		
 		ArrayList<String> lines = new ArrayList<String>();
 		
-		String line = null;
-		
 		try {
 			
-			while((line = reader.readLine()) != null) {
+			for(String line = reader.readLine(); line != null; line = reader.readLine()) {
 				
 				lines.add(line);
 				
@@ -40,5 +38,7 @@ public class FileParser {
 		infoHolder.parseData(lines);
 		
 	}
+	
+//	protected abstract void parseLine(String line);
 	
 }

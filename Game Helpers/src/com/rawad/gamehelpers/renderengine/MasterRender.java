@@ -9,13 +9,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.rawad.gamehelpers.gamemanager.Game;
+import com.rawad.gamehelpers.utils.Util;
 
 public class MasterRender {
 	
 	public static final Color DEFAULT_BACKGROUND_COLOR = new Color(202, 212, 227);
 	
-	private Map<Class<? extends Render>, Render> renders;
-	private ArrayList<Render> iterableRenders;
+	private Map<Class<? extends LayeredRender>, LayeredRender> renders;
+	private ArrayList<LayeredRender> iterableRenders;
 	
 	private BufferedImage onscreen;
 	private BufferedImage offscreenBuffer;
@@ -24,8 +25,8 @@ public class MasterRender {
 	
 	public MasterRender() {
 		
-		renders = new HashMap<Class<? extends Render>, Render>();
-		iterableRenders = new ArrayList<Render>();
+		renders = new HashMap<Class<? extends LayeredRender>, LayeredRender>();
+		iterableRenders = new ArrayList<LayeredRender>();
 		
 		onscreen = new BufferedImage(Game.SCREEN_WIDTH, Game.SCREEN_HEIGHT, BufferedImage.TYPE_INT_ARGB);
 		offscreenBuffer = new BufferedImage(onscreen.getWidth(), onscreen.getHeight(), BufferedImage.TYPE_INT_ARGB);
@@ -48,7 +49,7 @@ public class MasterRender {
 	
 	public void render() {
 		
-		for(Render render: iterableRenders) {
+		for(LayeredRender render: iterableRenders) {
 			
 			render.render(g);
 			
@@ -72,7 +73,7 @@ public class MasterRender {
 	 * @param key
 	 * @param render
 	 */
-	public void registerRender(Class<? extends Render> key, Render render) {
+	public void registerRender(Class<? extends LayeredRender> key, LayeredRender render) {
 		renders.put(key, render);
 		iterableRenders.add(render);
 	}
@@ -82,12 +83,12 @@ public class MasterRender {
 	 * 
 	 * @param render
 	 */
-	public void registerRender(Render render) {
+	public void registerRender(LayeredRender render) {
 		this.registerRender(render.getClass(), render);
 	}
 	
-	public Render getRender(Class<? extends Render> key) {
-		return renders.get(key);
+	public <T extends LayeredRender> T getRender(Class<T> key) {
+		return Util.cast(renders.get(key));
 	}
 	
 }

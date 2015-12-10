@@ -28,7 +28,7 @@ public class ResourceManager {
 	
 	private static final String appdataDir = System.getProperty("user.home").replace('\\', '/') + "/AppData/Roaming/My Game Launcher/";
 	// Always use "/" for file paths, they are all replaced to the system-dependant file-seperator in each method.
-	// TODO: Still gotta change that "/AppData/Roaming
+	// TODO: Still gotta change that "/AppData/Roaming/"
 	
 	private static final String UNKNOWN_TEXTURE_PATH = appdataDir + "Game Helpers/res/textures/unknown.png";
 	

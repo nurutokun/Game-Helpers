@@ -5,13 +5,18 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 import com.rawad.gamehelpers.resources.ResourceManager;
+import com.rawad.gamehelpers.utils.strings.FontData;
 
 public class TextLabel extends TextContainer {
 	
 	private static final int BACKGROUND_LOCATION;
 	
+	private FontData fontData;
+	
 	public TextLabel(String text, int x, int y, int width, int height) {
 		super(text, x, y, width, height);
+		
+		fontData = new FontData();
 		
 		textForeground = Color.WHITE;
 		
@@ -47,6 +52,10 @@ public class TextLabel extends TextContainer {
 	 */
 	public void addNewLine(String line) {
 		this.text.setContent(getText() + line, width, wrapText);
+	}
+	
+	public FontData getFontData() {
+		return fontData;
 	}
 	
 }

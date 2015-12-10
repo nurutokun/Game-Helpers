@@ -118,7 +118,9 @@ public abstract class State {
 	
 	protected void handleDropDownMenuSelect(DropDown drop) {}
 	
-	protected void onActivate() {}
+	protected void onActivate() {
+//		Logger.log(Logger.DEBUG, "onActive(): " + toString());
+	}
 	
 	protected void onDeactivate() {}
 	

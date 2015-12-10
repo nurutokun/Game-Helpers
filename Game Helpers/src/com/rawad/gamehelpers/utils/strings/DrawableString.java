@@ -11,6 +11,7 @@ import java.util.HashMap;
 import com.rawad.gamehelpers.log.Logger;
 import com.rawad.gamehelpers.utils.Util;
 
+@Deprecated @SuppressWarnings("unused")
 public class DrawableString {
 	
 	public static final String DEL = "\b";
@@ -761,6 +762,11 @@ public class DrawableString {
 			return "";
 		}
 		
+	}
+	
+	//TODO: This is for the new rendering system.
+	public ArrayList<Line> getLines() {
+		return null;
 	}
 	
 	private enum Direction {

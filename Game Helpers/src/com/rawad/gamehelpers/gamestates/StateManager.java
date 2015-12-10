@@ -19,8 +19,6 @@ public class StateManager {
 	
 	public StateManager(Game game) {
 		
-		guiRender = (GuiRender) game.getMasterRender().getRender(GuiRender.class);
-		
 		states = new HashMap<String, State>();
 		
 		this.game = game;
@@ -54,6 +52,16 @@ public class StateManager {
 		} catch(NullPointerException ex) {
 			Logger.log(Logger.DEBUG, "Current state is null for rendering");
 		}
+		
+	}
+	
+	/**
+	 * Should be called by each game, independantly, after (at least) the GuiRender has been registered.
+	 * 
+	 */
+	public void init() {
+		
+		guiRender = (GuiRender) game.getMasterRender().getRender(GuiRender.class);
 		
 	}
 	
