@@ -4,8 +4,7 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 
-import com.rawad.gamehelpers.files.FileParser;
-import com.rawad.gamehelpers.files.FileType;
+import com.rawad.gamehelpers.fileparser.FileParser;
 import com.rawad.gamehelpers.gamestates.StateManager;
 import com.rawad.gamehelpers.renderengine.MasterRender;
 import com.rawad.gamehelpers.resources.GameHelpersLoader;
@@ -17,12 +16,9 @@ public abstract class Game {
 	public static final int SCREEN_WIDTH = 640;// 640
 	public static final int SCREEN_HEIGHT = 480;// 480
 	
-	public static final String FOLDER_GAME_HELPERS = "Game Helpers";
-	
 	protected StateManager sm;
 	
-	protected FileParser fileParser;
-	protected HashMap<Class<? extends FileType>, FileType> files;
+	protected HashMap<Class<? extends FileParser>, FileParser> fileParsers;
 	
 	protected HashMap<String, Loader> loaders;
 	
@@ -32,8 +28,7 @@ public abstract class Game {
 	
 	public Game() {
 		
-		fileParser = new FileParser();
-		files = new HashMap<Class<? extends FileType>, FileType>();
+		fileParsers = new HashMap<Class<? extends FileParser>, FileParser>();
 		
 		loaders = new HashMap<String, Loader>();
 		
@@ -67,12 +62,8 @@ public abstract class Game {
 		return Util.cast(loaders.get(key));
 	}
 	
-	public FileParser getFileParser() {
-		return fileParser;
-	}
-	
-	public <T extends FileType> T getFile(Class<T> key) {
-		return Util.cast(files.get(key));// Now, how it knows what to cast the object to, not quite sure...
+	public <T extends FileParser> T getFileParser(Class<T> key) {
+		return Util.cast(fileParsers.get(key));// Now, how it knows what to cast the object to, not quite sure...
 		// It get's it from that "<T extends FileType>"; whatever T extends.
 	}
 	

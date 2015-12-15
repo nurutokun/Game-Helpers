@@ -14,6 +14,7 @@ import com.rawad.gamehelpers.gamemanager.GameManager;
 import com.rawad.gamehelpers.input.event.KeyboardEvent;
 import com.rawad.gamehelpers.input.event.MouseEvent;
 import com.rawad.gamehelpers.log.Logger;
+import com.rawad.gamehelpers.resources.GameHelpersLoader;
 import com.rawad.gamehelpers.resources.ResourceManager;
 
 public abstract class GuiComponent {
@@ -315,9 +316,12 @@ public abstract class GuiComponent {
 	
 	public static int loadTexture(String textureFolder, String textureFileName) {
 		
-		String filePath = BASE_FOLDER_PATH + textureFolder + textureFileName + TEXTURE_FILE_EXTENSION;
+		GameHelpersLoader loader = GameManager.instance().getCurrentGame().getLoader(GameHelpersLoader.BASE);
 		
-		return ResourceManager.loadTexture(filePath);
+		return loader.loadGuiTexture(textureFolder, textureFileName);
+		
+//		String filePath = BASE_FOLDER_PATH + textureFolder + textureFileName + TEXTURE_FILE_EXTENSION;
+//		return ResourceManager.loadTexture(filePath);
 	}
 	
 	@Deprecated

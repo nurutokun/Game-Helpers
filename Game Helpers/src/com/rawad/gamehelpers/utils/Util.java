@@ -1,6 +1,10 @@
 package com.rawad.gamehelpers.utils;
 
 import java.awt.Color;
+import java.io.Closeable;
+import java.io.IOException;
+
+import com.rawad.gamehelpers.log.Logger;
 
 public final class Util {
 	
@@ -15,6 +19,8 @@ public final class Util {
 		String re = "";
 		
 		for(int i = 0; i < lines.length; i++) {
+			
+			if(lines[i].isEmpty()) continue;// Questionable...
 			
 			re += lines[i];
 			
@@ -62,6 +68,16 @@ public final class Util {
 			return Double.parseDouble(potentialDouble);
 		} catch(Exception ex) {
 			return 0.0d;
+		}
+		
+	}
+	
+	public static <T extends Closeable> void silentClose(T streamToClose) {
+		
+		try {
+			streamToClose.close();
+		} catch(IOException ex) {
+			Logger.log(Logger.WARNING, "The stream: " + streamToClose.toString() + " could not be closed");
 		}
 		
 	}

@@ -32,7 +32,7 @@ public class ResourceManager {
 	
 	private static final String UNKNOWN_TEXTURE_PATH = appdataDir + "Game Helpers/res/textures/unknown.png";
 	
-	private static final int UNKNOWN = -1;
+	public static final int UNKNOWN = -1;
 	
 	private static final BufferedImage UNKNOWN_TEXTURE;
 	

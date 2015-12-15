@@ -1,4 +1,4 @@
-package com.rawad.gamehelpers.files;
+package com.rawad.gamehelpers.fileparser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
