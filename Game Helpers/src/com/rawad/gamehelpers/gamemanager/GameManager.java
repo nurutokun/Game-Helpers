@@ -48,7 +48,7 @@ public class GameManager {
 	 * @param gameToLaunch
 	 * @see #registerGame(Game)
 	 */
-	public void launchGame(Game gameToLaunch) {
+	public void launchGame(Game gameToLaunch, boolean client) {
 		
 		registerGame(gameToLaunch);
 		
@@ -58,7 +58,7 @@ public class GameManager {
 			
 			running = true;
 			
-			gameThread = new Thread(new GameThread(currentGame), "Game Thread");
+			gameThread = new Thread(new GameThread(currentGame, client), "Game Thread");
 			
 			gameThread.start();
 			
@@ -110,8 +110,12 @@ public class GameManager {
 		
 		private final MasterRender masterRender;
 		
-		public GameThread(Game game) {
+		private final boolean client;
+		
+		public GameThread(Game game, boolean client) {
 			this.game = game;
+			
+			this.client = client;
 			
 			masterRender = game.getMasterRender();
 			
@@ -120,7 +124,11 @@ public class GameManager {
 		@Override
 		public void run() {
 			
-			game.init();
+			if(client) {
+				game.clientInit();
+			} else {
+				game.serverInit();
+			}
 			
 			DisplayManager.setDisplayMode(DisplayManager.Mode.WINDOWED, masterRender);// Might put this back
 			// in the launchGame method.

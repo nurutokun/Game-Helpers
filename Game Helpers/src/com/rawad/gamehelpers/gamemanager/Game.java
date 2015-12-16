@@ -36,19 +36,31 @@ public abstract class Game {
 		
 	}
 	
+	// Should replace the two seperate init methods with just having this class be more neutral and having a client
+	// instead of a game manager to hold this and other games and the viewport be exclusively for controlling the player
 	/**
 	 * For use by client only.
 	 * 
 	 */
-	public void init() {
-		
-		loaders.put(GameHelpersLoader.BASE, new GameHelpersLoader());// Loads things from game helpers
-		// ^^^ Might add a third "Loader" class, specifically for the GameHelpers project, so that the given folder
-		// name is internal.
+	public void clientInit() {
+		init();
 		
 		sm = new StateManager(this);
 		
 		debug = false;
+		
+	}
+	
+	/**
+	 * For use by server only.
+	 */
+	public void serverInit() {
+		init();
+	}
+	
+	private void init() {
+		
+		loaders.put(GameHelpersLoader.BASE, new GameHelpersLoader());// Loads things from game helpers folder
 		
 	}
 	
