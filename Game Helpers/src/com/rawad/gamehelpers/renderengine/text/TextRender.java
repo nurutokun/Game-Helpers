@@ -13,6 +13,8 @@ import com.rawad.gamehelpers.utils.strings.Word;
 
 public class TextRender extends Render {
 	
+	private static final double LINE_HEIGHT = 0.5;
+	
 	public TextRender() {
 		
 	}
@@ -25,19 +27,36 @@ public class TextRender extends Render {
 //			
 //		}
 		
+		BufferedImage texture = ResourceManager.getTexture(fontData.getTextureId());
+		
 		for(Line line: text.getLines()) {
+			//base x, base y. end of each word add space, each letter adds width
+			
+			int x = 0;// Get from text object
+			int y = 0;
 			
 			for(Word word: line.getWords()) {
 				
-				for(CCharacter character: word.getCharacters()) {
+				for(CCharacter c: word.getCharacters()) {
 					
-					character.getId();
+					BufferedImage charTexture = texture.getSubimage((int) c.getX(), (int) c.getY(), 
+							(int) c.getSizeX(), (int) c.getSizeY());
 					
-					BufferedImage texture = ResourceManager.getTexture(fontData.getTextureId());
+					// c.getSizeX() and c.getSizeY() should be used for hitbox.
+					
+					g.drawImage(charTexture, x, y, null);
+					
+					x += c.getXadvance();
 					
 				}
 				
+				// add width of "space" character to x
+				x += fontData.getSpaceWidth();
+				
 			}
+			
+			// add line height to y
+			y += LINE_HEIGHT;// TODO: * text.getFontSize();
 			
 		}
 		

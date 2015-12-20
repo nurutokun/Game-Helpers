@@ -1,5 +1,6 @@
 package com.rawad.gamehelpers.resources;
 
+
 public class GameHelpersLoader extends Loader {
 	
 	public static final String BASE = ResourceManager.getString("GameHelpers.name");

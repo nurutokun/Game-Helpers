@@ -11,7 +11,6 @@ import java.util.HashMap;
 import com.rawad.gamehelpers.log.Logger;
 import com.rawad.gamehelpers.utils.Util;
 
-@Deprecated @SuppressWarnings("unused")
 public class DrawableString {
 	
 	public static final String DEL = "\b";

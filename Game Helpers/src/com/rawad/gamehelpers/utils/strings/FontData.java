@@ -6,12 +6,9 @@ import java.util.HashMap;
 
 import com.rawad.gamehelpers.gamemanager.Game;
 import com.rawad.gamehelpers.log.Logger;
-import com.rawad.gamehelpers.resources.ResourceManager;
 import com.rawad.gamehelpers.utils.Util;
 
 public class FontData {
-	
-	private static final String FONT_FOLDER = "/fonts/";
 	
 	private static final String TOKEN_SEPERATOR = " ";
 	private static final String DATA_SEPERATOR = "=";
@@ -70,9 +67,7 @@ public class FontData {
 		
 	}
 	
-	public void readFile(String fontFile) {
-		
-		BufferedReader reader = ResourceManager.readFile(FONT_FOLDER + fontFile + ".txt");
+	public void readFile(BufferedReader reader) {
 		
 		try {
 			
@@ -101,11 +96,13 @@ public class FontData {
 			
 			String[] data = tokens[i].split(DATA_SEPERATOR);
 			
+			if(data.length < 2) continue;// Mainly for the "char" lines; they've got extra spaces in between.
+			
 			String key = data[0];
 			String value = data[1];
 			
 			currentLineData.put(key, value);
-			
+						
 		}
 		
 		switch(tokens[0]) {

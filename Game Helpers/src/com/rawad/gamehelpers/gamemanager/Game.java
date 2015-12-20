@@ -24,6 +24,8 @@ public abstract class Game {
 	
 	protected MasterRender masterRender;
 	
+	protected GameHelpersLoader gameHelpersLoader;
+	
 	protected boolean debug;
 	
 	public Game() {
@@ -58,9 +60,11 @@ public abstract class Game {
 		init();
 	}
 	
-	private void init() {
+	protected void init() {
 		
-		loaders.put(GameHelpersLoader.BASE, new GameHelpersLoader());// Loads things from game helpers folder
+		gameHelpersLoader = new GameHelpersLoader();
+		
+		loaders.put(GameHelpersLoader.BASE, gameHelpersLoader);// Loads things from game helpers folder
 		
 	}
 	

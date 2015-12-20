@@ -9,9 +9,6 @@ import com.rawad.gamehelpers.renderengine.MasterRender;
 
 public class GameManager {
 	
-	public static final int SCREEN_WIDTH = 640;//640
-	public static final int SCREEN_HEIGHT = 480;//480
-	
 	private static int FPS = 60;
 	
 	private static GameManager instance;
@@ -48,7 +45,7 @@ public class GameManager {
 	 * @param gameToLaunch
 	 * @see #registerGame(Game)
 	 */
-	public void launchGame(Game gameToLaunch, boolean client) {
+	public void launchGame(Game gameToLaunch) {
 		
 		registerGame(gameToLaunch);
 		
@@ -58,7 +55,7 @@ public class GameManager {
 			
 			running = true;
 			
-			gameThread = new Thread(new GameThread(currentGame, client), "Game Thread");
+			gameThread = new Thread(new GameThread(currentGame), "Game Thread");
 			
 			gameThread.start();
 			
@@ -110,12 +107,8 @@ public class GameManager {
 		
 		private final MasterRender masterRender;
 		
-		private final boolean client;
-		
-		public GameThread(Game game, boolean client) {
+		public GameThread(Game game) {
 			this.game = game;
-			
-			this.client = client;
 			
 			masterRender = game.getMasterRender();
 			
@@ -124,11 +117,7 @@ public class GameManager {
 		@Override
 		public void run() {
 			
-			if(client) {
-				game.clientInit();
-			} else {
-				game.serverInit();
-			}
+			game.clientInit();// If you're running the game from here, you've got to be a client.
 			
 			DisplayManager.setDisplayMode(DisplayManager.Mode.WINDOWED, masterRender);// Might put this back
 			// in the launchGame method.
