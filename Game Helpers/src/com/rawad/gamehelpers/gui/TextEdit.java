@@ -10,6 +10,8 @@ import com.rawad.gamehelpers.input.KeyboardInput;
 import com.rawad.gamehelpers.input.MouseInput;
 import com.rawad.gamehelpers.input.event.KeyboardEvent;
 import com.rawad.gamehelpers.input.event.MouseEvent;
+import com.rawad.gamehelpers.utils.strings.RenderedString.HorizontalAlignment;
+import com.rawad.gamehelpers.utils.strings.RenderedString.VerticalAlignment;
 
 public class TextEdit extends TextContainer {
 	
@@ -31,7 +33,10 @@ public class TextEdit extends TextContainer {
 		
 		increasing = true;
 		
+		this.text.setHorizontalAlignment(HorizontalAlignment.LEFT);
+		this.text.setVerticalAlignment(VerticalAlignment.TOP);
 		this.text.setCaretPosition(0, 0);
+		this.text.setHideOutOfBounds(true);
 		
 		centerText = false;
 		hideOutOfBoundsText = true;

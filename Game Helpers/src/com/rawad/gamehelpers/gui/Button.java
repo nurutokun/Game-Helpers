@@ -15,7 +15,6 @@ public class Button extends TextContainer {
 	private static final int DISABLED_LOCATION;
 	
 	protected boolean clicked;
-	protected boolean highlighted;
 	protected boolean pressed;
 	protected boolean enabled;
 	
@@ -126,18 +125,12 @@ public class Button extends TextContainer {
 	}
 	
 	@Override
-	protected void mouseEntered() {
-		highlighted = true;
+	protected void mouseEntered(MouseEvent e) {
 		
 		if(mouseDragged && pressed) {
 			mouseDragged = false;
 		}
 		
-	}
-	
-	@Override
-	protected void mouseExited() {
-		highlighted = false;
 	}
 	
 	public boolean isClicked() {

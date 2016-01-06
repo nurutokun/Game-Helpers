@@ -55,20 +55,25 @@ public class GuiManager {
 		for(DropDown drop: dropDowns) {
 			
 			if(drop.isClicked()) {
-				
 				drop.setClicked(false);
+			}
+			
+			DropDown.Menu menu = drop.getMenu();
+			
+			if(menu.isClicked()) {
 				
-				if(drop.isMenuDown()) {
-					// Tell the drop down menu to select an item.
-					drop.calculateSelectedItem(me.getY());
-					drop.setMenuDown(false);
+				menu.setClicked(false);
+				
+				if(menu.isDown()) {
+					// (NO LONGER EXISTS, handled internally by the menu.) Tell the drop down menu to select an item.
+					menu.setDown(false);
 					
 					currentSelectedDropDown = drop;
 					
 					break;
 					
 				} else {
-					drop.setMenuDown(true);
+					menu.setDown(true);
 				}
 				
 			}

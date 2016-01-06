@@ -246,15 +246,23 @@ public class ResourceManager {
 		textures.put(location, null);
 	}
 	
+	public static File loadFile(String filePath) {
+		
+		filePath = (appdataDir + filePath).replace('/', File.separatorChar);
+		
+		return new File(filePath);
+		
+	}
+	
 	public static BufferedReader readFile(String filePath) {
 		
 		BufferedReader reader = null;
 		
-		filePath = (appdataDir + filePath).replace('/', File.separatorChar);
+		File file = loadFile(filePath);
 		
 		try {
 			
-			reader = new BufferedReader(new FileReader(filePath));
+			reader = new BufferedReader(new FileReader(file));
 			
 		} catch(IOException ex) {
 			

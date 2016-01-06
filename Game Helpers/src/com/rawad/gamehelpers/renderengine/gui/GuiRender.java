@@ -4,7 +4,7 @@ import java.awt.Graphics2D;
 import java.util.ArrayList;
 
 import com.rawad.gamehelpers.gui.GuiComponent;
-import com.rawad.gamehelpers.gui.TextLabel;
+import com.rawad.gamehelpers.gui.TextContainer;
 import com.rawad.gamehelpers.gui.overlay.Overlay;
 import com.rawad.gamehelpers.renderengine.LayeredRender;
 import com.rawad.gamehelpers.renderengine.gui.overlay.OverlayRender;
@@ -22,6 +22,8 @@ public class GuiRender extends LayeredRender {
 	public GuiRender() {
 		
 		overlayRender = new OverlayRender();
+		
+		textRender = TextRender.instance();
 		
 		components = new ArrayList<GuiComponent>();
 		overlays = new ArrayList<Overlay>();
@@ -47,11 +49,11 @@ public class GuiRender extends LayeredRender {
 			if(comp.shouldRender()) {
 				comp.render(g);
 				
-				if(comp instanceof TextLabel) {
+				if(comp instanceof TextContainer) {
 					
-					TextLabel textComp = (TextLabel) comp;
+					TextContainer textComp = (TextContainer) comp;
 					
-//					textRender.render(g, textComp.getTextObject(), textComp.getFontData());
+					textRender.render(g, textComp.getTextObject(), textComp.getTextBoundBox());
 					
 				}
 				

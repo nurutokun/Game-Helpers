@@ -3,6 +3,7 @@ package com.rawad.gamehelpers.resources;
 
 public class GameHelpersLoader extends Loader {
 	
+	/** Use this as the key in the {@code Game} class. */
 	public static final String BASE = ResourceManager.getString("GameHelpers.name");
 	
 	private static final String GUI_FOLDER = ResourceManager.getString("Gui.base");

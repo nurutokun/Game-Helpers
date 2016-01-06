@@ -141,7 +141,7 @@ public abstract class GuiComponent {
 			}
 			
 			if(!hovered) {
-				mouseEntered();
+				mouseEntered(me);
 				
 				hovered = true;
 				
@@ -193,7 +193,7 @@ public abstract class GuiComponent {
 	
 	protected void mouseReleased(MouseEvent e) {}
 	
-	protected void mouseEntered() {}
+	protected void mouseEntered(MouseEvent e) {}// Here MouseEvent is mainly for the DropDown's Menu
 	
 	protected void mouseExited() {}
 	
@@ -212,6 +212,10 @@ public abstract class GuiComponent {
 	
 	public String getId() {
 		return id;
+	}
+	
+	public Rectangle getHitbox() {
+		return hitbox;
 	}
 	
 	public void setX(int x) {

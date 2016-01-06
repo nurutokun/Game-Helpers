@@ -5,18 +5,14 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 import com.rawad.gamehelpers.resources.ResourceManager;
-import com.rawad.gamehelpers.utils.strings.FontData;
+import com.rawad.gamehelpers.utils.Util;
 
 public class TextLabel extends TextContainer {
 	
 	private static final int BACKGROUND_LOCATION;
 	
-	private FontData fontData;
-	
 	public TextLabel(String text, int x, int y, int width, int height) {
 		super(text, x, y, width, height);
-		
-		fontData = new FontData();
 		
 		textForeground = Color.WHITE;
 		
@@ -46,16 +42,12 @@ public class TextLabel extends TextContainer {
 	}
 	
 	/**
-	 * Appends a new line of text to this object's text, with the {@code DrawableString.NL} character appened to the end.
+	 * Appends a new line of text to this object's text using the {@code Util.NL} delimiter.
 	 * 
 	 * @param text
 	 */
 	public void addNewLine(String line) {
-		this.text.setContent(getText() + line, width, wrapText);
-	}
-	
-	public FontData getFontData() {
-		return fontData;
+		this.text.setContent(getText() + Util.NL + line);
 	}
 	
 }

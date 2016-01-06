@@ -1,6 +1,7 @@
 package com.rawad.gamehelpers.resources;
 
 import java.io.BufferedReader;
+import java.io.File;
 
 import com.rawad.gamehelpers.utils.Util;
 
@@ -8,9 +9,9 @@ public abstract class Loader {
 	
 	private static final String RES_FOLDER = ResourceManager.getString("GameHelpers.res");
 	
-	private static final String TEXT_FILE_EXTENSION = ResourceManager.getString("GameHelpers.txt");
-	private static final String TEXTURE_FILE_EXTENSION = ResourceManager.getString("GameHelpers.png");
-	private static final String FONT_FILE_EXTENSION = ResourceManager.getString("GameHelpers.fnt");
+	private static final String TEXT_FILE_EXTENSION = ResourceManager.getString("GameHelpers.text");
+	private static final String TEXTURE_FILE_EXTENSION = ResourceManager.getString("GameHelpers.image");
+	private static final String FONT_FILE_EXTENSION = ResourceManager.getString("GameHelpers.font");
 	
 	/** Holds the name for the base texture folder. */
 	private static final String TEXTURE_FOLDER = ResourceManager.getString("GameHelpers.textures");
@@ -47,9 +48,9 @@ public abstract class Loader {
 	 * 
 	 * @param folderName
 	 * @param fileName
-	 * @return
+	 * @return {@code BufferedReader} that can be used to read a single line of the file at a time.
 	 */
-	public BufferedReader loadFile(String folderName, String fileName) {
+	public BufferedReader readFile(String folderName, String fileName) {
 		return ResourceManager.readFile(getProperPath(basePath, RES_FOLDER, folderName, fileName) + 
 				TEXT_FILE_EXTENSION);
 	}
@@ -59,7 +60,12 @@ public abstract class Loader {
 				content);
 	}
 	
-	public BufferedReader loadFontFile(String fileName) {
+	public File loadFontFile(String fileName) {
+		return ResourceManager.loadFile(getProperPath(basePath, RES_FOLDER, FONT_FOLDER, fileName) + 
+				FONT_FILE_EXTENSION);
+	}
+	
+	public BufferedReader readFontFile(String fileName) {
 		return ResourceManager.readFile(getProperPath(basePath, RES_FOLDER, FONT_FOLDER, fileName) + FONT_FILE_EXTENSION);
 	}
 	
