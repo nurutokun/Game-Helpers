@@ -2,10 +2,16 @@ package com.rawad.gamehelpers.gamemanager;
 
 import java.util.ArrayList;
 
+import javax.swing.RepaintManager;
+import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
+import javax.swing.UnsupportedLookAndFeelException;
+
 import com.rawad.gamehelpers.display.DisplayManager;
 import com.rawad.gamehelpers.input.MouseInput;
 import com.rawad.gamehelpers.log.Logger;
-import com.rawad.gamehelpers.renderengine.MasterRender;
+import com.rawad.gamehelpers.utils.CustomRepainter;
+import com.rawad.gamehelpers.utils.Util;
 
 public class GameManager {
 	
@@ -36,6 +42,46 @@ public class GameManager {
 		
 		useOldRendering = false;
 		
+	}
+	
+	static {
+		
+		RepaintManager.setCurrentManager(new CustomRepainter());
+		
+		boolean setLookAndFeel = false;
+		
+		try {
+			
+			
+			for(LookAndFeelInfo info: UIManager.getInstalledLookAndFeels()) {
+				
+				if("Nimbus".equals(info.getName())) {
+					UIManager.setLookAndFeel(info.getClassName());
+					
+					setLookAndFeel = true;
+					
+					break;
+				}
+				
+			}
+			
+			if(!setLookAndFeel) {
+				throw new Exception("Couldn't set Nimbus Look and Feel!");
+			}
+			
+		} catch(Exception e) {
+			
+			try {
+				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			} catch (ClassNotFoundException | InstantiationException
+					| IllegalAccessException | UnsupportedLookAndFeelException ex) {
+				
+				Logger.log(Logger.WARNING, "Couldn't load system look and feel; " + ex.getMessage() 
+						+ ". Using default look and feel instead.");
+				
+			}
+			
+		}
 	}
 	
 	/**
@@ -105,22 +151,17 @@ public class GameManager {
 		
 		private final Game game;
 		
-		private final MasterRender masterRender;
-		
 		public GameThread(Game game) {
 			this.game = game;
-			
-			masterRender = game.getMasterRender();
 			
 		}
 		
 		@Override
 		public void run() {
-			
+
 			game.clientInit();// If you're running the game from here, you've got to be a client.
 			
-			DisplayManager.setDisplayMode(DisplayManager.Mode.WINDOWED, masterRender);// Might put this back
-			// in the launchGame method.
+			initializeGUI(game);
 			
 			int frames = 0;
 			int totalTime = 0;
@@ -150,26 +191,16 @@ public class GameManager {
 				
 				prevTime = currentTime;
 				
-				MouseInput.update(DisplayManager.getCurrentWindowComponent(), getDeltaTime());
+				MouseInput.update(DisplayManager.getCurrentContainer(), getDeltaTime());
 				
 				game.update(getDeltaTime());
-				
-				if(useOldRendering) {
-					game.render(masterRender.getGraphics());
-				} else {
-					masterRender.render();
-				}
-				
-				DisplayManager.update();
-				
-				masterRender.clearBuffer();
 				
 				if(DisplayManager.isCloseRequested()) {
 					running = false;
 					
-					DisplayManager.destroyWindow();
-					
 				}
+				
+				DisplayManager.update();
 				
 				try {
 					Thread.sleep(1000/FPS);
@@ -178,6 +209,23 @@ public class GameManager {
 				}
 				
 			}
+			
+		}
+		
+		private void initializeGUI(final Game game) {
+			
+			Util.invokeAndWait(new Runnable() {
+				
+				@Override
+				public void run() {
+					game.initGUI();
+					
+					DisplayManager.showDisplayMode(DisplayManager.Mode.WINDOWED, game);// Might put this back
+					// in the launchGame method.
+					
+				}
+				
+			});
 			
 		}
 		

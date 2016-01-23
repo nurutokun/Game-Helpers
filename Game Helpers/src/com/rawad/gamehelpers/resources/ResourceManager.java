@@ -17,6 +17,7 @@ import java.util.ResourceBundle;
 import java.util.Set;
 
 import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 
 import com.rawad.gamehelpers.log.Logger;
 
@@ -26,7 +27,7 @@ public class ResourceManager {
 	
 	private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
 	
-	private static final String appdataDir = System.getProperty("user.home").replace('\\', '/') + "/AppData/Roaming/My Game Launcher/";
+	public static final String appdataDir = System.getProperty("user.home").replace('\\', '/') + "/AppData/Roaming/My Game Launcher/";
 	// Always use "/" for file paths, they are all replaced to the system-dependant file-seperator in each method.
 	// TODO: Still gotta change that "/AppData/Roaming/"
 	
@@ -221,6 +222,16 @@ public class ResourceManager {
 		
 		return curMax;
 		
+	}
+	
+	/**
+	 * Convencience method for getting {@code ImageIcon} object from texture location.
+	 * 
+	 * @param location
+	 * @return
+	 */
+	public static ImageIcon getImageIcon(int location) {
+		return new ImageIcon(getTexture(location));
 	}
 	
 	public static BufferedImage getTexture(int location) {

@@ -1,5 +1,6 @@
 package com.rawad.gamehelpers.input;
 
+import java.awt.Container;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
@@ -17,6 +18,20 @@ import com.rawad.gamehelpers.gamemanager.Game;
 
 public class EventHandler implements MouseMotionListener, MouseListener, MouseWheelListener,
 		KeyListener, ComponentListener, WindowListener {
+	
+	private static EventHandler instance;
+	
+	private EventHandler() {}
+	
+	public static EventHandler instance() {
+		
+		if(instance == null) {
+			instance = new EventHandler();
+		}
+		
+		return instance;
+		
+	}
 	
 	@Override
 	public void keyPressed(KeyEvent e) {
@@ -38,6 +53,7 @@ public class EventHandler implements MouseMotionListener, MouseListener, MouseWh
 		}
 		
 		KeyboardInput.addTypedKey(c);
+		
 	}
 	
 	@Override
@@ -110,17 +126,15 @@ public class EventHandler implements MouseMotionListener, MouseListener, MouseWh
 		double xScale = (double) Game.SCREEN_WIDTH/(double) e.getComponent().getWidth();
 		double yScale = (double) Game.SCREEN_HEIGHT/(double) e.getComponent().getHeight();
 		
-		int newX = (int) (((double) e.getX()) * xScale);
-		int newY = (int) (((double) e.getY()) * yScale);
+		MouseInput.setX(e.getX());
+		MouseInput.setY(e.getY());
 		
-		MouseInput.setX(newX);
-		MouseInput.setY(newY);
+		MouseInput.setScaleX(xScale);
+		MouseInput.setScaleY(yScale);;
 		
 		MouseInput.setButtonClicked(MouseInput.MIDDLE_MOUSE_BUTTON, false);
 		MouseInput.setButtonClicked(MouseInput.RIGHT_MOUSE_BUTTON, false);
 		MouseInput.setButtonClicked(MouseInput.LEFT_MOUSE_BUTTON, false);
-		
-//		Logger.log(Logger.DEBUG, "Mouse Moved x,y: " + e.getX() + ", " + e.getY());
 		
 	}
 	
@@ -142,7 +156,9 @@ public class EventHandler implements MouseMotionListener, MouseListener, MouseWh
 	public void componentShown(ComponentEvent e) {}
 	
 	@Override
-	public void windowActivated(WindowEvent e) {}
+	public void windowActivated(WindowEvent e) {
+		requestFocus(e.getSource());
+	}
 	
 	@Override
 	public void windowClosed(WindowEvent e) {}
@@ -163,5 +179,13 @@ public class EventHandler implements MouseMotionListener, MouseListener, MouseWh
 	
 	@Override
 	public void windowOpened(WindowEvent e) {}
+	
+	private void requestFocus(Object source) {
+		
+		if(source instanceof Container) {
+			((Container) source).requestFocusInWindow();// For KeyListener to work.
+		}
+		
+	}
 	
 }

@@ -51,26 +51,27 @@ public abstract class Loader {
 	 * @return {@code BufferedReader} that can be used to read a single line of the file at a time.
 	 */
 	public BufferedReader readFile(String folderName, String fileName) {
-		return ResourceManager.readFile(getProperPath(basePath, RES_FOLDER, folderName, fileName) + 
-				TEXT_FILE_EXTENSION);
+		return ResourceManager.readFile(getProperPath(basePath, RES_FOLDER, folderName, fileName) 
+				+ TEXT_FILE_EXTENSION);
 	}
 	
 	protected void saveFile(String content, String folderName, String fileName) {
-		ResourceManager.saveFile(getProperPath(basePath, RES_FOLDER, folderName, fileName) + TEXT_FILE_EXTENSION, 
-				content);
+		ResourceManager.saveFile(getProperPath(basePath, RES_FOLDER, folderName, fileName) 
+				+ TEXT_FILE_EXTENSION, content);
 	}
 	
 	public File loadFontFile(String fileName) {
-		return ResourceManager.loadFile(getProperPath(basePath, RES_FOLDER, FONT_FOLDER, fileName) + 
-				FONT_FILE_EXTENSION);
+		return ResourceManager.loadFile(getProperPath(basePath, RES_FOLDER, FONT_FOLDER, fileName) 
+				+ FONT_FILE_EXTENSION);
 	}
 	
 	public BufferedReader readFontFile(String fileName) {
-		return ResourceManager.readFile(getProperPath(basePath, RES_FOLDER, FONT_FOLDER, fileName) + FONT_FILE_EXTENSION);
+		return ResourceManager.readFile(getProperPath(basePath, RES_FOLDER, FONT_FOLDER, fileName) 
+				+ FONT_FILE_EXTENSION);
 	}
 	
 	/**
-	 * Final {@code String} of {@code pathParts} should be the actual file.
+	 * Final {@code String} of {@code pathParts} can be the actual file; no extensions are added at the end.
 	 * 
 	 * @param pathParts
 	 * @return

@@ -23,6 +23,8 @@ public class MasterRender {
 	
 	private Graphics2D g;
 	
+	private boolean rendered;
+	
 	public MasterRender() {
 		
 		renders = new HashMap<Class<? extends LayeredRender>, LayeredRender>();
@@ -38,20 +40,24 @@ public class MasterRender {
 		
 	}
 	
-	public void clearBuffer() {
-		
-		offscreenBuffer.copyData(onscreen.getRaster());
-		
-		g.setColor(DEFAULT_BACKGROUND_COLOR);
-		g.fillRect(0, 0, onscreen.getWidth(), onscreen.getHeight());
-		
-	}
-	
 	public void render() {
 		
-		for(LayeredRender render: iterableRenders) {
+		if(!rendered) {
 			
-			render.render(g);
+			g.setColor(DEFAULT_BACKGROUND_COLOR);
+			g.fillRect(0, 0, offscreenBuffer.getWidth(), offscreenBuffer.getHeight());
+			
+			BackgroundRender.instance().render(g);
+			
+			for(LayeredRender render: iterableRenders) {
+				
+				render.render(g);
+				
+			}
+			
+			offscreenBuffer.copyData(onscreen.getRaster());
+			
+			rendered = true;
 			
 		}
 		
@@ -59,12 +65,9 @@ public class MasterRender {
 	
 	public BufferedImage getBuffer() {
 		
-		return onscreen;
+		rendered = false;
 		
-	}
-	
-	public Graphics2D getGraphics() {
-		return g;
+		return onscreen;
 	}
 	
 	/**

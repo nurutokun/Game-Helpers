@@ -1,53 +1,95 @@
 package com.rawad.gamehelpers.gui;
 
-import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
-import com.rawad.gamehelpers.resources.ResourceManager;
-import com.rawad.gamehelpers.utils.Util;
+import javax.swing.JLabel;
+import javax.swing.Painter;
+import javax.swing.SwingConstants;
+import javax.swing.UIDefaults;
 
-public class TextLabel extends TextContainer {
+import com.rawad.gamehelpers.gamemanager.GameManager;
+import com.rawad.gamehelpers.resources.GameHelpersLoader;
+import com.rawad.gamehelpers.resources.ResourceManager;
+
+public class TextLabel extends JLabel implements Painter<TextLabel> {
+	
+	/**
+	 * Generated serial version UID.
+	 */
+	private static final long serialVersionUID = -6486800223003919334L;
 	
 	private static final int BACKGROUND_LOCATION;
 	
-	public TextLabel(String text, int x, int y, int width, int height) {
-		super(text, x, y, width, height);
+	private int backgroundTexture;
+	
+	private boolean drawBackground;
+	
+	public TextLabel(String text) {
+//		super("<html><div style=\"text-align: center;\">" + text + "</html>");
+//		super("<html><center>" + text + "</center></html>");
+		super(text, SwingConstants.CENTER);
 		
-		textForeground = Color.WHITE;
+//		setFocusable(true);// For keylistener
 		
-		texture = BACKGROUND_LOCATION;
+		setBackgroundTexture(BACKGROUND_LOCATION);
+		
+		UIDefaults labelDefaults = new UIDefaults();
+		
+		labelDefaults.put("Label.backgroundPainter", this);
+		
+		putClientProperty("Nimbus.Overrides", labelDefaults);
+		putClientProperty("Nimbus.Overrides.InheritDefaults", false);
+		
+		drawBackground = true;
 		
 	}
-	
-	public TextLabel(String text, int x, int y) {
-		this(text, x, y, ResourceManager.getTexture(BACKGROUND_LOCATION).getWidth(),
-				ResourceManager.getTexture(BACKGROUND_LOCATION).getHeight());
-		
-	}
-	
+
 	static {
 		
-		BACKGROUND_LOCATION = loadTexture(ResourceManager.getString("TextLabel.base"), ResourceManager.getString("Gui.background"));
+		GameHelpersLoader loader = GameManager.instance().getCurrentGame().getLoader(GameHelpersLoader.BASE);
+		
+		BACKGROUND_LOCATION = loader.loadGuiTexture(ResourceManager.getString("TextLabel.base"), 
+				ResourceManager.getString("Gui.background"));
+		
+	}
+	
+	public void setDrawBackground(boolean drawBackground) {
+		this.drawBackground = drawBackground;
+	}
+	
+	@Override
+	public void paint(Graphics2D g, TextLabel object, int width, int height) {
+		
+		if(drawBackground) {
+			BufferedImage image = ResourceManager.getTexture(backgroundTexture);
+			
+			g.drawImage(image, 0, 0, width, height, null);
+		}
 		
 	}
 	
 	@Override
-	public void render(Graphics2D g) {
+	public Dimension getPreferredSize() {
 		
-		g.drawImage(ResourceManager.getTexture(texture).getScaledInstance(width, height, BufferedImage.SCALE_FAST), x, y, null);
+		BufferedImage image = ResourceManager.getTexture(BACKGROUND_LOCATION);
 		
-		super.render(g);
-		
+		return new Dimension(image.getWidth(), image.getHeight());
 	}
 	
 	/**
-	 * Appends a new line of text to this object's text using the {@code Util.NL} delimiter.
-	 * 
-	 * @param text
+	 * @return the backgroundTexture
 	 */
-	public void addNewLine(String line) {
-		this.text.setContent(getText() + Util.NL + line);
+	public int getBackgroundTexture() {
+		return backgroundTexture;
+	}
+	
+	/**
+	 * @param backgroundTexture the backgroundTexture to set
+	 */
+	public void setBackgroundTexture(int backgroundTexture) {
+		this.backgroundTexture = backgroundTexture;
 	}
 	
 }

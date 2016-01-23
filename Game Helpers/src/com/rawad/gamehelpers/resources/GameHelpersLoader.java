@@ -1,6 +1,5 @@
 package com.rawad.gamehelpers.resources;
 
-
 public class GameHelpersLoader extends Loader {
 	
 	/** Use this as the key in the {@code Game} class. */
@@ -12,7 +11,11 @@ public class GameHelpersLoader extends Loader {
 		super(BASE);
 		
 	}
-
+	
+	public int loadGuiTexture(String subGuiFolder, String subComponentFolder, String guiTextureFile) {
+		return loadGuiTexture(getProperPath(subGuiFolder, subComponentFolder), guiTextureFile);
+	}
+	
 	public int loadGuiTexture(String subGuiFolder, String guiTextureFile) {
 		return loadTexture(getProperPath(GUI_FOLDER, subGuiFolder), guiTextureFile);
 	}

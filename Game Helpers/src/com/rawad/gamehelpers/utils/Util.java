@@ -1,8 +1,10 @@
 package com.rawad.gamehelpers.utils;
 
 import java.awt.Color;
+import java.awt.EventQueue;
 import java.io.Closeable;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 
 import com.rawad.gamehelpers.log.Logger;
 
@@ -13,6 +15,24 @@ public final class Util {
 	public static final Color TRANSPARENT = new Color(0, 0, 0, 0);
 	
 	private Util() {}
+	
+	public static void invokeLater(Runnable runnable) {
+		
+		EventQueue.invokeLater(runnable);
+		
+	}
+	
+	public static void invokeAndWait(Runnable runnable) {
+		
+		try {
+			EventQueue.invokeAndWait(runnable);
+		} catch (InvocationTargetException | InterruptedException ex) {
+//			ex.printStackTrace();
+			Logger.log(Logger.SEVERE, "Error occured while trying to run thread " + runnable + " the thread "
+					+ "didn't seem to like that...");
+		}
+		
+	}
 	
 	public static String getStringFromLines(String[] lines, String regex, boolean addRegexToEnd) {
 		
@@ -76,7 +96,7 @@ public final class Util {
 		
 		try {
 			streamToClose.close();
-		} catch(IOException ex) {
+		} catch(IOException | NullPointerException ex) {
 			Logger.log(Logger.WARNING, "The stream: " + streamToClose.toString() + " could not be closed");
 		}
 		

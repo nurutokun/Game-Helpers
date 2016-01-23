@@ -1,261 +1,380 @@
 package com.rawad.gamehelpers.gui;
 
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
+import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 
-import com.rawad.gamehelpers.input.event.KeyboardEvent;
-import com.rawad.gamehelpers.input.event.MouseEvent;
+import javax.swing.ButtonModel;
+import javax.swing.ComboBoxEditor;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.ListCellRenderer;
+import javax.swing.Painter;
+import javax.swing.UIDefaults;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.plaf.basic.BasicComboBoxUI;
+
+import com.rawad.gamehelpers.gamemanager.GameManager;
+import com.rawad.gamehelpers.log.Logger;
+import com.rawad.gamehelpers.resources.GameHelpersLoader;
 import com.rawad.gamehelpers.resources.ResourceManager;
-import com.rawad.gamehelpers.utils.Util;
-import com.rawad.gamehelpers.utils.strings.RenderedString.HorizontalAlignment;
-import com.rawad.gamehelpers.utils.strings.RenderedString.VerticalAlignment;
 
-public class DropDown extends Button {
+public class DropDown extends JComboBox<String> {
 	
-	private static final int BACKGROUND_LOCATION;
-	private static final int FOREGROUND_LOCATION;
-	private static final int ONCLICK_LOCATION;
-	private static final int DISABLED_LOCATION;
+	/**
+	 * Generated serial version UID.
+	 */
+	private static final long serialVersionUID = 8420334095211221221L;
 	
-	private Menu menu;
+	private static final int EDITOR_BACKGROUND_LOCATION;
+	private static final int EDITOR_FOREGROUND_LOCATION;
+	private static final int EDITOR_ONCLICK_LOCATION;
+	private static final int EDITOR_DISABLED_LOCATION;
 	
-	private Rectangle textBoundBox;
+	private static final int BUTTON_BACKGROUND_LOCATION;
+	private static final int BUTTON_FOREGROUND_LOCATION;
+	private static final int BUTTON_ONCLICK_LOCATION;
+	private static final int BUTTON_DISABLED_LOCATION;
 	
-	private int widthSection;
+	private final String id;
 	
-	public DropDown(String id, int x, int y, int width, int height, String defaultOption, String... options) {
-		super(id, x, y, width, height);
+	private ComboBoxRenderer comboBoxRenderer;
+	
+	private int backgroundTexture;
+	private int foregroundTexture;
+	private int onclickTexture;
+	private int disabledTexture;
+	
+	private int buttonBackgroundTexture;
+	private int buttonForegroundTexture;
+	private int buttonOnclickTexture;
+	private int buttonDisabledTexture;
+	
+	public DropDown(String id, String defaultOption, String... options) {
+		super(options);
 		
-		widthSection = width/3;// Use a third of the total bar as the arrow clicking spot
+		this.id = id;
 		
-		hitbox.setBounds(this.x + (2 * widthSection), this.y, widthSection, height);
+		setSelectedItem(defaultOption);
+		setEditable(true);
+		setFocusable(false);
 		
-		textBoundBox = new Rectangle(this.x, this.y, widthSection * 2, height);
+		setBackgroundTexture(EDITOR_BACKGROUND_LOCATION);
+		setForegroundTexture(EDITOR_FOREGROUND_LOCATION);
+		setOnclickTexture(EDITOR_ONCLICK_LOCATION);
+		setDisabledTexture(EDITOR_DISABLED_LOCATION);
 		
-		menu = new Menu(this, options, this.x + 5, this.y + height - 5, widthSection * 2);
-		menu.setSelectedItem(defaultOption);
+		setButtonBackgroundTexture(BUTTON_BACKGROUND_LOCATION);
+		setButtonForegroundTexture(BUTTON_FOREGROUND_LOCATION);
+		setButtonOnclickTexture(BUTTON_ONCLICK_LOCATION);
+		setButtonDisabledTexture(BUTTON_DISABLED_LOCATION);
 		
-		setSelectedItem(menu.getSelectedItem());
+		comboBoxRenderer = new ComboBoxRenderer(this);
 		
-	}
-	
-	public DropDown(String id, int x, int y, int width, int height, String... options) {
-		this(id, x, y, width, height, options[0], options);
-	}
-	
-	public DropDown(String id, int x, int y, int defaultOption, String... options) {
-		this(id, x, y, ResourceManager.getTexture(BACKGROUND_LOCATION).getWidth(),
-				ResourceManager.getTexture(BACKGROUND_LOCATION).getHeight(), options[defaultOption], options);
+		setRenderer(comboBoxRenderer);
+		setEditor(comboBoxRenderer);
+		
+		setUI(comboBoxRenderer);
+		
+		UIDefaults comboBoxDefaults = new UIDefaults();
+		
+		comboBoxDefaults.put("ComboBox.backgroundPainter", comboBoxRenderer);
+		comboBoxDefaults.put("ComboBox.foregroundPainter", comboBoxRenderer);
+		
+		putClientProperty("Nimbus.Overrides", comboBoxDefaults);
+		putClientProperty("Nimbus.Overrides.InheritDefaults", false);
+		
+//		http://www.codejava.net/java-se/swing/create-custom-gui-for-jcombobox
+		
 	}
 	
 	static {
 		
 		String dropdownBase = ResourceManager.getString("DropDown.base");
 		
-		BACKGROUND_LOCATION = loadTexture(dropdownBase, ResourceManager.getString("Gui.background"));
-		FOREGROUND_LOCATION = loadTexture(dropdownBase, ResourceManager.getString("Gui.foreground"));
-		ONCLICK_LOCATION = loadTexture(dropdownBase, ResourceManager.getString("Gui.onclick"));
-		DISABLED_LOCATION = loadTexture(dropdownBase, ResourceManager.getString("Gui.disabled"));
+		String editorBase = ResourceManager.getString("DropDown.editor");
+		String buttonBase = ResourceManager.getString("DropDown.button");
+		
+		String background = ResourceManager.getString("Gui.background");
+		String foreground = ResourceManager.getString("Gui.foreground");
+		String onclick = ResourceManager.getString("Gui.onclick");
+		String disabled = ResourceManager.getString("Gui.disabled");
+		
+		GameHelpersLoader loader = GameManager.instance().getCurrentGame().getLoader(GameHelpersLoader.BASE);
+		
+		EDITOR_BACKGROUND_LOCATION = loader.loadGuiTexture(dropdownBase, editorBase, background);
+		EDITOR_FOREGROUND_LOCATION = loader.loadGuiTexture(dropdownBase, editorBase, foreground);
+		EDITOR_ONCLICK_LOCATION = loader.loadGuiTexture(dropdownBase, editorBase, onclick);
+		EDITOR_DISABLED_LOCATION = loader.loadGuiTexture(dropdownBase, editorBase, disabled);
+		
+		BUTTON_BACKGROUND_LOCATION = loader.loadGuiTexture(dropdownBase, buttonBase, background);
+		BUTTON_FOREGROUND_LOCATION = loader.loadGuiTexture(dropdownBase, buttonBase, foreground);
+		BUTTON_ONCLICK_LOCATION = loader.loadGuiTexture(dropdownBase, buttonBase, onclick);
+		BUTTON_DISABLED_LOCATION = loader.loadGuiTexture(dropdownBase, buttonBase, disabled);
+		
 		
 	}
 	
 	@Override
-	public void render(Graphics2D g) {
-		super.drawBase(g, BACKGROUND_LOCATION, FOREGROUND_LOCATION, ONCLICK_LOCATION, DISABLED_LOCATION);
+	public Dimension getPreferredSize() {
 		
-		// TODO: More inherited string rendering here.
-//		this.text.render(g, Color.WHITE, Util.TRANSPARENT, Util.TRANSPARENT, new Rectangle(x, y, width - (width/3), 
-//				height), centerText, hideOutOfBoundsText);
+		BufferedImage texture = ResourceManager.getTexture(backgroundTexture);
 		
-		super.drawHitbox(g);
-		
+		return new Dimension(texture.getWidth(), texture.getHeight());
 	}
 	
-	@Override
-	protected void mouseClicked(MouseEvent e) {
-		super.mouseClicked(e);
+	/**
+	 * Takes care of all the rendering regarding the combobox except for the arrow button.
+	 * 
+	 * @author Rawad
+	 *
+	 */
+	private class ComboBoxRenderer extends BasicComboBoxUI 
+						implements ComboBoxEditor, ListCellRenderer<String>, Painter<DropDown> {
 		
-		setUpdate(menu.isDown());
-		// Only update the menu; it will then tell its parent to start updating again when menu is up.
-		
-		menu.setDown(!menu.isDown());
-		
-	}
-	
-	private void setSelectedItem(String selectedItem) {
-		
-		text.setContent(getId() + ":" + Util.NL + selectedItem);
-		
-	}
-	
-	public void setCurrentSelectedItem(String selection) {
-		
-		for(String item: menu.getItems()) {
-			
-			if(item.equals(selection)) {
-				menu.setSelectedItem(selection);// Just to make sure it can be selected.
-				break;
-			}
-			
-		}
-		
-	}
-	
-	public String getCurrentSelectedItem() {
-		return menu.getSelectedItem();
-	}
-	
-	public Menu getMenu() {
-		return menu;
-	}
-	
-	@Override
-	public void onAdd(GuiManager manager) {
-		super.onAdd(manager);
-		
-		manager.addComponent(getMenu());// Could also be put behind drop down with (manager.getComponents().size() - 1).
-		
-	}
-	
-	@Override
-	public Rectangle getTextBoundBox() {
-		return textBoundBox;
-	}
-	
-	public class Menu extends Button {
-		
-		private static final int STRING_HEIGHT = 20;
-		
+		private final String prefix;
+
 		private DropDown parent;
 		
-		private String[] items;
+		private Button button;
 		
-		private String currentSelected;
+		private TextLabel ed;
+		private JLabel label;
 		
-		private int highlighted;
+		private String selectedItem;
 		
-		private int totalHeight;
-		
-		public Menu(DropDown parent, String[] items, int x, int y, int width) {
-			super("Menu", x, y, width, items.length * STRING_HEIGHT);
+		public ComboBoxRenderer(DropDown parent) {
 			
 			this.parent = parent;
+			this.prefix = parent.getId();
 			
-			this.items = items;
+			ed = new TextLabel(prefix);
+			ed.setBackgroundTexture(backgroundTexture);
 			
-//			text.setFont(Font.getFont(Font.SERIF));// Can't use this because the graphics can't handle it...
-			text.setHorizontalAlignment(HorizontalAlignment.LEFT);
-			text.setVerticalAlignment(VerticalAlignment.TOP);
-			
-			String content = Util.getStringFromLines(items, Util.NL, false);
-			text.setContent(content);
-			
-			totalHeight = 0;
-			
-			setDown(false);
+			label = new JLabel();
+			label.setOpaque(true);
 			
 		}
 		
 		@Override
-		public void update(MouseEvent me, KeyboardEvent ke) {
-			super.update(me, ke);
+		protected JButton createArrowButton() {
 			
-			if(!intersects(me.getX(), me.getY()) && me.isLeftButtonDown() && !mouseDragged) {// Don't have to check down
+			button = new Button("", "Arrow Button For: \"" + parent.getId() + "\"");
+			
+			button.setBackgroundTexture(parent.getButtonBackgroundTexture());
+			button.setForegroundTexture(parent.getButtonForegroundTexture());
+			button.setOnclickTexture(parent.getButtonOnclickTexture());
+			button.setDisabledTexture(parent.getButtonDisabledTexture());
+			
+			button.addChangeListener(new ChangeListener() {
 				
-				setDown(false);
+				@Override
+				public void stateChanged(ChangeEvent e) {
+					
+					comboBoxRenderer.ed.setBackgroundTexture(backgroundTexture);
+					
+					ButtonModel model = button.getModel();
+					
+					if(model.isEnabled()) {
+						
+						if(model.isRollover() || model.isSelected()) {
+							comboBoxRenderer.ed.setBackgroundTexture(foregroundTexture);
+						}
+						
+						if(model.isArmed()) {
+							comboBoxRenderer.ed.setBackgroundTexture(onclickTexture);
+						}
+						
+					} else {
+						
+						ed.setBackgroundTexture(disabledTexture);
+						
+					}
+					
+				}
 				
-				me.consume();
+			});
+			
+			return button;
+			
+		}
+		
+		@Override
+		public Component getEditorComponent() {
+			return ed;
+		}
+		
+		@Override
+		public Object getItem() {
+			return selectedItem;
+		}
+		
+		@Override
+		public void setItem(Object item) {
+			
+			this.selectedItem = item.toString();
+			ed.setText(""
+					+ "<html>"
+					+ "<div style=\"" + "text-align: center;" + "\">"
+					+ prefix + ": " + "<br/>" + selectedItem
+					+ "<div/>"
+					+ "</html>"
+					);
+			
+		}
+		
+		@Override
+		public Component getListCellRendererComponent(JList<? extends String> list, String value, int index,
+				boolean isSelected, boolean cellHasFocus) {
+			
+			label.setText(value);
+			
+			if(isSelected) {
+				label.setBackground(Color.GRAY);
+				label.setForeground(Color.WHITE);
+			} else {
+				label.setBackground(Color.WHITE);
+				label.setForeground(Color.BLACK);
+			}
+			
+			return label;
+		}
+		
+		/**/
+		@Override
+		public void paint(Graphics2D g, DropDown dropDown, int width, int height) {
+			
+			Logger.log(Logger.DEBUG, "Painting combo box.");// Never gets called.
+			
+			BufferedImage image = ResourceManager.getTexture(backgroundTexture);// Default if not enabled.
+			
+			ButtonModel model = button.getModel();
+			
+			if(model.isEnabled()) {
+				
+				if(model.isRollover() || model.isSelected()) {
+					image = ResourceManager.getTexture(foregroundTexture);
+					
+				}
+				
+				if(model.isArmed()) {
+					image = ResourceManager.getTexture(onclickTexture);
+					
+				}
+				
+			} else {
+
+				image = ResourceManager.getTexture(disabledTexture);
 				
 			}
 			
-			Rectangle textBoundingBox = text.getBoundingBox();
+			g.drawImage(image, 0, 0, width, height, null);// x,y relative to combo box bounds already.
 			
-			if(isHovered()) {
-				highlighted = (me.getY() - this.y) / textBoundingBox.height / items.length;
-				// Set text.line highlighted with this.
-			}
-				
-			hitbox.setBounds(x, y, width, textBoundingBox.height);
-			
-		}
-		
-		public void setDown(boolean menuDown) {
-			
-			this.setUpdate(menuDown);
-			this.setRender(menuDown);
-			
-			parent.setUpdate(!menuDown);
-			
-		}
-		
-		public boolean isDown() {
-			return this.shouldUpdate();// Could add (&& shouldRender).
-		}
+		}/**/
 		
 		@Override
-		public void render(Graphics2D g) {
-			// Don't render all the Button stuff with super.render();
-			
-			g.setColor(Color.LIGHT_GRAY);
-			g.fill(getTextBoundBox());
-			
-			if(isHovered()) {// TODO: Should be done by RenderedString.
-				g.setColor(Color.GRAY);
-				g.fillRect(x + 1, y + (highlighted * totalHeight / items.length) + 1, width - 2, 
-						totalHeight / items.length - 2);
-			}
-			
-			g.setColor(Color.RED);
-			g.drawRect(x, y, text.getBoundingBox().width, text.getBoundingBox().height);
-			
-			drawHitbox(g);
-			
-		}
+		public void selectAll() {}
 		
 		@Override
-		protected void mouseClicked(MouseEvent e) {
-			super.mouseClicked(e);
-			
-			setSelectedItem(getItemAt(e.getY()));
-			
-			setDown(false);
-			
-		}
-		
-		public String getItemAt(int y) {
-			
-			int yIndex = y - this.y;// TODO: Should be done by RenderedString.
-			
-			return items[yIndex/STRING_HEIGHT];
-			
-		}
-		
-		public void setSelectedItem(String currentSelected) {
-			this.currentSelected = currentSelected;
-			
-			parent.setSelectedItem(currentSelected);
-			
-		}
-		
-		public String getSelectedItem() {
-			return currentSelected;
-		}
+		public void addActionListener(ActionListener l) {}
 		
 		@Override
-		public void setX(int x) {
-			this.x = x;
-		}
+		public void removeActionListener(ActionListener l) {}
 		
-		@Override
-		public void setY(int y) {
-			this.y = y;
-		}
-		
-		public String[] getItems() {
-			return items;
-		}
-		
+	}
+	
+	public String getId() {
+		return id;
+	}
+	
+	/**
+	 * @param backgroundTexture the backgroundTexture to set
+	 */
+	public void setBackgroundTexture(int backgroundTexture) {
+		this.backgroundTexture = backgroundTexture;
+	}
+	
+	/**
+	 * @param foregroundTexture the foregroundTexture to set
+	 */
+	public void setForegroundTexture(int foregroundTexture) {
+		this.foregroundTexture = foregroundTexture;
+	}
+	
+	/**
+	 * @param onclickTexture the onclickTexture to set
+	 */
+	public void setOnclickTexture(int onclickTexture) {
+		this.onclickTexture = onclickTexture;
+	}
+	
+	/**
+	 * @param disabledTexture the disabledTexture to set
+	 */
+	public void setDisabledTexture(int disabledTexture) {
+		this.disabledTexture = disabledTexture;
+	}
+	
+	/**
+	 * @return the buttonBackgroundTexture
+	 */
+	public int getButtonBackgroundTexture() {
+		return buttonBackgroundTexture;
+	}
+	
+	/**
+	 * @param buttonBackgroundTexture the buttonBackgroundTexture to set
+	 */
+	public void setButtonBackgroundTexture(int buttonBackgroundTexture) {
+		this.buttonBackgroundTexture = buttonBackgroundTexture;
+	}
+	
+	/**
+	 * @return the buttonForegroundTexture
+	 */
+	public int getButtonForegroundTexture() {
+		return buttonForegroundTexture;
+	}
+	
+	/**
+	 * @param buttonForegroundTexture the buttonForegroundTexture to set
+	 */
+	public void setButtonForegroundTexture(int buttonForegroundTexture) {
+		this.buttonForegroundTexture = buttonForegroundTexture;
+	}
+	
+	/**
+	 * @return the buttonOnclickTexture
+	 */
+	public int getButtonOnclickTexture() {
+		return buttonOnclickTexture;
+	}
+	
+	/**
+	 * @param buttonOnclickTexture the buttonOnclickTexture to set
+	 */
+	public void setButtonOnclickTexture(int buttonOnclickTexture) {
+		this.buttonOnclickTexture = buttonOnclickTexture;
+	}
+	
+	/**
+	 * @return the buttonDisabledTexture
+	 */
+	public int getButtonDisabledTexture() {
+		return buttonDisabledTexture;
+	}
+	
+	/**
+	 * @param buttonDisabledTexture the buttonDisabledTexture to set
+	 */
+	public void setButtonDisabledTexture(int buttonDisabledTexture) {
+		this.buttonDisabledTexture = buttonDisabledTexture;
 	}
 	
 }

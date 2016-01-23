@@ -1,15 +1,13 @@
 package com.rawad.gamehelpers.input;
 
 import java.awt.AWTException;
-import java.awt.Component;
+import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Point;
 import java.awt.Robot;
 import java.util.HashMap;
 
 import com.rawad.gamehelpers.display.Cursors;
-import com.rawad.gamehelpers.display.DisplayManager;
-import com.rawad.gamehelpers.gamemanager.Game;
 import com.rawad.gamehelpers.log.Logger;
 
 public class MouseInput {
@@ -26,6 +24,9 @@ public class MouseInput {
 	private static Robot bot;
 	
 	private static Cursor cursor;
+	
+	private static double scaleX;
+	private static double scaleY;
 	
 	private static int x;
 	private static int y;
@@ -48,9 +49,12 @@ public class MouseInput {
 		mouseStates.put(RIGHT_MOUSE_BUTTON, new Boolean[]{false, false});
 		mouseStates.put(MIDDLE_MOUSE_BUTTON, new Boolean[]{false, false});
 		
+		scaleX = 1;
+		scaleY = 1;
+		
 	}
 	
-	public static void update(Component window, long timePassed) {
+	public static void update(Container window, long timePassed) {
 		
 		if(bot == null) {
 			
@@ -64,15 +68,12 @@ public class MouseInput {
 			
 		}
 		
-		if(isClamped() && DisplayManager.getCurrentWindowComponent().isShowing()) {
+		if(isClamped() && window.isShowing()) {
 			
 			setCursor(Cursors.BLANK);
 			
-			double xScale = (double) window.getWidth()/(double) Game.SCREEN_WIDTH;
-			double yScale = (double) window.getHeight()/(double) Game.SCREEN_HEIGHT;
-			
-			int scaledClampX = (int) (((double) clampX) * xScale);
-			int scaledClampY = (int) (((double) clampY) * yScale);
+			int scaledClampX = (int) (clampX * scaleX);
+			int scaledClampY = (int) (clampY * scaleY);
 			
 //			Logger.log(Logger.DEBUG, "regular clamp x,y: " + clampX + ", " + clampY +
 //					" | scaled clamp x,y: " + scaledClampX + ", " + scaledClampY + " | x,y: " + x + ", " + y);
@@ -202,11 +203,15 @@ public class MouseInput {
 		MouseInput.cursor = cursor;
 	}
 	
-	public static int getX() {
+	public static int getX(boolean scale) {
 		if(isClamped()) {
 			return dx;
 		} else {
-			return x;
+			if(scale) {
+				return (int) (x * scaleX);
+			} else {
+				return x;
+			}
 		}
 	}
 	
@@ -214,16 +219,36 @@ public class MouseInput {
 		MouseInput.x = x;
 	}
 	
-	public static int getY() {
+	public static int getY(boolean scale) {
 		if(isClamped())	 {
 			return dy;
 		} else {
-			return y;
+			if(scale) {
+				return (int) (y * scaleY);
+			} else {
+				return y;
+			}
 		}
 	}
 	
 	public static void setY(int y) {
 		MouseInput.y = y;
+	}
+	
+	public static void setScaleX(double scaleX) {
+		MouseInput.scaleX = scaleX;
+	}
+	
+	public static double getScaleX() {
+		return scaleX;
+	}
+	
+	public static void setScaleY(double scaleY) {
+		MouseInput.scaleY = scaleY;
+	}
+	
+	public static double getScaleY() {
+		return scaleY;
 	}
 	
 }

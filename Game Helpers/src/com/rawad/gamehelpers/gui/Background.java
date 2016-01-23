@@ -12,6 +12,8 @@ public class Background {
 	private static final int DEFAULT_TEXTURE;
 	private static final int DEFAULT_FLIPPED_TEXTURE;
 	
+	private static Background instance;
+	
 	private int texture;
 	private int flippedTexture;
 	
@@ -19,14 +21,16 @@ public class Background {
 	private int secondX;
 	
 	private int maxWidth;
+	private int maxHeight;// Solely for rendering.
 	
-	public Background() {
+	private Background() {
 		
 		texture = DEFAULT_TEXTURE;
 		
 		flippedTexture = DEFAULT_FLIPPED_TEXTURE;
 		
 		maxWidth = ResourceManager.getTexture(texture).getWidth();
+		maxHeight = ResourceManager.getTexture(texture).getHeight();
 		
 		x = 0;
 		secondX = -maxWidth;
@@ -105,6 +109,14 @@ public class Background {
 		return flippedTexture;
 	}
 	
+	public int getMaxWidth() {
+		return maxWidth;
+	}
+	
+	public int getMaxHeight() {
+		return maxHeight;
+	}
+	
 	public static BufferedImage getHorizontallyFlippedImage(BufferedImage original) {
 		
 		BufferedImage flipped = new BufferedImage(original.getWidth(), original.getHeight(), original.getType());
@@ -118,6 +130,16 @@ public class Background {
 		}
 		
 		return flipped;
+		
+	}
+	
+	public static Background instance() {
+		
+		if(instance == null) {
+			instance = new Background();
+		}
+		
+		return instance;
 		
 	}
 	

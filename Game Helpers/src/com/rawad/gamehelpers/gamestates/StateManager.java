@@ -1,15 +1,12 @@
 package com.rawad.gamehelpers.gamestates;
 
-import java.awt.Graphics2D;
 import java.util.HashMap;
+import java.util.Set;
 
 import com.rawad.gamehelpers.gamemanager.Game;
 import com.rawad.gamehelpers.log.Logger;
-import com.rawad.gamehelpers.renderengine.gui.GuiRender;
 
 public class StateManager {
-	
-	private GuiRender guiRender;
 	
 	private HashMap<String, State> states;
 	
@@ -28,10 +25,8 @@ public class StateManager {
 	public void update() {
 		
 		try {
-			currentState.update();
 			
-			guiRender.addGuiComponents(currentState.getGuiManager().getComponents());
-			guiRender.addOverlays(currentState.getOverlayManager().getOverlays());
+			currentState.update();
 			
 		} catch(NullPointerException ex) {
 			Logger.log(Logger.DEBUG, "Current state is null for updating");
@@ -40,28 +35,22 @@ public class StateManager {
 		
 	}
 	
-	public void render(Graphics2D g) {
-		
-		try {
-			
-			currentState.render(g);
-			
-			currentState.getGuiManager().render(g);
-			currentState.getOverlayManager().render(g);
-			
-		} catch(NullPointerException ex) {
-			Logger.log(Logger.DEBUG, "Current state is null for rendering");
-		}
-		
-	}
-	
 	/**
-	 * Should be called by each game, independantly, after (at least) the GuiRender has been registered.
-	 * 
+	 * Everything GUI-initialization related is done here; this is called on the Swing EDT.
 	 */
-	public void init() {
+	public void initialize() {
 		
-		guiRender = (GuiRender) game.getMasterRender().getRender(GuiRender.class);
+		Set<String> stateIds = states.keySet();
+		
+		for(String stateId: stateIds) {
+			
+			State state = states.get(stateId);
+			
+			state.initialize();
+			
+			game.getContainer().add(state.container, state.getStateId());
+			
+		}
 		
 	}
 	
@@ -69,7 +58,7 @@ public class StateManager {
 		
 		states.put(state.getStateId(), state);
 		
-		currentState = state;
+		currentState = state;// Note that these states aren't added to the game's container just yet.
 		
 		state.setStateManager(this);
 		
@@ -89,6 +78,8 @@ public class StateManager {
 			
 			newState.onActivate();// Just so that this is called before any updating/rendering.
 			currentState = newState;
+			
+			game.show(stateId);
 			
 		} catch(Exception ex) {
 			

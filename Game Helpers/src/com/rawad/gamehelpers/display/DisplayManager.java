@@ -1,10 +1,10 @@
 package com.rawad.gamehelpers.display;
 
-import java.awt.Component;
+import java.awt.Container;
 import java.util.ArrayList;
 
 import com.rawad.gamehelpers.gamemanager.Game;
-import com.rawad.gamehelpers.renderengine.MasterRender;
+import com.rawad.gamehelpers.utils.Util;
 
 public class DisplayManager {
 	
@@ -20,6 +20,8 @@ public class DisplayManager {
 	
 	private static DisplayMode currentDisplayMode;
 	
+	private static Mode requestedMode;
+	
 	private static boolean closeRequested;
 	
 	private DisplayManager() {
@@ -27,24 +29,57 @@ public class DisplayManager {
 	}
 	
 	/**
-	 * Renders everything onto the current buffer.
+	 * Renders everything onto the current buffer. (Not really... Not anymore, at least. Thanks to swing.)
 	 * 
 	 */
 	public static void update() {
 		
-		currentDisplayMode.repaint();
+		if(requestedMode != null) {
+			
+			Util.invokeLater(new Runnable() {
+				
+				final Mode mode = requestedMode;// This is so we can set it to null afterwards.
+				
+				@Override
+				public void run() {
+					
+					showDisplayMode(mode, currentDisplayMode.game);// Take game from prev. object.
+					
+				}
+				
+			});
+			
+			requestedMode = null;
+			
+		}
+		
+		if(closeRequested) {
+			destroyWindow();
+		}
 		
 	}
 	
-	public static void setDisplayMode(Mode mode, MasterRender render) {
+	public static void requestDisplayModeChange(Mode mode) {
+		requestedMode = mode;
+	}
+	
+	/**
+	 * Should only be called by the {@code GameManager}; use {@code requestDisplayModeChange(Mode} otherwise.
+	 * This will immediately show the display mode. The reason for this being the whole thread thing.
+	 * 
+	 * @param mode
+	 */
+	public static void showDisplayMode(final Mode mode, final Game game) {
 		
-		if(currentDisplayMode != null) {
+		if(currentDisplayMode != null) {// For refreshing fullscreen.
 			currentDisplayMode.destroy();
 		}
 		
+		mode.getDisplayMode().create(game);
+		
 		currentDisplayMode = mode.getDisplayMode();
 		
-		currentDisplayMode.create(render);
+		currentDisplayMode.show();
 		
 	}
 	
@@ -52,7 +87,7 @@ public class DisplayManager {
 		closeRequested = true;
 	}
 	
-	public static void destroyWindow() {
+	private static void destroyWindow() {
 		
 		closeRequested = false;
 		
@@ -113,6 +148,12 @@ public class DisplayManager {
 		FULLSCREEN_WIDTH = width;
 		FULLSCREEN_HEIGHT = height;
 		
+		if(getDisplayMode() == Mode.FULLSCREEN) {
+			
+			showDisplayMode(getDisplayMode(), currentDisplayMode.game);
+			
+		}
+		
 	}
 	
 	public static String getFullScreenResolution() {
@@ -153,8 +194,13 @@ public class DisplayManager {
 		DISPLAY_HEIGHT = height;
 	}
 	
-	public static Component getCurrentWindowComponent() {
-		return currentDisplayMode.getCurrentWindow();
+	/**
+	 * Fore {@code MouseInput} class.
+	 * 
+	 * @return
+	 */
+	public static Container getCurrentContainer() {
+		return currentDisplayMode.game.getContainer();
 	}
 	
 	public static boolean isCloseRequested() {

@@ -1,152 +1,152 @@
 package com.rawad.gamehelpers.gui;
 
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.awt.Insets;
 import java.awt.image.BufferedImage;
 
-import com.rawad.gamehelpers.input.event.KeyboardEvent;
-import com.rawad.gamehelpers.input.event.MouseEvent;
+import javax.swing.ButtonModel;
+import javax.swing.JButton;
+import javax.swing.Painter;
+import javax.swing.UIDefaults;
+
+import com.rawad.gamehelpers.gamemanager.GameManager;
+import com.rawad.gamehelpers.resources.GameHelpersLoader;
 import com.rawad.gamehelpers.resources.ResourceManager;
 
-public class Button extends TextContainer {
+public class Button extends JButton implements Painter<Button> {
+	
+	/**
+	 * Generated serial version UID.
+	 */
+	private static final long serialVersionUID = -555939131830923181L;
 	
 	private static final int BACKGROUND_LOCATION;
 	private static final int FOREGROUND_LOCATION;
 	private static final int ONCLICK_LOCATION;
 	private static final int DISABLED_LOCATION;
 	
-	protected boolean clicked;
-	protected boolean pressed;
-	protected boolean enabled;
+	private final String id;
+
+	private int backgroundTexture;
+	private int foregroundTexture;
+	private int onclickTexture;
+	private int disabledTexture;
 	
-	public Button(String id, String text, int x, int y, int width, int height) {
-		super(id, text, x, y, width, height);
+	public Button(String text, String id) {
+		super(text);
+
+		this.id = id;
 		
-		enabled = true;
+		UIDefaults buttonDefaults = new UIDefaults();
+		
+		buttonDefaults.put("Button.backgroundPainter", this);
+		
+		putClientProperty("Nimbus.Overrides", buttonDefaults);
+		putClientProperty("Nimbus.Overrides.InheritDefaults", false);
+		
+		setBorderPainted(false);
+		setFocusable(false);
+		
+		setBackgroundTexture(BACKGROUND_LOCATION);
+		setForegroundTexture(FOREGROUND_LOCATION);
+		setOnclickTexture(ONCLICK_LOCATION);
+		setDisabledTexture(DISABLED_LOCATION);
 		
 	}
 	
-	public Button(String textAndId, int x, int y, int width, int height) {
-		this(textAndId, textAndId, x, y, width, height);
+	public Button(String text) {
+		this(text, text);
 	}
-	
-	public Button(String text, int x, int y) {
-		this(text, x, y, ResourceManager.getTexture(BACKGROUND_LOCATION).getWidth(),
-				ResourceManager.getTexture(BACKGROUND_LOCATION).getHeight());
-	}
-	
+
 	static {
 		
 		String buttonBase = ResourceManager.getString("Button.base");
 		
-		BACKGROUND_LOCATION = loadTexture(buttonBase, ResourceManager.getString("Gui.background"));
-		FOREGROUND_LOCATION = loadTexture(buttonBase, ResourceManager.getString("Gui.foreground"));
-		ONCLICK_LOCATION = loadTexture(buttonBase, ResourceManager.getString("Gui.onclick"));
-		DISABLED_LOCATION = loadTexture(buttonBase, ResourceManager.getString("Gui.disabled"));
+		GameHelpersLoader loader = GameManager.instance().getCurrentGame().getLoader(GameHelpersLoader.BASE);
 		
+		BACKGROUND_LOCATION = loader.loadGuiTexture(buttonBase, ResourceManager.getString("Gui.background"));
+		FOREGROUND_LOCATION = loader.loadGuiTexture(buttonBase, ResourceManager.getString("Gui.foreground"));
+		ONCLICK_LOCATION = loader.loadGuiTexture(buttonBase, ResourceManager.getString("Gui.onclick"));
+		DISABLED_LOCATION = loader.loadGuiTexture(buttonBase, ResourceManager.getString("Gui.disabled"));
+		
+	}
+	
+	public String getId() {
+		return id;
+	}
+	
+	/**
+	 * @param backgroundTexture the backgroundTexture to set
+	 */
+	public void setBackgroundTexture(int backgroundTexture) {
+		this.backgroundTexture = backgroundTexture;
+	}
+	
+	/**
+	 * @param foregroundTexture the foregroundTexture to set
+	 */
+	public void setForegroundTexture(int foregroundTexture) {
+		this.foregroundTexture = foregroundTexture;
+	}
+	
+	/**
+	 * @param onclickTexture the onclickTexture to set
+	 */
+	public void setOnclickTexture(int onclickTexture) {
+		this.onclickTexture = onclickTexture;
+	}
+	
+	/**
+	 * @param disabledTexture the disabledTexture to set
+	 */
+	public void setDisabledTexture(int disabledTexture) {
+		this.disabledTexture = disabledTexture;
 	}
 	
 	@Override
-	public void update(MouseEvent me, KeyboardEvent ke) {
+	public void paint(Graphics2D g, Button button, int width, int height) {
 		
-		if(enabled) {
-			super.update(me, ke);
+		ButtonModel model = button.getModel();
+		
+		BufferedImage image = ResourceManager.getTexture(backgroundTexture);// Default if not enabled.
+		
+		if(model.isEnabled()) {
 			
-			if(!intersects(me.getX(), me.getY()) && !me.isLeftButtonDown()) {
-				mouseReleased(me);
+			if(model.isRollover() || model.isSelected()) {
+				image = ResourceManager.getTexture(foregroundTexture);
 			}
 			
-		}
-		
-	}
-	
-	@Override
-	public void render(Graphics2D g) {
-		this.render(g, BACKGROUND_LOCATION, FOREGROUND_LOCATION, ONCLICK_LOCATION, DISABLED_LOCATION);
-	}
-	
-	protected void render(Graphics2D g, int background, int foreground, int onclick, int disabled) {
-		
-		drawBase(g, background, foreground, onclick, disabled);
-		
-		super.render(g);// Draw's button's text
-		
-	}
-	
-	protected void drawBase(Graphics2D g, int background_loc, int foreground_loc, int onclick_loc, int disabled_loc) {
-		
-		if(enabled) {
-			
-			BufferedImage background = ResourceManager.getTexture(background_loc);
-			
-			g.drawImage(background.getScaledInstance(width, height, BufferedImage.SCALE_FAST), x, y, null);
-			
-			if(isHovered()) {
-				
-				BufferedImage foreground = ResourceManager.getTexture(foreground_loc);
-				
-				g.drawImage(foreground.getScaledInstance(width, height, BufferedImage.SCALE_FAST), x, y, null);
-			}
-			
-			if(pressed) {
-				
-				BufferedImage onclick = ResourceManager.getTexture(onclick_loc);
-				
-				g.drawImage(onclick.getScaledInstance(width, height, BufferedImage.SCALE_FAST), x, y, null);
+			if(model.isArmed()) {
+				image = ResourceManager.getTexture(onclickTexture);
 			}
 			
 		} else {
+
+			image = ResourceManager.getTexture(disabledTexture);
 			
-			BufferedImage disabled = ResourceManager.getTexture(disabled_loc);
+		}
+		
+		g.drawImage(image, 0, 0, width, height, null);// x,y relative to button bounds already.
+		
+		if(model.isSelected()) {
 			
-			g.drawImage(disabled.getScaledInstance(width, height, BufferedImage.SCALE_FAST), x, y, null);
+			Insets inset = button.getInsets();
+			
+			g.setColor(Color.BLACK);
+			g.drawRect(inset.left, inset.top, width - inset.right, height - inset.bottom);
 			
 		}
 		
 	}
 	
 	@Override
-	protected void mouseClicked(MouseEvent e) {
-		pressed = false;
-		clicked = true;
+	public Dimension getPreferredSize() {
 		
-	}
-	
-	@Override
-	protected void mousePressed(MouseEvent e) {
-		super.mousePressed(e);
+		BufferedImage image = ResourceManager.getTexture(backgroundTexture);
 		
-		pressed = true;
-		
-	}
-	
-	@Override
-	protected void mouseReleased(MouseEvent e) {
-		pressed = false;
-	}
-	
-	@Override
-	protected void mouseEntered(MouseEvent e) {
-		
-		if(mouseDragged && pressed) {
-			mouseDragged = false;
-		}
-		
-	}
-	
-	public boolean isClicked() {
-		return clicked;
-	}
-	
-	public void setClicked(boolean clicked) {
-		this.clicked = clicked;	
-	}
-	
-	public boolean isEnabled() {
-		return enabled;
-	}
-	
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
+		return new Dimension(image.getWidth(), image.getHeight());
 	}
 	
 }

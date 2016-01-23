@@ -1,36 +1,34 @@
 package com.rawad.gamehelpers.gamestates;
 
-import java.awt.Graphics2D;
+import java.awt.CardLayout;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JPanel;
 
 import com.rawad.gamehelpers.gui.Button;
 import com.rawad.gamehelpers.gui.DropDown;
-import com.rawad.gamehelpers.gui.GuiComponent;
-import com.rawad.gamehelpers.gui.GuiManager;
 import com.rawad.gamehelpers.gui.overlay.Overlay;
-import com.rawad.gamehelpers.gui.overlay.OverlayManager;
-import com.rawad.gamehelpers.input.event.KeyboardEvent;
-import com.rawad.gamehelpers.input.event.MouseEvent;
+import com.rawad.gamehelpers.utils.Util;
 
 public abstract class State {
 	
-	private final String stateId;
+	protected final Listener listener = new Listener();
 	
-	private GuiManager guiManager;
-	private OverlayManager overlayManager;
+	private final String stateId;
 	
 	protected StateManager sm;
 	
-	private MouseEvent me;
-	private KeyboardEvent ke;
+	protected CustomContainer container;
 	
-	/** Mainly for convenience. Other classes will have to get this instance straight from the game class. */
-//	protected FileParser fileParser;
+	private CardLayout cl;// Create custom add() and show() methods that will run the cl method on EDT.
 	
 	public State(String stateId) {
-		this.stateId = stateId;
+		super();
 		
-		guiManager = new GuiManager();
-		overlayManager = new OverlayManager();
+		this.stateId = stateId;
 		
 	}
 	
@@ -44,94 +42,38 @@ public abstract class State {
 	}
 	
 	/**
-	 * Should be called by subclass whenever anything GUI-related is being done
-	 */
-	public final void update() {
-		
-		me = new MouseEvent();
-		ke = new KeyboardEvent();
-		
-		this.update(me, ke);
-		
-	}
-	
-	/**
-	 * Optional in case different values want to be used. e.g. when mouse is clamped, maybe use coordinates of an on-screen object.
-	 * 
-	 * @param me
-	 * @param ke
+	 * Note: Called after client is updated, so logic for that can be done here.
 	 * 
 	 */
-	public void update(MouseEvent me, KeyboardEvent ke) {
-		
-		guiManager.update(me, ke);
-		
-		Button butt = guiManager.getCurrentClickedButton();
-		
-		if(butt != null) {
-			handleButtonClick(butt);
-			
-		}
-		
-		DropDown drop = guiManager.getCurrentSelectedDropDown();
-		
-		if(drop != null) {
-			handleDropDownMenuSelect(drop);
-			
-		}
-		
-	}
-	
-	public void updateOverlays(MouseEvent me, KeyboardEvent ke) {
-		
-		overlayManager.update(me, ke);
-		
-		Button butt = overlayManager.getClickedButton();
-		
-		if(butt != null) {
-			handleButtonClick(butt);
-			
-		}
-		
-	}
-	
-	public void render(Graphics2D g) {
-		
-	}
-	
-	/**
-	 * Should be inherited to implement component clicking
-	 * 
-	 * @param comp
-	 */
-	protected void handleMouseClick(GuiComponent comp) {}
-	
-	/**
-	 * Should be inherited to implement component hovering
-	 * 
-	 * @param comp
-	 */
-	protected void handleMouseHover(GuiComponent comp) {}
+	protected void update() {}
 	
 	protected void handleButtonClick(Button butt) {}
 	
 	protected void handleDropDownMenuSelect(DropDown drop) {}
 	
-	protected void onActivate() {
-//		Logger.log(Logger.DEBUG, "onActive(): " + toString());
+	/**
+	 * Should be responsible for initializing anything GUI related; will be called from the Swing EDT.
+	 */
+	protected void initialize() {
+		
+		container = new CustomContainer();
+		
+		cl = new CardLayout();
+		container.setLayout(cl);
+		
+		addListener(container);
+		
 	}
+	
+	protected void onActivate() {}
 	
 	protected void onDeactivate() {}
 	
-	protected final void addGuiComponent(GuiComponent comp) {
-		
-		guiManager.addComponent(comp);
-		
-	}
-	
 	protected final void addOverlay(Overlay overlay) {
 		
-		overlayManager.addOverlay(overlay);
+		container.add(overlay, overlay.getId());
+		
+		addListener(overlay);
 		
 	}
 	
@@ -143,12 +85,85 @@ public abstract class State {
 		return stateId;
 	}
 	
-	public GuiManager getGuiManager() {
-		return guiManager;
+	protected final void show(final String name) {
+		
+		Util.invokeLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				cl.show(container, name);
+			}
+			
+		});
+		
 	}
 	
-	public OverlayManager getOverlayManager() {
-		return overlayManager;
+	/**
+	 * Add {@code else if} statements as more {@code Listener} objects are required. Also adds listeners to childs
+	 * of containers. Could also add key listeners.
+	 * 
+	 * @param comp
+	 */
+	protected void addListener(Component comp) {
+
+		if(comp instanceof Button) {
+			((Button) comp).addActionListener(listener);
+		} else if(comp instanceof DropDown) {
+			((DropDown) comp).addActionListener(listener);
+		}
+		
+		if(comp instanceof Container) {
+			
+			Component[] components = ((Container) comp).getComponents();
+			
+			for(Component c: components) {
+				
+				addListener(c);
+				
+			}
+		}
+		
+	}
+	
+	private class Listener implements ActionListener {
+		
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			
+			Object source = e.getSource();
+			
+			if(source instanceof Button) {
+				handleButtonClick((Button) source);
+			} else if(source instanceof DropDown) {
+				handleDropDownMenuSelect((DropDown) source);
+			}
+			
+		}
+		
+	}
+	
+	protected class CustomContainer extends JPanel {
+		
+		/**
+		 * Generated serial version UID.
+		 */
+		private static final long serialVersionUID = -7152604465120519057L;
+		
+		public CustomContainer() {
+			super();
+			
+			setIgnoreRepaint(true);
+			
+		}
+		
+		@Override
+		protected void addImpl(Component comp, Object constraints, int index) {
+			super.addImpl(comp, constraints, index);
+			
+			addListener(comp);
+			
+		}
+		
 	}
 	
 }
