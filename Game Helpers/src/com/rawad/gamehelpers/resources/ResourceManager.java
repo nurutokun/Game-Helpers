@@ -23,34 +23,49 @@ import com.rawad.gamehelpers.log.Logger;
 
 public class ResourceManager {
 	
+	/** Path used when/if games are released; should be checked on other OS's. */
+	private static final String SYSTEM_PATH = System.getProperty("user.home") + "/AppData/Roaming/My Game Launcher/";
+
+	private static final String[] REPOSITORIES = {
+		"",
+		SYSTEM_PATH
+	};
+	
 	private static final String BUNDLE_NAME = "com.rawad.gamehelpers.resources.strings_resources"; //$NON-NLS-1$
 	
 	private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
 	
-	public static final String appdataDir = System.getProperty("user.home").replace('\\', '/') + "/AppData/Roaming/My Game Launcher/";
+	public static String appdataDir;
 	// Always use "/" for file paths, they are all replaced to the system-dependant file-seperator in each method.
 	// TODO: Still gotta change that "/AppData/Roaming/"
 	
-	private static final String UNKNOWN_TEXTURE_PATH = appdataDir + "Game Helpers/res/textures/unknown.png";
+	private static final String UNKNOWN_TEXTURE_PATH = "Game Helpers/res/textures/unknown.png";
 	
 	public static final int UNKNOWN = -1;
 	
-	private static final BufferedImage UNKNOWN_TEXTURE;
+	private static BufferedImage UNKNOWN_TEXTURE;
 	
 	private static HashMap<Integer, Texture> textures = new HashMap<Integer, Texture>();
 	
+	private ResourceManager() {}
+	
 	static {
 		
-		BufferedImage temp = null;
+		appdataDir = SYSTEM_PATH.replace('\\', '/');
 		
-		try {
-			temp = ImageIO.read(new File(UNKNOWN_TEXTURE_PATH));
-		} catch(Exception ex) {
-			Logger.log(Logger.DEBUG, "Unkown texture file couldn't be loaded from: \"" + UNKNOWN_TEXTURE_PATH + "\"");
-			temp = generateUnkownTexture();
+	}
+	
+	/**
+	 * Should be given index
+	 * 
+	 * @param developingEnvironment
+	 * 			- Whether or not the <code>Game</code> is being run from an IDE, for example, or not.
+	 */
+	public static void setBasePath(boolean developingEnvironment) {
+		
+		if(developingEnvironment) {
+			appdataDir = "";
 		}
-		
-		UNKNOWN_TEXTURE = temp;
 		
 	}
 	
@@ -81,6 +96,7 @@ public class ResourceManager {
 	}
 	
 	private static BufferedImage generateUnkownTexture() {
+		
 		BufferedImage temp = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
 		
 		for(int x = 0; x < temp.getWidth(); x++) {
@@ -111,7 +127,8 @@ public class ResourceManager {
 			ImageIO.write(temp, fileFormat, new File(UNKNOWN_TEXTURE_PATH));// excludes ".png"
 			
 		} catch(Exception ex) {
-			Logger.log(Logger.WARNING, ex.getLocalizedMessage() + "; the \"unknown texture\" was created but not saved.");
+			Logger.log(Logger.WARNING, ex.getLocalizedMessage() + "; the \"unknown texture\" was created but "
+					+ "not saved.");
 			
 		}
 		
@@ -119,7 +136,27 @@ public class ResourceManager {
 		
 	}
 	
+	private static void loadUnknownTexture() {
+		
+		BufferedImage temp = null;
+		
+		try {
+			temp = ImageIO.read(new File(appdataDir + UNKNOWN_TEXTURE_PATH));
+		} catch(Exception ex) {
+			Logger.log(Logger.DEBUG, "Unknown texture file couldn't be loaded from: \"" 
+					+ UNKNOWN_TEXTURE_PATH + "\"");
+			temp = generateUnkownTexture();
+		}
+		
+		UNKNOWN_TEXTURE = temp;
+		
+	}
+	
 	public static int loadTexture(String imagePath) {
+		
+		if(UNKNOWN_TEXTURE == null) {
+			loadUnknownTexture();
+		}
 		
 		if(imagePath.isEmpty()) {
 			return UNKNOWN;
@@ -296,15 +333,22 @@ public class ResourceManager {
 		
 		filePath = (appdataDir + filePath).replace('/', File.separatorChar);
 		
-		try (	PrintWriter writer = new PrintWriter(new FileWriter(filePath, false), true)// Don't append, start all over every time.
-				) {
+		for(String path: REPOSITORIES) {
 			
-			writer.write(content);
+			path = (path + filePath).replace('/', File.separatorChar);
 			
-		} catch(IOException ex) {
-			
-			Logger.log(Logger.SEVERE, "Couldn't write to file at \"" + filePath + "\"");
-			ex.printStackTrace();
+			// Don't append, start all over every time.
+			try (	PrintWriter writer = new PrintWriter(new FileWriter(filePath, false), true)
+					) {
+				
+				writer.write(content);
+				
+			} catch(IOException ex) {
+				
+				Logger.log(Logger.SEVERE, "Couldn't write to file at \"" + filePath + "\"");
+				ex.printStackTrace();
+				
+			}
 			
 		}
 		
