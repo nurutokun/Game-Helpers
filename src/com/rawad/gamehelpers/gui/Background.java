@@ -43,8 +43,8 @@ public class Background {
 		
 		BufferedImage temp = ResourceManager.getTexture(DEFAULT_TEXTURE);
 		
-		DEFAULT_FLIPPED_TEXTURE = ResourceManager.loadTexture(ResourceManager.getTextureObject(DEFAULT_TEXTURE).getPath() + "(flipped)", 
-				getHorizontallyFlippedImage(temp)).getLocation();
+		DEFAULT_FLIPPED_TEXTURE = ResourceManager.loadTexture(ResourceManager.getTextureObject(DEFAULT_TEXTURE)
+				.getPath() + "(flipped)", getHorizontallyFlippedImage(temp)).getLocation();
 		
 	}
 	

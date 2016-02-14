@@ -3,6 +3,7 @@ package com.rawad.gamehelpers.renderengine;
 import java.awt.Graphics2D;
 
 import com.rawad.gamehelpers.display.DisplayManager;
+import com.rawad.gamehelpers.game.GameManager;
 import com.rawad.gamehelpers.gui.Background;
 import com.rawad.gamehelpers.resources.ResourceManager;
 
@@ -16,7 +17,7 @@ public class BackgroundRender extends Render {
 	
 	public void render(Graphics2D g) {
 		
-		Background background = Background.instance();
+		Background background = GameManager.instance().getCurrentGame().getBackground();
 		
 		int x = background.getX();
 		int secondX = background.getSecondX();

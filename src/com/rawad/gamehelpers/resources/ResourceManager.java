@@ -66,6 +66,20 @@ public class ResourceManager {
 		
 	}
 	
+	public static void init(String[] args) {
+		
+		try {
+			
+			boolean devEnv = Boolean.valueOf(args[0]);
+			
+			setBasePath(devEnv);
+			
+		} catch(Exception ex) {
+			Logger.log(Logger.WARNING, "Error; can be ignored. Caused by improper command line argument(s).");
+		}
+		
+	}
+	
 	/**
 	 * 
 	 * Should make it so that it works with indices.
@@ -211,7 +225,8 @@ public class ResourceManager {
 			return loc;
 			
 		} catch(Exception ex) {
-			Logger.log(Logger.SEVERE, ex.getLocalizedMessage() + "; resource manager couldn't load image from \"" + imagePath + "\"");
+			Logger.log(Logger.SEVERE, ex.getLocalizedMessage() + "; resource manager couldn't load image from \"" 
+					+ imagePath + "\"");
 			return UNKNOWN;
 		}
 		
@@ -305,7 +320,18 @@ public class ResourceManager {
 			return UNKNOWN_TEXTURE;
 		}
 		
-		return textures.get(location).getTexture();
+		Texture texture = getTextureObject(location);
+		
+		BufferedImage re;
+		
+		if(texture == null) {
+			re = UNKNOWN_TEXTURE;
+		} else {
+			re = texture.getTexture();
+		}
+		
+		return re;
+		
 	}
 	
 	public static Texture getTextureObject(int location) {
@@ -322,6 +348,16 @@ public class ResourceManager {
 		textures.put(location, null);
 		
 		return UNKNOWN;
+	}
+	
+	public static void releaseResources() {
+		
+		for(Integer texture: textures.keySet()) {
+			
+			unloadTexture(texture);
+			
+		}
+		
 	}
 	
 	public static File loadFile(String filePath) {

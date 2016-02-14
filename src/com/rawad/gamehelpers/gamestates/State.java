@@ -1,6 +1,5 @@
 package com.rawad.gamehelpers.gamestates;
 
-import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.event.ActionEvent;
@@ -8,6 +7,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JPanel;
 
+import com.rawad.gamehelpers.display.RXCardLayout;
 import com.rawad.gamehelpers.gui.Button;
 import com.rawad.gamehelpers.gui.DropDown;
 import com.rawad.gamehelpers.gui.overlay.Overlay;
@@ -23,7 +23,7 @@ public abstract class State {
 	
 	protected CustomContainer container;
 	
-	private CardLayout cl;// Create custom add() and show() methods that will run the cl method on EDT.
+	private RXCardLayout cl;
 	
 	public State(String stateId) {
 		super();
@@ -42,8 +42,7 @@ public abstract class State {
 	}
 	
 	/**
-	 * Note: Called after client is updated, so logic for that can be done here.
-	 * 
+	 * <b>Note:</b> Called in <code>postTick()</code>, use to render scene (by controller) and perhaps other things.
 	 */
 	protected void update() {}
 	
@@ -58,7 +57,7 @@ public abstract class State {
 		
 		container = new CustomContainer();
 		
-		cl = new CardLayout();
+		cl = new RXCardLayout();
 		container.setLayout(cl);
 		
 		addListener(container);
@@ -156,7 +155,8 @@ public abstract class State {
 		public CustomContainer() {
 			super();
 			
-			setIgnoreRepaint(true);
+//			setIgnoreRepaint(true);
+			setFocusable(false);
 			
 		}
 		

@@ -3,13 +3,9 @@ package com.rawad.gamehelpers.game;
 import java.util.ArrayList;
 
 import javax.swing.RepaintManager;
-import javax.swing.UIManager;
-import javax.swing.UIManager.LookAndFeelInfo;
-import javax.swing.UnsupportedLookAndFeelException;
 
-import com.rawad.gamehelpers.display.DisplayManager;
-import com.rawad.gamehelpers.input.Mouse;
 import com.rawad.gamehelpers.log.Logger;
+import com.rawad.gamehelpers.resources.ResourceManager;
 import com.rawad.gamehelpers.utils.CustomRepainter;
 import com.rawad.gamehelpers.utils.Util;
 
@@ -29,18 +25,9 @@ public class GameManager {
 	private long timePassed;
 	private long averageFrameRate;
 	
-	/** Represents if a game is running or not. */
-	private boolean running;
-	
-	private boolean useOldRendering;
-	
 	private GameManager() {
 		
 		games = new ArrayList<Game>();
-		
-		running = false;
-		
-		useOldRendering = false;
 		
 	}
 	
@@ -48,60 +35,24 @@ public class GameManager {
 		
 		RepaintManager.setCurrentManager(new CustomRepainter());
 		
-		boolean setLookAndFeel = false;
-		
-		try {
-			
-			
-			for(LookAndFeelInfo info: UIManager.getInstalledLookAndFeels()) {
-				
-				if("Nimbus".equals(info.getName())) {
-					UIManager.setLookAndFeel(info.getClassName());
-					
-					setLookAndFeel = true;
-					
-					break;
-				}
-				
-			}
-			
-			if(!setLookAndFeel) {
-				throw new Exception("Couldn't set Nimbus Look and Feel!");
-			}
-			
-		} catch(Exception e) {
-			
-			try {
-				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-			} catch (ClassNotFoundException | InstantiationException
-					| IllegalAccessException | UnsupportedLookAndFeelException ex) {
-				
-				Logger.log(Logger.WARNING, "Couldn't load system look and feel; " + ex.getMessage() 
-						+ ". Using default look and feel instead.");
-				
-			}
-			
-		}
 	}
 	
 	/**
 	 * Registers the given {@code gameToLaunch} object, then it calls the {@code init()} method inherited in 
-	 * the {@code Game} class and starts the {@code DisplayManager}.
+	 * the {@code Game} class.
 	 * 
 	 * @param gameToLaunch
 	 * @see #registerGame(Game)
 	 */
-	public void launchGame(Game gameToLaunch) {
+	public void launchGame(Game gameToLaunch, Proxy clientOrServer) {
 		
 		registerGame(gameToLaunch);
 		
-		// Make sure that this/another game isn't already running. Could maybe make this game-dependant so multiple different games can be
-		// launched at once.
-		if(!running) {
+		// Make sure that this/another game isn't already running. Could maybe make this game-dependant so multiple 
+		// different games can be launched at once.
+		if(!gameToLaunch.isRunning()) {
 			
-			running = true;
-			
-			gameThread = new Thread(new GameThread(currentGame), "Game Thread");
+			gameThread = new Thread(new GameThread(currentGame, clientOrServer), "Game Thread");
 			
 			gameThread.start();
 			
@@ -113,13 +64,9 @@ public class GameManager {
 		return currentGame;
 	}
 	
-	public void onClose() {
-		
-	}
-	
 	/**
-	 * Registers the given {@code game} object to the current list of games, if it isn't already, and sets the {@code currentGame} object to 
-	 * this one.
+	 * Registers the given {@code game} object to the current list of games, if it isn't already, and sets the 
+	 * {@code currentGame} object to this one.
 	 * 
 	 * @param game
 	 */
@@ -129,7 +76,8 @@ public class GameManager {
 			games.add(game);
 		}
 		
-		currentGame = game;// Don't have to initialize game in order for this value to be set (for servers, mainly). Also in launchGame method
+		currentGame = game;// Don't have to initialize game in order for this value to be set (for servers, mainly).
+		// Also in launchGame method
 		
 	}
 	
@@ -150,16 +98,20 @@ public class GameManager {
 	private class GameThread implements Runnable {
 		
 		private final Game game;
+		private final Proxy clientOrServer;
 		
-		public GameThread(Game game) {
+		public GameThread(Game game, Proxy clientOrServer) {
 			this.game = game;
+			this.clientOrServer = clientOrServer;
 			
 		}
 		
 		@Override
 		public void run() {
-
-			game.clientInit();// If you're running the game from here, you've got to be a client.
+			
+//			game.initResources();
+			
+			game.init(clientOrServer);
 			
 			initializeGUI(game);
 			
@@ -170,7 +122,7 @@ public class GameManager {
 			
 			prevTime = currentTime;// To keep the initial value limited to zero, just in case.
 			
-			while(running) {
+			while(game.isRunning()) {
 				
 				currentTime = System.currentTimeMillis();
 				
@@ -193,16 +145,13 @@ public class GameManager {
 				
 				prevTime = currentTime;
 				
-				Mouse.update(DisplayManager.getCurrentContainer(), getDeltaTime());
-				
-				game.update(getDeltaTime());
-				
-				if(DisplayManager.isCloseRequested()) {
-					running = false;
-					
-				}
-				
-				DisplayManager.update();
+//				try {
+					game.update(getDeltaTime());
+//				} catch(Exception ex) {
+//					game.stop();
+//					
+//					break;
+//				}
 				
 				try {
 					Thread.sleep(1000/FPS);
@@ -212,6 +161,8 @@ public class GameManager {
 				
 			}
 			
+			ResourceManager.releaseResources();
+			
 		}
 		
 		private void initializeGUI(final Game game) {
@@ -220,9 +171,8 @@ public class GameManager {
 				
 				@Override
 				public void run() {
-					game.initGUI();
 					
-					DisplayManager.showDisplayMode(DisplayManager.Mode.WINDOWED, game);
+					game.initGUI();
 					
 				}
 				
@@ -238,14 +188,6 @@ public class GameManager {
 	
 	public long getFPS() {
 		return averageFrameRate;
-	}
-	
-	public void changeUseOldRendering() {
-		useOldRendering = !useOldRendering;
-	}
-	
-	public boolean shouldUseOldRendering() {
-		return useOldRendering;
 	}
 	
 }

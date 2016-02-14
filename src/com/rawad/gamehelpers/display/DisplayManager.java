@@ -1,6 +1,5 @@
 package com.rawad.gamehelpers.display;
 
-import java.awt.Container;
 import java.util.ArrayList;
 
 import com.rawad.gamehelpers.game.Game;
@@ -9,8 +8,6 @@ import com.rawad.gamehelpers.utils.Util;
 public class DisplayManager {
 	
 	// vvv All of these should be changeable to what the user desires
-	public static int REFRESH_RATE = 60;
-	
 	private static int DISPLAY_WIDTH = Game.SCREEN_WIDTH;// not final; changes with the resizing of the window
 	private static int DISPLAY_HEIGHT = Game.SCREEN_HEIGHT;
 	
@@ -18,18 +15,21 @@ public class DisplayManager {
 	private static int FULLSCREEN_HEIGHT = Game.SCREEN_HEIGHT;
 	// ^^^
 	
+	private static SuperContainer superContainer;
+	private static RXCardLayout cl;
+	
 	private static DisplayMode currentDisplayMode;
 	
 	private static Mode requestedMode;
-	
-	private static boolean closeRequested;
 	
 	private DisplayManager() {
 		
 	}
 	
 	/**
-	 * Renders everything onto the current buffer. (Not really... Not anymore, at least. Thanks to swing.)
+	 * <strike>Renders everything onto the current buffer.</strike> 
+	 * (Not really... Not anymore, at least. Thanks to swing.)
+	 * Now  this handles switching between display modes and handling close requests.
 	 * 
 	 */
 	public static void update() {
@@ -53,9 +53,7 @@ public class DisplayManager {
 			
 		}
 		
-		if(closeRequested) {
-			destroyWindow();
-		}
+		superContainer.repaint();
 		
 	}
 	
@@ -64,8 +62,40 @@ public class DisplayManager {
 	}
 	
 	/**
-	 * Should only be called by the {@code GameManager}; use {@code requestDisplayModeChange(Mode} otherwise.
-	 * This will immediately show the display mode. The reason for this being the whole thread thing.
+	 * Sets up base for GUI.
+	 */
+	public static void init() {
+		
+		cl = new RXCardLayout();
+		
+		superContainer = new SuperContainer(cl);
+		
+	}
+	
+	/**
+	 * Shows the required component using this {@code Game} object's {@code superContainer}.
+	 * 
+	 * @param name
+	 * 				- Name of "card" to be shown.
+	 */
+	public static void show(final String name) {
+		
+		Util.invokeLater(new Runnable() {
+			
+			@Override
+			public void run() {
+
+				cl.show(superContainer, name);
+				
+			}
+			
+		});
+		
+	}
+	
+	/**
+	 * Should only be called at the beginning of an game's lifetime (<b>should change that</b>) on the EDT; should
+	 * call <code>requestDisplayModeChange(Mode)</code> otherwise.
 	 * 
 	 * @param mode
 	 */
@@ -75,26 +105,20 @@ public class DisplayManager {
 			currentDisplayMode.destroy();
 		}
 		
-		mode.getDisplayMode().create(game);
-		
 		currentDisplayMode = mode.getDisplayMode();
+		
+		currentDisplayMode.create(game);
 		
 		currentDisplayMode.show();
 		
 	}
 	
-	public static void requestClose() {
-		closeRequested = true;
-	}
-	
-	private static void destroyWindow() {
-		
-		closeRequested = false;
+	public static void destroyWindow() {
 		
 		currentDisplayMode.destroy();
 		
 		currentDisplayMode = null;
-		 
+		
 	}
 	
 	public static String[] getCompatibleDisplayModeResolutions() {
@@ -194,17 +218,8 @@ public class DisplayManager {
 		DISPLAY_HEIGHT = height;
 	}
 	
-	/**
-	 * Fore {@code MouseInput} class.
-	 * 
-	 * @return
-	 */
-	public static Container getCurrentContainer() {
-		return currentDisplayMode.game.getContainer();
-	}
-	
-	public static boolean isCloseRequested() {
-		return closeRequested;
+	public static SuperContainer getContainer() {
+		return superContainer;
 	}
 	
 	public static Mode getDisplayMode() {

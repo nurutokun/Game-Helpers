@@ -27,7 +27,7 @@ public class Windowed extends DisplayMode {
 			
 			@Override
 			public boolean requestFocusInWindow() {
-				return Windowed.this.game.getContainer().requestFocusInWindow();
+				return DisplayManager.getContainer().requestFocusInWindow();
 				// Called by EventHandler whenever the window is activated; this passes it to the game container.
 			}
 			
@@ -47,14 +47,12 @@ public class Windowed extends DisplayMode {
 	@Override
 	public void show() {
 		
-		frame.add(game.getContainer());
+		frame.add(DisplayManager.getContainer(), BorderLayout.CENTER);
 		
 		frame.setIconImage(game.getIcon());
 		frame.pack();
 //		frame.setLocationRelativeTo(null);// maybe...
 		frame.setVisible(true);
-		
-		frame.repaint();// Just as an initial thing; could simply be replaced by the first state repainting initially.
 		
 	}
 	

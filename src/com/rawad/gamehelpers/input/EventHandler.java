@@ -15,6 +15,7 @@ import java.awt.event.WindowListener;
 
 import com.rawad.gamehelpers.display.DisplayManager;
 import com.rawad.gamehelpers.game.Game;
+import com.rawad.gamehelpers.game.GameManager;
 
 public class EventHandler implements MouseMotionListener, MouseListener, MouseWheelListener,
 		KeyListener, ComponentListener, WindowListener {
@@ -165,7 +166,7 @@ public class EventHandler implements MouseMotionListener, MouseListener, MouseWh
 	
 	@Override
 	public void windowClosing(WindowEvent e) {
-		DisplayManager.requestClose();
+		GameManager.instance().getCurrentGame().requestStop();
 	}
 	
 	@Override

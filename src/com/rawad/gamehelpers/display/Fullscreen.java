@@ -8,6 +8,7 @@ import java.awt.GraphicsEnvironment;
 import javax.swing.JFrame;
 
 import com.rawad.gamehelpers.game.Game;
+import com.rawad.gamehelpers.game.GameManager;
 import com.rawad.gamehelpers.input.EventHandler;
 import com.rawad.gamehelpers.log.Logger;
 
@@ -17,9 +18,9 @@ public class Fullscreen extends com.rawad.gamehelpers.display.DisplayMode {
 	private DisplayMode[] displayModes = {
 			
 			// Makes it so that the dimensions can be easily changed by changing them from the DisplayManager class
-			new DisplayMode(DisplayManager.getDisplayWidth(), DisplayManager.getDisplayHeight(), 32, DisplayManager.REFRESH_RATE),
-			new DisplayMode(DisplayManager.getDisplayWidth(), DisplayManager.getDisplayHeight(), 24, DisplayManager.REFRESH_RATE),
-			new DisplayMode(DisplayManager.getDisplayWidth(), DisplayManager.getDisplayHeight(), 16, DisplayManager.REFRESH_RATE),
+			new DisplayMode(DisplayManager.getDisplayWidth(), DisplayManager.getDisplayHeight(), 32, (int) GameManager.instance().getFPS()),
+			new DisplayMode(DisplayManager.getDisplayWidth(), DisplayManager.getDisplayHeight(), 24, (int) GameManager.instance().getFPS()),
+			new DisplayMode(DisplayManager.getDisplayWidth(), DisplayManager.getDisplayHeight(), 16, (int) GameManager.instance().getFPS()),
 			new DisplayMode(DisplayManager.getDisplayWidth(), DisplayManager.getDisplayHeight(), 32, DisplayMode.REFRESH_RATE_UNKNOWN),
 			new DisplayMode(DisplayManager.getDisplayWidth(), DisplayManager.getDisplayHeight(), 24, DisplayMode.REFRESH_RATE_UNKNOWN),
 			new DisplayMode(DisplayManager.getDisplayWidth(), DisplayManager.getDisplayHeight(), 16, DisplayMode.REFRESH_RATE_UNKNOWN),
@@ -57,7 +58,7 @@ public class Fullscreen extends com.rawad.gamehelpers.display.DisplayMode {
 				
 				@Override
 				public boolean requestFocusInWindow() {
-					return Fullscreen.this.game.getContainer().requestFocusInWindow();
+					return DisplayManager.getContainer().requestFocusInWindow();
 				}
 				
 			};
@@ -66,7 +67,7 @@ public class Fullscreen extends com.rawad.gamehelpers.display.DisplayMode {
 			
 			frame.setLayout(new BorderLayout());
 			
-			frame.add(game.getContainer(), BorderLayout.CENTER);
+			frame.add(DisplayManager.getContainer(), BorderLayout.CENTER);
 //			frame.add(new Button("Testing"), BorderLayout.CENTER);
 			
 			frame.setUndecorated(true);

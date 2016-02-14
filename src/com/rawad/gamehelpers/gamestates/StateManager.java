@@ -3,7 +3,9 @@ package com.rawad.gamehelpers.gamestates;
 import java.util.HashMap;
 import java.util.Set;
 
+import com.rawad.gamehelpers.display.DisplayManager;
 import com.rawad.gamehelpers.game.Game;
+import com.rawad.gamehelpers.game.Proxy;
 import com.rawad.gamehelpers.log.Logger;
 
 public class StateManager {
@@ -16,6 +18,8 @@ public class StateManager {
 	
 	private Game game;
 	
+	private Proxy client;
+	
 	public StateManager(Game game) {
 		
 		states = new HashMap<String, State>();
@@ -24,8 +28,13 @@ public class StateManager {
 		
 		this.game = game;
 		
+		this.client = game.getProxy();
+		
 	}
 	
+	/**
+	 * Handles changing state, should be called in postTick().
+	 */
 	public void update() {
 		
 		if(requestedStateIdHolder != null) {
@@ -36,11 +45,10 @@ public class StateManager {
 		}
 		
 		try {
-			
 			currentState.update();
-			
-		} catch(NullPointerException ex) {
-			Logger.log(Logger.DEBUG, "Current state is null for updating");
+		} catch(Exception ex) {
+			Logger.log(Logger.WARNING, "Caught exception while trying to update state: " 
+					+ currentState.getStateId());
 			ex.printStackTrace();
 		}
 		
@@ -59,9 +67,18 @@ public class StateManager {
 			
 			state.initialize();
 			
-			game.getContainer().add(state.container, state.getStateId());
+			DisplayManager.getContainer().add(state.container, state.getStateId());
 			
 		}
+		
+	}
+	
+	public void stop() {
+		
+		currentState.onDeactivate();
+		
+		currentState = null;
+		requestedStateIdHolder = null;
 		
 	}
 	
@@ -69,7 +86,8 @@ public class StateManager {
 		
 		states.put(state.getStateId(), state);
 		
-		currentState = state;// Note that these states aren't added to the game's container just yet.
+//		currentState = state;// Note that these states aren't added to the game's container just yet.
+		// So, they shouldn't be set as current state either.
 		
 		state.setStateManager(this);
 		
@@ -91,17 +109,21 @@ public class StateManager {
 			
 			State newState = states.get(stateId);
 			
-			currentState.onDeactivate();
+			if(currentState != null) {
+				currentState.onDeactivate();
+			}
+			
+			game.getProxy().setController(null);
 			
 			newState.onActivate();// Just so that this is called before any updating/rendering.
 			currentState = newState;
 			
-			game.show(stateId);
+			DisplayManager.show(stateId);
 			
 		} catch(Exception ex) {
 			
-			Logger.log(Logger.WARNING, "The state \"" + stateId + "\" couldn't be set as the active state; probably wasn't "
-					+ "created.");
+			Logger.log(Logger.WARNING, "The state \"" + stateId + "\" couldn't be set as the active state; "
+					+ "probably wasn't created.");
 			
 			ex.printStackTrace();
 			
@@ -116,6 +138,10 @@ public class StateManager {
 	 */
 	public Game getGame() {
 		return game;
+	}
+	
+	public Proxy getClient() {
+		return client;
 	}
 	
 }

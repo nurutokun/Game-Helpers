@@ -54,7 +54,7 @@ public class Mouse {
 		
 	}
 	
-	public static void update(Container window, long timePassed) {
+	public static void update(Container window) {
 		
 		if(bot == null) {
 			

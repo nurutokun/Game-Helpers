@@ -1,5 +1,13 @@
 package com.rawad.gamehelpers.gui.overlay;
 
+import java.awt.AWTKeyStroke;
+import java.awt.KeyboardFocusManager;
+import java.awt.event.KeyEvent;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.swing.KeyStroke;
+
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
@@ -40,6 +48,15 @@ public class PauseOverlay extends Overlay {
 		
 		add(btnResume, "2, 2, fill, fill");
 		add(btnMainMenu, "2, 4, fill, fill");
+		
+		Set<AWTKeyStroke> forwardTraversalKeys = new HashSet<AWTKeyStroke>();
+		Set<AWTKeyStroke> backwardTraversalKeys = new HashSet<AWTKeyStroke>();
+		
+		forwardTraversalKeys.add(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0, false));
+		backwardTraversalKeys.add(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0, false));
+		
+		setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, forwardTraversalKeys);
+		setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, backwardTraversalKeys);
 		
 	}
 	

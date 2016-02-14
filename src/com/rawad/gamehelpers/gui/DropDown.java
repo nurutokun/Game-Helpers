@@ -3,8 +3,9 @@ package com.rawad.gamehelpers.gui;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Graphics2D;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.image.BufferedImage;
 
 import javax.swing.ButtonModel;
@@ -14,14 +15,12 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
-import javax.swing.Painter;
 import javax.swing.UIDefaults;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.plaf.basic.BasicComboBoxUI;
 
 import com.rawad.gamehelpers.game.GameManager;
-import com.rawad.gamehelpers.log.Logger;
 import com.rawad.gamehelpers.resources.GameHelpersLoader;
 import com.rawad.gamehelpers.resources.ResourceManager;
 
@@ -64,6 +63,7 @@ public class DropDown extends JComboBox<String> {
 		setSelectedItem(defaultOption);
 		setEditable(true);
 		setOpaque(false);
+		setFocusable(false);// TODO: Should try to fix how the focusing works on dropdowns.
 		
 		setBackgroundTexture(EDITOR_BACKGROUND_LOCATION);
 		setForegroundTexture(EDITOR_FOREGROUND_LOCATION);
@@ -106,7 +106,7 @@ public class DropDown extends JComboBox<String> {
 		String onclick = ResourceManager.getString("Gui.onclick");
 		String disabled = ResourceManager.getString("Gui.disabled");
 		
-		GameHelpersLoader loader = GameManager.instance().getCurrentGame().getLoader(GameHelpersLoader.BASE);
+		GameHelpersLoader loader = GameManager.instance().getCurrentGame().getLoader(GameHelpersLoader.class);
 		
 		EDITOR_BACKGROUND_LOCATION = loader.loadGuiTexture(dropdownBase, editorBase, background);
 		EDITOR_FOREGROUND_LOCATION = loader.loadGuiTexture(dropdownBase, editorBase, foreground);
@@ -135,8 +135,7 @@ public class DropDown extends JComboBox<String> {
 	 * @author Rawad
 	 *
 	 */
-	private class ComboBoxRenderer extends BasicComboBoxUI 
-						implements ComboBoxEditor, ListCellRenderer<String>, Painter<DropDown> {
+	private class ComboBoxRenderer extends BasicComboBoxUI implements ComboBoxEditor, ListCellRenderer<String> {
 		
 		private final String prefix;
 
@@ -159,6 +158,7 @@ public class DropDown extends JComboBox<String> {
 			
 			label = new JLabel();
 			label.setOpaque(true);
+			label.setFocusable(false);
 			
 		}
 		
@@ -166,6 +166,8 @@ public class DropDown extends JComboBox<String> {
 		protected JButton createArrowButton() {
 			
 			button = new Button("", "Arrow Button For: \"" + parent.getId() + "\"");
+			
+			button.setFocusable(false);
 			
 			button.setBackgroundTexture(parent.getButtonBackgroundTexture());
 			button.setForegroundTexture(parent.getButtonForegroundTexture());
@@ -177,18 +179,18 @@ public class DropDown extends JComboBox<String> {
 				@Override
 				public void stateChanged(ChangeEvent e) {
 					
-					comboBoxRenderer.ed.setBackgroundTexture(backgroundTexture);
+					ed.setBackgroundTexture(backgroundTexture);
 					
 					ButtonModel model = button.getModel();
 					
 					if(model.isEnabled()) {
 						
 						if(model.isRollover() || model.isSelected()) {
-							comboBoxRenderer.ed.setBackgroundTexture(foregroundTexture);
+							ed.setBackgroundTexture(foregroundTexture);
 						}
 						
 						if(model.isArmed()) {
-							comboBoxRenderer.ed.setBackgroundTexture(onclickTexture);
+							ed.setBackgroundTexture(onclickTexture);
 						}
 						
 					} else {
@@ -197,6 +199,20 @@ public class DropDown extends JComboBox<String> {
 						
 					}
 					
+				}
+				
+			});
+			
+			button.addFocusListener(new FocusListener() {
+				
+				@Override
+				public void focusGained(FocusEvent e) {
+					button.getModel().setRollover(true);
+				}
+				
+				@Override
+				public void focusLost(FocusEvent e) {
+					button.getModel().setRollover(false);
 				}
 				
 			});
@@ -245,38 +261,6 @@ public class DropDown extends JComboBox<String> {
 			
 			return label;
 		}
-		
-		/**/
-		@Override
-		public void paint(Graphics2D g, DropDown dropDown, int width, int height) {
-			
-			Logger.log(Logger.DEBUG, "Painting combo box.");// Never gets called.
-			
-			BufferedImage image = ResourceManager.getTexture(backgroundTexture);// Default if not enabled.
-			
-			ButtonModel model = button.getModel();
-			
-			if(model.isEnabled()) {
-				
-				if(model.isRollover() || model.isSelected()) {
-					image = ResourceManager.getTexture(foregroundTexture);
-					
-				}
-				
-				if(model.isArmed()) {
-					image = ResourceManager.getTexture(onclickTexture);
-					
-				}
-				
-			} else {
-
-				image = ResourceManager.getTexture(disabledTexture);
-				
-			}
-			
-			g.drawImage(image, 0, 0, width, height, null);// x,y relative to combo box bounds already.
-			
-		}/**/
 		
 		@Override
 		public void selectAll() {}

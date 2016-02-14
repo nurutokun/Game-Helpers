@@ -4,10 +4,13 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Insets;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
 import javax.swing.ButtonModel;
 import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.KeyStroke;
 import javax.swing.Painter;
 import javax.swing.UIDefaults;
 
@@ -39,6 +42,11 @@ public class Button extends JButton implements Painter<Button> {
 
 		this.id = id;
 		
+		this.registerKeyboardAction(getActionForKeyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0, false)), 
+				KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false), JComponent.WHEN_FOCUSED);
+		this.registerKeyboardAction(getActionForKeyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0, true)), 
+				KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, true), JComponent.WHEN_FOCUSED);
+		
 		UIDefaults buttonDefaults = new UIDefaults();
 		
 		buttonDefaults.put("Button.backgroundPainter", this);
@@ -47,7 +55,6 @@ public class Button extends JButton implements Painter<Button> {
 		putClientProperty("Nimbus.Overrides.InheritDefaults", false);
 		
 		setBorderPainted(false);
-		setFocusable(false);
 		
 		setBackgroundTexture(BACKGROUND_LOCATION);
 		setForegroundTexture(FOREGROUND_LOCATION);
@@ -64,7 +71,7 @@ public class Button extends JButton implements Painter<Button> {
 		
 		String buttonBase = ResourceManager.getString("Button.base");
 		
-		GameHelpersLoader loader = GameManager.instance().getCurrentGame().getLoader(GameHelpersLoader.BASE);
+		GameHelpersLoader loader = GameManager.instance().getCurrentGame().getLoader(GameHelpersLoader.class);
 		
 		BACKGROUND_LOCATION = loader.loadGuiTexture(buttonBase, ResourceManager.getString("Gui.background"));
 		FOREGROUND_LOCATION = loader.loadGuiTexture(buttonBase, ResourceManager.getString("Gui.foreground"));
@@ -114,7 +121,7 @@ public class Button extends JButton implements Painter<Button> {
 		
 		if(model.isEnabled()) {
 			
-			if(model.isRollover() || model.isSelected()) {
+			if(model.isRollover() || model.isSelected() || button.isFocusOwner()) {
 				image = ResourceManager.getTexture(foregroundTexture);
 			}
 			

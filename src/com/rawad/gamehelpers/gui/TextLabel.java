@@ -32,7 +32,7 @@ public class TextLabel extends JLabel implements Painter<TextLabel> {
 //		super("<html><center>" + text + "</center></html>");
 		super(text, SwingConstants.CENTER);
 		
-//		setFocusable(true);// For keylistener
+		setFocusable(false);
 		
 		setBackgroundTexture(BACKGROUND_LOCATION);
 		
@@ -49,7 +49,7 @@ public class TextLabel extends JLabel implements Painter<TextLabel> {
 
 	static {
 		
-		GameHelpersLoader loader = GameManager.instance().getCurrentGame().getLoader(GameHelpersLoader.BASE);
+		GameHelpersLoader loader = GameManager.instance().getCurrentGame().getLoader(GameHelpersLoader.class);
 		
 		BACKGROUND_LOCATION = loader.loadGuiTexture(ResourceManager.getString("TextLabel.base"), 
 				ResourceManager.getString("Gui.background"));

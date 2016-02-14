@@ -1,8 +1,10 @@
 package com.rawad.gamehelpers.gui.overlay;
 
 import java.awt.Graphics;
+import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 
+import javax.swing.AbstractAction;
 import javax.swing.JPanel;
 
 /**
@@ -20,6 +22,8 @@ public class Overlay extends JPanel {
 	private final String id;
 	
 	private BufferedImage background;
+	
+	private AbstractAction activeChanger;
 	
 	private boolean active;
 	
@@ -55,6 +59,34 @@ public class Overlay extends JPanel {
 	
 	public void setBackground(BufferedImage background) {
 		this.background = background;
+	}
+	
+	public AbstractAction getActiveChanger() {
+		
+		if(activeChanger == null) {
+			
+			activeChanger = new AbstractAction() {
+				
+				/**
+				 * Generated serial version UID.
+				 */
+				private static final long serialVersionUID = -3486750925477566153L;
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					
+					Overlay source = Overlay.this;
+					
+					source.setActive(!source.isActive());
+					
+				}
+				
+			};
+			
+		}
+		
+		return activeChanger;
+		
 	}
 	
 }
