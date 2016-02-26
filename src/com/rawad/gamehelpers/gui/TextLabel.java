@@ -9,7 +9,6 @@ import javax.swing.Painter;
 import javax.swing.SwingConstants;
 import javax.swing.UIDefaults;
 
-import com.rawad.gamehelpers.game.GameManager;
 import com.rawad.gamehelpers.resources.GameHelpersLoader;
 import com.rawad.gamehelpers.resources.ResourceManager;
 import com.rawad.gamehelpers.utils.Util;
@@ -21,7 +20,7 @@ public class TextLabel extends JLabel implements Painter<TextLabel> {
 	 */
 	private static final long serialVersionUID = -6486800223003919334L;
 	
-	private static final int BACKGROUND_LOCATION;
+	private static int BACKGROUND_LOCATION;
 	
 	private int backgroundTexture;
 	
@@ -46,10 +45,8 @@ public class TextLabel extends JLabel implements Painter<TextLabel> {
 		drawBackground = true;
 		
 	}
-
-	static {
-		
-		GameHelpersLoader loader = GameManager.instance().getCurrentGame().getLoader(GameHelpersLoader.class);
+	
+	public static void registerTextures(GameHelpersLoader loader) {
 		
 		BACKGROUND_LOCATION = loader.loadGuiTexture(ResourceManager.getString("TextLabel.base"), 
 				ResourceManager.getString("Gui.background"));

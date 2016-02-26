@@ -8,9 +8,9 @@ import java.util.Set;
 
 import javax.swing.KeyStroke;
 
-import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.FormSpecs;
 import com.jgoodies.forms.layout.RowSpec;
 import com.rawad.gamehelpers.gui.Button;
 
@@ -35,15 +35,16 @@ public class PauseOverlay extends Overlay {
 
 		btnResume = new Button("Resume");
 		btnMainMenu = new Button("Main Menu");
+		
 		setLayout(new FormLayout(new ColumnSpec[] {
 				ColumnSpec.decode("pref:grow"),
-				FormFactory.PREF_COLSPEC,
+				FormSpecs.PREF_COLSPEC,
 				ColumnSpec.decode("pref:grow"),},
 			new RowSpec[] {
 				RowSpec.decode("pref:grow"),
-				FormFactory.PREF_ROWSPEC,
+				FormSpecs.PREF_ROWSPEC,
 				RowSpec.decode("5dlu"),
-				FormFactory.PREF_ROWSPEC,
+				FormSpecs.PREF_ROWSPEC,
 				RowSpec.decode("pref:grow"),}));
 		
 		add(btnResume, "2, 2, fill, fill");
@@ -58,6 +59,14 @@ public class PauseOverlay extends Overlay {
 		setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, forwardTraversalKeys);
 		setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, backwardTraversalKeys);
 		
+	}
+	
+	public Button getResumeButton() {
+		return btnResume;
+	}
+	
+	public Button getMainMenuButton() {
+		return btnMainMenu;
 	}
 	
 }

@@ -1,6 +1,7 @@
 package com.rawad.gamehelpers.display;
 
 import java.awt.BorderLayout;
+import java.awt.image.BufferedImage;
 
 import javax.swing.JFrame;
 
@@ -49,10 +50,18 @@ public class Windowed extends DisplayMode {
 		
 		frame.add(DisplayManager.getContainer(), BorderLayout.CENTER);
 		
-		frame.setIconImage(game.getIcon());
+//		frame.setIconImage(game.getIcon());
 		frame.pack();
 //		frame.setLocationRelativeTo(null);// maybe...
 		frame.setVisible(true);
+		
+	}
+	
+	@Override
+	public void setIcon(BufferedImage icon) {
+		frame.setIconImage(icon);
+		
+		frame.revalidate();
 		
 	}
 	

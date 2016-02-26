@@ -20,6 +20,8 @@ public class StateManager {
 	
 	private Proxy client;
 	
+	private LoadingState loadingState;
+	
 	public StateManager(Game game) {
 		
 		states = new HashMap<String, State>();
@@ -54,6 +56,26 @@ public class StateManager {
 		
 	}
 	
+	public void initializeLoadingScreen(Runnable loader) {
+		
+		loadingState = new LoadingState(loader);
+		
+		loadingState.setStateManager(this);// Don't add to list of states because that will get re-initialized.
+		
+		initializeState(loadingState);
+		
+		currentState = loadingState;
+		
+	}
+	
+	public void showLoadingScreen() {
+		
+		loadingState.onActivate();
+		
+		DisplayManager.show(loadingState.getStateId());
+		
+	}
+	
 	/**
 	 * Everything GUI-initialization related is done here; this is called on the Swing EDT.
 	 */
@@ -65,11 +87,17 @@ public class StateManager {
 			
 			State state = states.get(stateId);
 			
-			state.initialize();
-			
-			DisplayManager.getContainer().add(state.container, state.getStateId());
+			initializeState(state);
 			
 		}
+		
+	}
+	
+	private void initializeState(State state) {
+		
+		state.initialize();
+		
+		DisplayManager.getContainer().add(state.container, state.getStateId());
 		
 	}
 	

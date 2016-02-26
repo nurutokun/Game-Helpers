@@ -20,7 +20,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.plaf.basic.BasicComboBoxUI;
 
-import com.rawad.gamehelpers.game.GameManager;
 import com.rawad.gamehelpers.resources.GameHelpersLoader;
 import com.rawad.gamehelpers.resources.ResourceManager;
 
@@ -31,15 +30,15 @@ public class DropDown extends JComboBox<String> {
 	 */
 	private static final long serialVersionUID = 8420334095211221221L;
 	
-	private static final int EDITOR_BACKGROUND_LOCATION;
-	private static final int EDITOR_FOREGROUND_LOCATION;
-	private static final int EDITOR_ONCLICK_LOCATION;
-	private static final int EDITOR_DISABLED_LOCATION;
+	private static int EDITOR_BACKGROUND_LOCATION;
+	private static int EDITOR_FOREGROUND_LOCATION;
+	private static int EDITOR_ONCLICK_LOCATION;
+	private static int EDITOR_DISABLED_LOCATION;
 	
-	private static final int BUTTON_BACKGROUND_LOCATION;
-	private static final int BUTTON_FOREGROUND_LOCATION;
-	private static final int BUTTON_ONCLICK_LOCATION;
-	private static final int BUTTON_DISABLED_LOCATION;
+	private static int BUTTON_BACKGROUND_LOCATION;
+	private static int BUTTON_FOREGROUND_LOCATION;
+	private static int BUTTON_ONCLICK_LOCATION;
+	private static int BUTTON_DISABLED_LOCATION;
 	
 	private final String id;
 	
@@ -94,7 +93,7 @@ public class DropDown extends JComboBox<String> {
 		
 	}
 	
-	static {
+	public static void registerTextures(GameHelpersLoader loader) {
 		
 		String dropdownBase = ResourceManager.getString("DropDown.base");
 		
@@ -106,8 +105,6 @@ public class DropDown extends JComboBox<String> {
 		String onclick = ResourceManager.getString("Gui.onclick");
 		String disabled = ResourceManager.getString("Gui.disabled");
 		
-		GameHelpersLoader loader = GameManager.instance().getCurrentGame().getLoader(GameHelpersLoader.class);
-		
 		EDITOR_BACKGROUND_LOCATION = loader.loadGuiTexture(dropdownBase, editorBase, background);
 		EDITOR_FOREGROUND_LOCATION = loader.loadGuiTexture(dropdownBase, editorBase, foreground);
 		EDITOR_ONCLICK_LOCATION = loader.loadGuiTexture(dropdownBase, editorBase, onclick);
@@ -117,7 +114,6 @@ public class DropDown extends JComboBox<String> {
 		BUTTON_FOREGROUND_LOCATION = loader.loadGuiTexture(dropdownBase, buttonBase, foreground);
 		BUTTON_ONCLICK_LOCATION = loader.loadGuiTexture(dropdownBase, buttonBase, onclick);
 		BUTTON_DISABLED_LOCATION = loader.loadGuiTexture(dropdownBase, buttonBase, disabled);
-		
 		
 	}
 	

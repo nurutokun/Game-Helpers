@@ -103,17 +103,18 @@ public class GameManager {
 		public GameThread(Game game, Proxy clientOrServer) {
 			this.game = game;
 			this.clientOrServer = clientOrServer;
-			
 		}
 		
 		@Override
 		public void run() {
 			
-//			game.initResources();
+			game.setProxy(clientOrServer);
 			
-			game.init(clientOrServer);
+			game.init();
 			
-			initializeGUI(game);
+			clientOrServer.init(game);
+			
+			initializeGUI(clientOrServer);
 			
 			int frames = 0;
 			int totalTime = 0;
@@ -165,15 +166,13 @@ public class GameManager {
 			
 		}
 		
-		private void initializeGUI(final Game game) {
+		private void initializeGUI(final Proxy clientOrServer) {
 			
 			Util.invokeAndWait(new Runnable() {
 				
 				@Override
 				public void run() {
-					
-					game.initGUI();
-					
+					clientOrServer.initGUI();
 				}
 				
 			});

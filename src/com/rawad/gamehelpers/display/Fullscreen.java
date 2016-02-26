@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.DisplayMode;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.image.BufferedImage;
 
 import javax.swing.JFrame;
 
@@ -63,7 +64,7 @@ public class Fullscreen extends com.rawad.gamehelpers.display.DisplayMode {
 				
 			};
 			
-			frame.setIconImage(game.getIcon());
+//			frame.setIconImage(game.getIcon());
 			
 			frame.setLayout(new BorderLayout());
 			
@@ -99,6 +100,14 @@ public class Fullscreen extends com.rawad.gamehelpers.display.DisplayMode {
 		
 		DisplayManager.setDisplayWidth(compatibleMode.getWidth());
 		DisplayManager.setDisplayHeight(compatibleMode.getHeight());
+		
+	}
+	
+	@Override
+	public void setIcon(BufferedImage icon) {
+		frame.setIconImage(icon);
+		
+		frame.revalidate();
 		
 	}
 	

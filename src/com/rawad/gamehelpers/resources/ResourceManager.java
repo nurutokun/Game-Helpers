@@ -34,15 +34,12 @@ public class ResourceManager {
 	
 	public static String basePath;
 	// Always use "/" for file paths, they are all replaced to the system-dependant file-seperator in each method.
-	// TODO: Still gotta change that "/AppData/Roaming/"
 	
 	private static final String UNKNOWN_TEXTURE_PATH;
 	
-	public static final int UNKNOWN = -1;
+	private static HashMap<Integer, TextureResource> textures = new HashMap<Integer, TextureResource>();
 	
-	private static BufferedImage UNKNOWN_TEXTURE;
-	
-	private static HashMap<Integer, Texture> textures = new HashMap<Integer, Texture>();
+	private static double percentLoaded;
 	
 	private ResourceManager() {}
 	
@@ -56,6 +53,7 @@ public class ResourceManager {
 		String[] repos = {
 				allProjectsDir,
 				System.getProperty("user.home") + "/AppData/Roaming/My Game Launcher/"
+				// TODO: Still gotta change that "/AppData/Roaming/"
 		};
 		
 		REPOSITORIES = repos;
@@ -176,7 +174,7 @@ public class ResourceManager {
 		String fileFormat = UNKNOWN_TEXTURE_PATH.substring(UNKNOWN_TEXTURE_PATH.length() - 3);// "png"
 		
 		try {
-			ImageIO.write(temp, fileFormat, new File(UNKNOWN_TEXTURE_PATH));// excludes ".png"
+			ImageIO.write(temp, fileFormat, new File(getFinalPath(basePath, UNKNOWN_TEXTURE_PATH)));// excludes ".png"
 			
 		} catch(Exception ex) {
 			Logger.log(Logger.WARNING, ex.getLocalizedMessage() + "; the \"unknown texture\" was created but "
@@ -188,79 +186,116 @@ public class ResourceManager {
 		
 	}
 	
-	private static void loadUnknownTexture() {
-		
-		BufferedImage temp = null;
-		
-		try {
-			temp = ImageIO.read(new File(basePath + UNKNOWN_TEXTURE_PATH));
-		} catch(Exception ex) {
-			Logger.log(Logger.DEBUG, "Unknown texture file couldn't be loaded from: \"" 
-					+ UNKNOWN_TEXTURE_PATH + "\"");
-			temp = generateUnkownTexture();
-		}
-		
-		UNKNOWN_TEXTURE = temp;
-		
+	public static double getPercentLoaded() {
+		return percentLoaded;
 	}
 	
-	public static int loadTexture(String imagePath) {
+	/**
+	 * Goes through all of the currently registered textures and loads them into memory.
+	 */
+	public static void loadAllTextures() {
 		
-		if(UNKNOWN_TEXTURE == null) {
-			loadUnknownTexture();
+		percentLoaded = 0;
+		
+		registerTexture(UNKNOWN_TEXTURE_PATH, TextureResource.UNKNOWN);
+		
+		TextureResource unknownTexture = getTextureObject(TextureResource.UNKNOWN);
+		
+		if(!unknownTexture.exists()) {
+			generateUnkownTexture();
 		}
 		
-		if(imagePath.isEmpty()) {
-			return UNKNOWN;
-		}
+		int loadedTextures = 0;
 		
-		imagePath = (basePath + imagePath).replace('/', File.separatorChar);
-		
-		try {
+		for(Integer location: textures.keySet()) {
 			
-			Texture texture = loadTexture(imagePath, ImageIO.read(new File(imagePath)));
+			TextureResource texture = getTextureObject(location);
 			
-			int loc = texture.getLocation();
+			texture.setTexture(loadTexture(texture.getPath()));
 			
-			return loc;
+			texture.onLoad();
 			
-		} catch(Exception ex) {
-			Logger.log(Logger.SEVERE, ex.getLocalizedMessage() + "; resource manager couldn't load image from \"" 
-					+ imagePath + "\"");
-			return UNKNOWN;
+			loadedTextures++;
+			
+			percentLoaded = (double) loadedTextures / (double) textures.size();
+			
 		}
 		
 	}
 	
-	public static Texture loadTexture(String imagePath, BufferedImage image) {
+	private static BufferedImage loadTexture(String path) {
 		
-		int loc = getLowestResourceLocation(textures);
+		BufferedImage texture = null;
 		
-		Texture texture = getTextureByPath(imagePath);
-		
-		if(texture == null) {
-			texture = new Texture(image, imagePath, loc);
-			Logger.log(Logger.DEBUG, "Loaded new texture at location: " + loc + ", with path: " + imagePath);
+		try {
 			
-		} else {
-			Logger.log(Logger.DEBUG, "Found texture matching this one at location: " + texture.getLocation());
+			texture = ImageIO.read(new File(path));
+			
+			Logger.log(Logger.DEBUG, "Loaded new texture at location: " + getTextureByPath(path).getLocation()
+					+ " with path: \"" + path + "\"");
+			
+		} catch(IOException ex) {
+			
+			texture = getTexture(TextureResource.UNKNOWN);
 			
 		}
-		
-		textures.put(loc, texture);
 		
 		return texture;
 		
 	}
 	
-	private static Texture getTextureByPath(String path) {
+	public static int loadTexture(TextureResource texture) {
 		
-		Iterator<Entry<Integer, Texture>> it = textures.entrySet().iterator();
+		int location = getLowestResourceLocation(textures);
+		
+		texture.setLocation(location);
+		
+		textures.put(location, texture);
+		
+		return location;
+		
+	}
+	
+	public static int registerTexture(String imagePath) {
+		
+		int location = getLowestResourceLocation(textures);
+		
+		return registerTexture(imagePath, location);
+		
+	}
+	
+	private static int registerTexture(String imagePath, int location) {
+		
+		imagePath = getFinalPath(basePath, imagePath);
+		
+		File textureFile = new File(imagePath);
+		
+		if(textureFile.exists()) {
+			
+			TextureResource texture = new TextureResource(imagePath, location);
+			
+			textures.put(location, texture);
+			
+		} else {
+			
+			Logger.log(Logger.WARNING, "Couldn't register texture at: \"" + imagePath + "\"; file doesn't exists...");
+			
+			location = TextureResource.UNKNOWN;
+			
+		}
+		
+		return location;
+		
+	}
+	
+	private static TextureResource getTextureByPath(String path) {
+		
+		Iterator<Entry<Integer, TextureResource>> it = textures.entrySet().iterator();
 		
 		while(it.hasNext()) {
-			Entry<Integer, Texture> entry = it.next();
+			Entry<Integer, TextureResource> entry = it.next();
 			
-			Texture texture = entry.getValue();
+			TextureResource texture = entry.getValue();
 			
 			if(texture.getPath().equals(path)) {
 				return texture;
@@ -316,38 +351,33 @@ public class ResourceManager {
 	
 	public static BufferedImage getTexture(int location) {
 		
-		if(location == UNKNOWN) {
-			return UNKNOWN_TEXTURE;
+		TextureResource texture = getTextureObject(location);
+		
+		try {
+			
+			return texture.getTexture();
+			
+		} catch(NullPointerException ex) {
+			
+			return getTextureObject(TextureResource.UNKNOWN).getTexture();
+			
 		}
 		
-		Texture texture = getTextureObject(location);
-		
-		BufferedImage re;
-		
-		if(texture == null) {
-			re = UNKNOWN_TEXTURE;
-		} else {
-			re = texture.getTexture();
-		}
-		
-		return re;
+//		return texture.getTexture();
 		
 	}
 	
-	public static Texture getTextureObject(int location) {
-		
-		if(location == UNKNOWN) {
-			return null;
-		}
-		
+	public static TextureResource getTextureObject(int location) {
 		return textures.get(location);
-		
 	}
 	
-	public static int unloadTexture(int location) {
-		textures.put(location, null);
+	public static void unloadTexture(int location) {
 		
-		return UNKNOWN;
+		TextureResource texture = textures.get(location);
+		
+		texture.setTexture(null);
+		
+//		return TextureResource.UNKNOWN;
 	}
 	
 	public static void releaseResources() {
@@ -361,10 +391,7 @@ public class ResourceManager {
 	}
 	
 	public static File loadFile(String filePath) {
-		
-		filePath = (basePath + filePath).replace('/', File.separatorChar);
-		
-		return new File(filePath);
+		return new File(getFinalPath(basePath, filePath));
 		
 	}
 	
@@ -397,11 +424,11 @@ public class ResourceManager {
 	
 	public static void saveFile(String filePath, String content) {
 		
-		filePath = (basePath + filePath).replace('/', File.separatorChar);
+		filePath = getFinalPath(basePath, filePath);
 		
 		for(String path: REPOSITORIES) {
 			
-			path = (path + filePath).replace('/', File.separatorChar);
+			path = getFinalPath(path, filePath);
 			
 			// Don't append, start all over every time.
 			try (	PrintWriter writer = new PrintWriter(new FileWriter(filePath, false), true)
@@ -420,34 +447,8 @@ public class ResourceManager {
 		
 	}
 	
-	public static class Texture {
-		
-		private final BufferedImage texture;
-		
-		private final String path;
-		
-		private final int location;
-		
-		public Texture(BufferedImage texture, String path, int location) {
-			this.texture = texture;
-			
-			this.path = path;
-			
-			this.location = location;
-		}
-		
-		public BufferedImage getTexture() {
-			return texture;
-		}
-		
-		public String getPath() {
-			return path;
-		}
-		
-		public int getLocation() {
-			return location;
-		}
-		
+	private static String getFinalPath(String basePath, String relativePath) {
+		return (basePath + relativePath).replace('/', File.separatorChar);
 	}
 	
 }

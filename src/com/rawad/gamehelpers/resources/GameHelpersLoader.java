@@ -16,7 +16,7 @@ public class GameHelpersLoader extends Loader {
 	}
 	
 	public int loadGuiTexture(String subGuiFolder, String guiTextureFile) {
-		return loadTexture(ResourceManager.getProperPath(GUI_FOLDER, subGuiFolder), guiTextureFile);
+		return registerTexture(ResourceManager.getProperPath(GUI_FOLDER, subGuiFolder), guiTextureFile);
 	}
 	
 }

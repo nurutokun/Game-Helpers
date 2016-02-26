@@ -14,7 +14,6 @@ import javax.swing.KeyStroke;
 import javax.swing.Painter;
 import javax.swing.UIDefaults;
 
-import com.rawad.gamehelpers.game.GameManager;
 import com.rawad.gamehelpers.resources.GameHelpersLoader;
 import com.rawad.gamehelpers.resources.ResourceManager;
 
@@ -25,10 +24,10 @@ public class Button extends JButton implements Painter<Button> {
 	 */
 	private static final long serialVersionUID = -555939131830923181L;
 	
-	private static final int BACKGROUND_LOCATION;
-	private static final int FOREGROUND_LOCATION;
-	private static final int ONCLICK_LOCATION;
-	private static final int DISABLED_LOCATION;
+	private static int BACKGROUND_LOCATION;
+	private static int FOREGROUND_LOCATION;
+	private static int ONCLICK_LOCATION;
+	private static int DISABLED_LOCATION;
 	
 	private final String id;
 
@@ -66,12 +65,10 @@ public class Button extends JButton implements Painter<Button> {
 	public Button(String text) {
 		this(text, text);
 	}
-
-	static {
+	
+	public static void registerTextures(GameHelpersLoader loader) {
 		
 		String buttonBase = ResourceManager.getString("Button.base");
-		
-		GameHelpersLoader loader = GameManager.instance().getCurrentGame().getLoader(GameHelpersLoader.class);
 		
 		BACKGROUND_LOCATION = loader.loadGuiTexture(buttonBase, ResourceManager.getString("Gui.background"));
 		FOREGROUND_LOCATION = loader.loadGuiTexture(buttonBase, ResourceManager.getString("Gui.foreground"));

@@ -1,6 +1,5 @@
 package com.rawad.gamehelpers.game;
 
-import java.awt.image.BufferedImage;
 import java.util.HashMap;
 
 import com.rawad.gamehelpers.fileparser.FileParser;
@@ -28,7 +27,7 @@ public abstract class Game {
 	protected GameHelpersLoader gameHelpersLoader;
 	
 	/** Can be stopped by setting to null. */
-	protected Background background;
+	private Background background;
 	
 	protected boolean debug;
 	
@@ -47,30 +46,24 @@ public abstract class Game {
 		
 	}
 	
-	public void initGUI() {
-		
-		clientOrServer.initGUI();
-		
-	}
-	
 	/**
+	 * <del>
 	 * <b>Note:</b> it is up to the inheriting class to initialize the proxy.
+	 * clientOrServer
+	 * </del>
 	 * 
-	 * @param clientOrServer
+	 * - Not anymore it isn't...
+	 * 
 	 */
-	protected void init(Proxy clientOrServer) {
+	protected void init() {
 		
 		running = true;
-		
-		this.clientOrServer = clientOrServer;
 		
 		debug = false;
 		
 		gameHelpersLoader = new GameHelpersLoader();
 		
 		loaders.put(GameHelpersLoader.class, gameHelpersLoader);// Loads things from game helpers folder
-		
-		background = Background.instance();
 		
 	}
 	
@@ -86,14 +79,15 @@ public abstract class Game {
 		
 		for(; totalTime >= tickTime; totalTime -= tickTime) {
 			
-			tick();
+			clientOrServer.tick();
 			
 		}
 		
 		remainingTime = totalTime;
 		
 		if(stopRequested) {
-			stop();
+			
+			clientOrServer.stop();
 			
 			running = false;
 			stopRequested = false;
@@ -102,15 +96,13 @@ public abstract class Game {
 		
 	}
 	
-	protected void tick() {
-		clientOrServer.tick();
-	}
+	public abstract int getIconLocation();
 	
-	protected void stop() {
-		clientOrServer.stop();
-	}
+	public abstract void registerTextures();
 	
-	public abstract BufferedImage getIcon();
+	public void setProxy(Proxy clientOrServer) {
+		this.clientOrServer = clientOrServer;
+	}
 	
 	public Proxy getProxy() {
 		return clientOrServer;
@@ -144,6 +136,10 @@ public abstract class Game {
 	 */
 	public String getSettingsFileName() {
 		return "settings";
+	}
+	
+	public void setBackground(Background background) {
+		this.background = background;
 	}
 	
 	public Background getBackground() {

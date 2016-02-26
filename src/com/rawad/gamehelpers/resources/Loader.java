@@ -25,6 +25,18 @@ public abstract class Loader {
 	}
 	
 	/**
+	 * 
+	 * @param texture
+	 * 		- Contains the image to be indexed by the <code>ResourceManager</code>.
+	 * @param subTextureFolder
+	 * @param textureFile
+	 * @return
+	 */
+	public int loadTexture(TextureResource texture) {
+		return ResourceManager.loadTexture(texture);
+	}
+	
+	/**
 	 * DO NOT add backslahes to the variables {@code subTextureFolder} and {@code textureFile} or any extension 
 	 * at all.
 	 * 
@@ -32,12 +44,12 @@ public abstract class Loader {
 	 * automatically adding the backslahes in this method.
 	 * 
 	 * @param subTextureFolder
-	 * 							- Folder within the texture folder which contains the required texture.
+	 * 		- Folder within the texture folder which contains the required texture.
 	 * @param textureFile
 	 * @return
 	 */
-	public int loadTexture(String subTextureFolder, String textureFile) {
-		return ResourceManager.loadTexture(ResourceManager.getProperPath(basePath, RES_FOLDER, TEXTURE_FOLDER, 
+	public int registerTexture(String subTextureFolder, String textureFile) {
+		return ResourceManager.registerTexture(ResourceManager.getProperPath(basePath, RES_FOLDER, TEXTURE_FOLDER, 
 				subTextureFolder, textureFile) + TEXTURE_FILE_EXTENSION);
 	}
 	

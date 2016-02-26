@@ -3,14 +3,16 @@ package com.rawad.gamehelpers.gui;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
+import com.rawad.gamehelpers.resources.GameHelpersLoader;
 import com.rawad.gamehelpers.resources.ResourceManager;
+import com.rawad.gamehelpers.resources.TextureResource;
 
 public class Background {
 	
-	private static final String DEFAULT_TEXTURE_PATH = "Game Helpers/res/textures/game_background.png";
+	private static final String DEFAULT_TEXTURE_FILE = "game_background";
 	
-	private static final int DEFAULT_TEXTURE;
-	private static final int DEFAULT_FLIPPED_TEXTURE;
+	private static int DEFAULT_TEXTURE;
+	private static int DEFAULT_FLIPPED_TEXTURE;
 	
 	private static Background instance;
 	
@@ -37,14 +39,24 @@ public class Background {
 		
 	}
 	
-	static {
+	public static void registerTextures(GameHelpersLoader loader) {
 		
-		DEFAULT_TEXTURE = ResourceManager.loadTexture(DEFAULT_TEXTURE_PATH);
+		DEFAULT_TEXTURE = loader.registerTexture("", DEFAULT_TEXTURE_FILE);
 		
-		BufferedImage temp = ResourceManager.getTexture(DEFAULT_TEXTURE);
+		final TextureResource flippedTexture = new TextureResource(ResourceManager.getTextureObject(DEFAULT_TEXTURE).getPath() 
+				+ " (flipped)", TextureResource.UNKNOWN);
 		
-		DEFAULT_FLIPPED_TEXTURE = ResourceManager.loadTexture(ResourceManager.getTextureObject(DEFAULT_TEXTURE)
-				.getPath() + "(flipped)", getHorizontallyFlippedImage(temp)).getLocation();
+		flippedTexture.setOnloadAction(new Runnable() {
+			
+			@Override
+			public void run() {
+				flippedTexture.setTexture(getHorizontallyFlippedImage(ResourceManager.getTexture(DEFAULT_TEXTURE)));
+				// This relies on the original being loaded first....
+			}
+			
+		});
+		
+		DEFAULT_FLIPPED_TEXTURE = loader.loadTexture(flippedTexture);
 		
 	}
 	
@@ -81,7 +93,7 @@ public class Background {
 		
 //		g.setColor(Color.RED);
 		
-		g.drawImage(ResourceManager.getTexture(texture), x, 0, null);
+		g.drawImage(ResourceManager.getTexture(12), x, 0, null);
 //		g.drawRect(x, 0, texture.getWidth() - 1, texture.getHeight() - 1);
 //		g.drawString("original: " + (x+maxWidth), x, 10);
 		

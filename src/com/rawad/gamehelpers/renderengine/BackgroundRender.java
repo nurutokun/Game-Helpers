@@ -19,6 +19,8 @@ public class BackgroundRender extends Render {
 		
 		Background background = GameManager.instance().getCurrentGame().getBackground();
 		
+		if(background == null) return;
+		
 		int x = background.getX();
 		int secondX = background.getSecondX();
 		
