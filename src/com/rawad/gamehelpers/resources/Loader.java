@@ -18,22 +18,15 @@ public abstract class Loader {
 	/** Subclasses don't really need access to this... Either of the two methods below should work fine. */
 	private final String basePath;
 	
-	protected Loader(String basePath) {
-		
-		this.basePath = basePath;
-		
-	}
-	
 	/**
+	 * Supports multi-folder specification (like in methods).
 	 * 
-	 * @param texture
-	 * 		- Contains the image to be indexed by the <code>ResourceManager</code>.
-	 * @param subTextureFolder
-	 * @param textureFile
-	 * @return
+	 * @param basePathParts
 	 */
-	public int loadTexture(TextureResource texture) {
-		return ResourceManager.loadTexture(texture);
+	protected Loader(String... basePathParts) {
+		
+		this.basePath = ResourceManager.getProperPath(basePathParts);
+		
 	}
 	
 	/**

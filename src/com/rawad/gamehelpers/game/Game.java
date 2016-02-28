@@ -44,6 +44,10 @@ public abstract class Game {
 		
 		loaders = new HashMap<Class<? extends Loader>, Loader>();
 		
+		gameHelpersLoader = new GameHelpersLoader();// Loaders moved to constructor from init() method for icon loading.
+		
+		loaders.put(GameHelpersLoader.class, gameHelpersLoader);
+		
 	}
 	
 	/**
@@ -60,10 +64,6 @@ public abstract class Game {
 		running = true;
 		
 		debug = false;
-		
-		gameHelpersLoader = new GameHelpersLoader();
-		
-		loaders.put(GameHelpersLoader.class, gameHelpersLoader);// Loads things from game helpers folder
 		
 	}
 	

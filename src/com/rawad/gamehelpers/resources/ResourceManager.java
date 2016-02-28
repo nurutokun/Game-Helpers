@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map.Entry;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -197,23 +196,30 @@ public class ResourceManager {
 		
 		percentLoaded = 0;
 		
-		registerTexture(UNKNOWN_TEXTURE_PATH, TextureResource.UNKNOWN);
-		
 		TextureResource unknownTexture = getTextureObject(TextureResource.UNKNOWN);
 		
-		if(!unknownTexture.exists()) {
-			generateUnkownTexture();
+		if(unknownTexture == null) {
+			registerTexture(UNKNOWN_TEXTURE_PATH, TextureResource.UNKNOWN);
+			
+			unknownTexture = getTextureObject(TextureResource.UNKNOWN);
+			
+			if(!unknownTexture.exists()) {
+				generateUnkownTexture();
+			}
+			
 		}
 		
 		int loadedTextures = 0;
 		
-		for(Integer location: textures.keySet()) {
+		for(Integer textureLocation: textures.keySet()) {
 			
-			TextureResource texture = getTextureObject(location);
+			TextureResource texture = textures.get(textureLocation);
 			
-			texture.setTexture(loadTexture(texture.getPath()));
+			if(texture == null) {
+				Logger.log(Logger.DEBUG, "Got a null texture trying to load texture at location: " + textureLocation);
+			}
 			
-			texture.onLoad();
+			loadTexture(texture);
 			
 			loadedTextures++;
 			
@@ -223,34 +229,37 @@ public class ResourceManager {
 		
 	}
 	
-	private static BufferedImage loadTexture(String path) {
+	public static int loadTexture(TextureResource texture) {
 		
-		BufferedImage texture = null;
+		int location = texture.getLocation();
 		
-		try {
+		if(texture.getTexture() == null) {
 			
-			texture = ImageIO.read(new File(path));
+			if(texture.exists()) {// Texture isn't loaded but does exist so load it.
+				
+				try {
+					
+					texture.setTexture(ImageIO.read(new File(texture.getPath())));
+					
+					Logger.log(Logger.DEBUG, "Loaded new texture at location: " + location
+							+ " with path: \"" + texture.getPath() + "\"");
+					
+				} catch(IOException ex) {
+					
+					location = TextureResource.UNKNOWN;
+					
+				}
+				
+			} else {// Texture isn't loaded and can't be loaded.
+				location = TextureResource.UNKNOWN;
+			}
 			
-			Logger.log(Logger.DEBUG, "Loaded new texture at location: " + getTextureByPath(path).getLocation()
-					+ " with path: \"" + path + "\"");
-			
-		} catch(IOException ex) {
-			
-			texture = getTexture(TextureResource.UNKNOWN);
 			
 		}
 		
-		return texture;
-		
-	}
-	
-	public static int loadTexture(TextureResource texture) {
-		
-		int location = getLowestResourceLocation(textures);
-		
 		texture.setLocation(location);
 		
-		textures.put(location, texture);
+		texture.onLoad();
 		
 		return location;
 		
@@ -258,7 +267,7 @@ public class ResourceManager {
 	
 	public static int registerTexture(String imagePath) {
 		
-		int location = getLowestResourceLocation(textures);
+		int location = getLowestResourceLocation(textures, imagePath);
 		
 		return registerTexture(imagePath, location);
 		
@@ -268,45 +277,13 @@ public class ResourceManager {
 		
 		imagePath = getFinalPath(basePath, imagePath);
 		
-		File textureFile = new File(imagePath);
-		
-		if(textureFile.exists()) {
-			
-			TextureResource texture = new TextureResource(imagePath, location);
-			
-			textures.put(location, texture);
-			
-		} else {
-			
-			Logger.log(Logger.WARNING, "Couldn't register texture at: \"" + imagePath + "\"; file doesn't exists...");
-			
-			location = TextureResource.UNKNOWN;
-			
-		}
+		textures.put(location, new TextureResource(imagePath, location));
 		
 		return location;
 		
 	}
 	
-	private static TextureResource getTextureByPath(String path) {
-		
-		Iterator<Entry<Integer, TextureResource>> it = textures.entrySet().iterator();
-		
-		while(it.hasNext()) {
-			Entry<Integer, TextureResource> entry = it.next();
-			
-			TextureResource texture = entry.getValue();
-			
-			if(texture.getPath().equals(path)) {
-				return texture;
-			}
-			
-		}
-		
-		return null;
-	}
-	
-	private static <T> int getLowestResourceLocation(HashMap<Integer, T> resources) {
+	private static <T extends Resource> int getLowestResourceLocation(HashMap<Integer, T> resources, String resourcePath) {
 		
 		int minLoc = 0;
 		int maxLoc = getMaximumResourceSize(resources.keySet());
@@ -319,6 +296,11 @@ public class ResourceManager {
 				break;
 			}
 			
+			if(resources.get(i).getPath().equals(getFinalPath(basePath, resourcePath))) {
+				Logger.log(Logger.DEBUG, "Resource at location " + i + " found with same path: " + resourcePath);
+				break;
+			}
+			
 			if(i == maxLoc) {
 				minLoc = ++i;
 				break;
@@ -327,6 +309,7 @@ public class ResourceManager {
 		}
 		
 		return minLoc;
+		
 	}
 	
 	private static int getMaximumResourceSize(Set<Integer> set) {
@@ -371,20 +354,11 @@ public class ResourceManager {
 		return textures.get(location);
 	}
 	
-	public static void unloadTexture(int location) {
-		
-		TextureResource texture = textures.get(location);
-		
-		texture.setTexture(null);
-		
-//		return TextureResource.UNKNOWN;
-	}
-	
 	public static void releaseResources() {
 		
 		for(Integer texture: textures.keySet()) {
 			
-			unloadTexture(texture);
+			textures.put(texture, null);
 			
 		}
 		

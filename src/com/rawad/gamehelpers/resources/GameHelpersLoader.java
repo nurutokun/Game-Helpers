@@ -1,5 +1,11 @@
 package com.rawad.gamehelpers.resources;
 
+/**
+ * Loads things from game helpers folder
+ * 
+ * @author Rawad
+ *
+ */
 public class GameHelpersLoader extends Loader {
 	
 	private static final String BASE = ResourceManager.getString("GameHelpers.name");

@@ -3,6 +3,7 @@ package com.rawad.gamehelpers.gui.overlay;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.text.DecimalFormat;
 
 import javax.swing.JProgressBar;
 
@@ -65,7 +66,9 @@ public class LoadingOverlay extends Overlay {
 		
 		final double finalProgress = progress * 100d;
 		
-		message = "Loading... " + finalProgress + "%";
+		DecimalFormat df = new DecimalFormat("###.##");
+		
+		message = "Loading... " + df.format(finalProgress) + "%";
 		
 		Util.invokeLater(new Runnable() {
 			

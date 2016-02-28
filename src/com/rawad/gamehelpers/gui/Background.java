@@ -43,20 +43,19 @@ public class Background {
 		
 		DEFAULT_TEXTURE = loader.registerTexture("", DEFAULT_TEXTURE_FILE);
 		
-		final TextureResource flippedTexture = new TextureResource(ResourceManager.getTextureObject(DEFAULT_TEXTURE).getPath() 
-				+ " (flipped)", TextureResource.UNKNOWN);
+		DEFAULT_FLIPPED_TEXTURE = loader.registerTexture("", DEFAULT_TEXTURE_FILE + " (flipped)");
 		
-		flippedTexture.setOnloadAction(new Runnable() {
+		final TextureResource texture = ResourceManager.getTextureObject(DEFAULT_TEXTURE);
+		final TextureResource flippedTexture = ResourceManager.getTextureObject(DEFAULT_FLIPPED_TEXTURE);
+		
+		texture.setOnloadAction(new Runnable() {// In case they're not loaded in the order they're registered (which they are)
 			
 			@Override
 			public void run() {
 				flippedTexture.setTexture(getHorizontallyFlippedImage(ResourceManager.getTexture(DEFAULT_TEXTURE)));
-				// This relies on the original being loaded first....
 			}
 			
 		});
-		
-		DEFAULT_FLIPPED_TEXTURE = loader.loadTexture(flippedTexture);
 		
 	}
 	
