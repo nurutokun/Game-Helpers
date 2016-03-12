@@ -148,9 +148,14 @@ public class Button extends JButton implements Painter<Button> {
 	@Override
 	public Dimension getPreferredSize() {
 		
-		BufferedImage image = ResourceManager.getTexture(backgroundTexture);
+		try {
+			BufferedImage image = ResourceManager.getTexture(backgroundTexture);
+			
+			return new Dimension(image.getWidth(), image.getHeight());
+		} catch(Exception ex) {
+			return new Dimension(128, 64);
+		}
 		
-		return new Dimension(image.getWidth(), image.getHeight());
 	}
 	
 }

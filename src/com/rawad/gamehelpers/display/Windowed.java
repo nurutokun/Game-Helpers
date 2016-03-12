@@ -5,7 +5,6 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.JFrame;
 
-import com.rawad.gamehelpers.game.Game;
 import com.rawad.gamehelpers.input.EventHandler;
 
 public class Windowed extends DisplayMode {
@@ -16,10 +15,10 @@ public class Windowed extends DisplayMode {
 		super();
 	}
 	
-	public void create(Game game) {
-		super.create(game);
+	@Override
+	public void create(String displayTitle) {
 		
-		frame = new JFrame(game.toString()) {
+		frame = new JFrame(displayTitle) {
 			
 			/**
 			 * Generated serial version UID.
@@ -50,7 +49,8 @@ public class Windowed extends DisplayMode {
 		
 		frame.add(DisplayManager.getContainer(), BorderLayout.CENTER);
 		
-//		frame.setIconImage(game.getIcon());
+		setIcon(icon);// If it's null (when game first starts) nothing happens, otherwise it will be set.
+		
 		frame.pack();
 //		frame.setLocationRelativeTo(null);// maybe...
 		frame.setVisible(true);
@@ -59,9 +59,12 @@ public class Windowed extends DisplayMode {
 	
 	@Override
 	public void setIcon(BufferedImage icon) {
-		frame.setIconImage(icon);
+		super.setIcon(icon);
 		
-		frame.revalidate();
+		if(icon != null && frame != null) {
+			frame.setIconImage(icon);
+			frame.revalidate();
+		}
 		
 	}
 	

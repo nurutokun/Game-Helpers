@@ -1,5 +1,6 @@
 package com.rawad.gamehelpers.display;
 
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import com.rawad.gamehelpers.game.Game;
@@ -22,6 +23,8 @@ public class DisplayManager {
 	
 	private static Mode requestedMode;
 	
+	private static String displayTitle;
+	
 	private DisplayManager() {
 		
 	}
@@ -43,7 +46,7 @@ public class DisplayManager {
 				@Override
 				public void run() {
 					
-					showDisplayMode(mode, currentDisplayMode.game);// Take game from prev. object.
+					showDisplayMode(mode);
 					
 				}
 				
@@ -64,11 +67,13 @@ public class DisplayManager {
 	/**
 	 * Sets up base for GUI.
 	 */
-	public static void init() {
+	public static void init(String displayTitle) {
 		
 		cl = new RXCardLayout();
 		
 		superContainer = new SuperContainer(cl);
+		
+		setDisplayTitle(displayTitle);
 		
 	}
 	
@@ -99,7 +104,7 @@ public class DisplayManager {
 	 * 
 	 * @param mode
 	 */
-	public static void showDisplayMode(final Mode mode, final Game game) {
+	public static void showDisplayMode(Mode mode) {
 		
 		if(currentDisplayMode != null) {// For refreshing fullscreen.
 			currentDisplayMode.destroy();
@@ -107,7 +112,7 @@ public class DisplayManager {
 		
 		currentDisplayMode = mode.getDisplayMode();
 		
-		currentDisplayMode.create(game);
+		currentDisplayMode.create(displayTitle);
 		
 		currentDisplayMode.show();
 		
@@ -118,6 +123,14 @@ public class DisplayManager {
 		currentDisplayMode.destroy();
 		
 		currentDisplayMode = null;
+		
+	}
+	
+	public static void setIcon(BufferedImage icon) {
+		
+		for(Mode mode: Mode.values()) {
+			mode.getDisplayMode().setIcon(icon);
+		}
 		
 	}
 	
@@ -174,7 +187,7 @@ public class DisplayManager {
 		
 		if(getDisplayMode() == Mode.FULLSCREEN) {
 			
-			showDisplayMode(getDisplayMode(), currentDisplayMode.game);
+			showDisplayMode(getDisplayMode());
 			
 		}
 		
@@ -216,6 +229,10 @@ public class DisplayManager {
 	
 	public static void setDisplayHeight(int height) {
 		DISPLAY_HEIGHT = height;
+	}
+	
+	public static void setDisplayTitle(String title) {
+		displayTitle = title;
 	}
 	
 	public static SuperContainer getContainer() {

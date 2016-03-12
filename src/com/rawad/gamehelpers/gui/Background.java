@@ -3,6 +3,7 @@ package com.rawad.gamehelpers.gui;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
+import com.rawad.gamehelpers.game.Game;
 import com.rawad.gamehelpers.resources.GameHelpersLoader;
 import com.rawad.gamehelpers.resources.ResourceManager;
 import com.rawad.gamehelpers.resources.TextureResource;
@@ -39,7 +40,7 @@ public class Background {
 		
 	}
 	
-	public static void registerTextures(GameHelpersLoader loader) {
+	public static void registerTextures(GameHelpersLoader loader, final Game game) {
 		
 		DEFAULT_TEXTURE = loader.registerTexture("", DEFAULT_TEXTURE_FILE);
 		
@@ -53,6 +54,9 @@ public class Background {
 			@Override
 			public void run() {
 				flippedTexture.setTexture(getHorizontallyFlippedImage(ResourceManager.getTexture(DEFAULT_TEXTURE)));
+				
+				game.setBackground(Background.instance());
+				
 			}
 			
 		});

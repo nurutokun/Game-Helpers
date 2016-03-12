@@ -199,6 +199,7 @@ public class ResourceManager {
 		TextureResource unknownTexture = getTextureObject(TextureResource.UNKNOWN);
 		
 		if(unknownTexture == null) {
+			
 			registerTexture(UNKNOWN_TEXTURE_PATH, TextureResource.UNKNOWN);
 			
 			unknownTexture = getTextureObject(TextureResource.UNKNOWN);
@@ -211,13 +212,7 @@ public class ResourceManager {
 		
 		int loadedTextures = 0;
 		
-		for(Integer textureLocation: textures.keySet()) {
-			
-			TextureResource texture = textures.get(textureLocation);
-			
-			if(texture == null) {
-				Logger.log(Logger.DEBUG, "Got a null texture trying to load texture at location: " + textureLocation);
-			}
+		for(TextureResource texture: textures.values()) {
 			
 			loadTexture(texture);
 			
@@ -277,7 +272,8 @@ public class ResourceManager {
 		
 		imagePath = getFinalPath(basePath, imagePath);
 		
-		textures.put(location, new TextureResource(imagePath, location));
+		textures.put(location, new TextureResource(imagePath, location));// TODO: Should make more efficient w/ the whole
+		// textures being checked if they exist earlier in this method's lifetime (could have a null check).
 		
 		return location;
 		
@@ -296,8 +292,7 @@ public class ResourceManager {
 				break;
 			}
 			
-			if(resources.get(i).getPath().equals(getFinalPath(basePath, resourcePath))) {
-				Logger.log(Logger.DEBUG, "Resource at location " + i + " found with same path: " + resourcePath);
+			if(resources.get(i).getPath().equals(getFinalPath(basePath, resourcePath))) {// Resource already in cache
 				break;
 			}
 			
@@ -338,15 +333,19 @@ public class ResourceManager {
 		
 		try {
 			
-			return texture.getTexture();
+			BufferedImage tex = texture.getTexture();
+			
+			if(tex != null) {
+				return tex;
+			} else {
+				throw new NullPointerException();
+			}
 			
 		} catch(NullPointerException ex) {
 			
 			return getTextureObject(TextureResource.UNKNOWN).getTexture();
 			
 		}
-		
-//		return texture.getTexture();
 		
 	}
 	

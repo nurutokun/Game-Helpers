@@ -120,9 +120,14 @@ public class DropDown extends JComboBox<String> {
 	@Override
 	public Dimension getPreferredSize() {
 		
-		BufferedImage texture = ResourceManager.getTexture(backgroundTexture);
+		try {
+			BufferedImage texture = ResourceManager.getTexture(backgroundTexture);
+			
+			return new Dimension(texture.getWidth(), texture.getHeight());
+		} catch(Exception ex) {
+			return new Dimension(128, 64);
+		}
 		
-		return new Dimension(texture.getWidth(), texture.getHeight());
 	}
 	
 	/**

@@ -2,20 +2,15 @@ package com.rawad.gamehelpers.display;
 
 import java.awt.image.BufferedImage;
 
-import com.rawad.gamehelpers.game.Game;
-
 public abstract class DisplayMode {
 	
-	protected Game game;
+	protected BufferedImage icon;
 	
 	public DisplayMode() {
 		
 	}
 	
-	public void create(Game game) {
-		this.game = game;
-		
-	}
+	public abstract void create(String displayTitle);
 	
 	public abstract void destroy();
 	
@@ -26,6 +21,8 @@ public abstract class DisplayMode {
 	 * 
 	 * @param icon
 	 */
-	public abstract void setIcon(BufferedImage icon);
+	public void setIcon(BufferedImage icon) {
+		this.icon = icon;
+	}
 	
 }

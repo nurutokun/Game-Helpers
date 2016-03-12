@@ -172,19 +172,25 @@ public class Mouse {
 		Mouse.mouseWheelPosition = mouseWheelPosition;		
 	}
 	
-	public static void setClamped(boolean clamped, int clampX, int clampY) {
+	public static void clamp(int clampX, int clampY) {
 		
 		if(bot != null) {
-			Mouse.clamped = clamped;
+			
+			Mouse.clamped = true;
 			
 			Mouse.clampX = clampX;
 			Mouse.clampY = clampY;
 			
-			// Avoids initial mouse "jump".
 			Mouse.setX(clampX);
 			Mouse.setY(clampY);
 			
 		}
+		
+	}
+	
+	public static void unclamp() {
+		
+		Mouse.clamped = false;
 		
 	}
 	

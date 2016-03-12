@@ -88,9 +88,14 @@ public class TextLabel extends JLabel implements Painter<TextLabel> {
 	@Override
 	public Dimension getPreferredSize() {
 		
-		BufferedImage image = ResourceManager.getTexture(BACKGROUND_LOCATION);
+		try {
+			BufferedImage image = ResourceManager.getTexture(backgroundTexture);
+			
+			return new Dimension(image.getWidth(), image.getHeight());
+		} catch(Exception ex) {
+			return new Dimension(128, 64);
+		}
 		
-		return new Dimension(image.getWidth(), image.getHeight());
 	}
 	
 	/**

@@ -13,35 +13,33 @@ public abstract class Game {
 	public static final int SCREEN_WIDTH = 640;// 640
 	public static final int SCREEN_HEIGHT = 480;// 480
 	
-	/** Time a single tick lasts in milliseconds. */
-	private long tickTime;
-	private long totalTime;
-	private long remainingTime;
-	
 	protected Proxy clientOrServer;
 	
 	protected HashMap<Class<? extends FileParser>, FileParser> fileParsers;
-	
 	protected HashMap<Class<? extends Loader>, Loader> loaders;
 	
 	protected GameHelpersLoader gameHelpersLoader;
 	
+	protected boolean debug;
+	
 	/** Can be stopped by setting to null. */
 	private Background background;
 	
-	protected boolean debug;
+	/** Time a single tick lasts in milliseconds. */
+	private long tickTime;
+	private long totalTime;
+	private long remainingTime;
 	
 	private boolean running;
 	private boolean stopRequested;
 	
 	public Game() {
 		
-		tickTime = 200;
+		tickTime = 50;
 		
 		stopRequested = false;
 		
 		fileParsers = new HashMap<Class<? extends FileParser>, FileParser>();
-		
 		loaders = new HashMap<Class<? extends Loader>, Loader>();
 		
 		gameHelpersLoader = new GameHelpersLoader();// Loaders moved to constructor from init() method for icon loading.
@@ -69,15 +67,15 @@ public abstract class Game {
 	
 	public final void update(long timePassed) {
 		
-		tickTime = 200;
-		
 		if(background != null) {
 			background.update(timePassed);
 		}
 		
-		totalTime += timePassed + remainingTime;
+		totalTime = timePassed + remainingTime;// +=
 		
-		for(; totalTime >= tickTime; totalTime -= tickTime) {
+		while(totalTime >= tickTime) {// Works better than for-loop; other one keeps tickTime and doesn't make totalTime 0.
+			
+			totalTime -= tickTime;
 			
 			clientOrServer.tick();
 			
@@ -106,10 +104,6 @@ public abstract class Game {
 	
 	public Proxy getProxy() {
 		return clientOrServer;
-	}
-	
-	public long getTickTime() {
-		return tickTime;
 	}
 	
 	public <T extends Loader> T getLoader(Class<T> key) {

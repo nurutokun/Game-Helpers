@@ -40,7 +40,10 @@ public class StateManager {
 	public void update() {
 		
 		if(requestedStateIdHolder != null) {
-			setState(requestedStateIdHolder.toString());
+			
+			if(!requestedStateIdHolder.equals(currentState.getStateId())) {// Keeps state from being set multiple times.
+				setState(requestedStateIdHolder.toString());// Especially useful for keeping MP state from to connect twice.
+			}
 			
 			requestedStateIdHolder = null;
 			

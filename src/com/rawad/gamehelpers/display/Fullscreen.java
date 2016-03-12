@@ -8,7 +8,6 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.JFrame;
 
-import com.rawad.gamehelpers.game.Game;
 import com.rawad.gamehelpers.game.GameManager;
 import com.rawad.gamehelpers.input.EventHandler;
 import com.rawad.gamehelpers.log.Logger;
@@ -39,8 +38,7 @@ public class Fullscreen extends com.rawad.gamehelpers.display.DisplayMode {
 	}
 	
 	@Override
-	public void create(Game game) {
-		super.create(game);
+	public void create(String displayTitle) {
 		
 		currentDevice = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
 		
@@ -50,7 +48,7 @@ public class Fullscreen extends com.rawad.gamehelpers.display.DisplayMode {
 				throw new Exception("Full screen isn't supported.");
 			}
 			
-			frame = new JFrame(game.toString()) {
+			frame = new JFrame(displayTitle) {
 				
 				/**
 				 * Generated serial version UID.
@@ -64,7 +62,7 @@ public class Fullscreen extends com.rawad.gamehelpers.display.DisplayMode {
 				
 			};
 			
-//			frame.setIconImage(game.getIcon());
+			setIcon(icon);
 			
 			frame.setLayout(new BorderLayout());
 			
@@ -105,9 +103,12 @@ public class Fullscreen extends com.rawad.gamehelpers.display.DisplayMode {
 	
 	@Override
 	public void setIcon(BufferedImage icon) {
-		frame.setIconImage(icon);
+		super.setIcon(icon);
 		
-		frame.revalidate();
+		if(icon != null && frame != null) {
+			frame.setIconImage(icon);
+			frame.revalidate();
+		}
 		
 	}
 	
