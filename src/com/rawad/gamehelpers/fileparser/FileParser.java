@@ -17,21 +17,21 @@ public abstract class FileParser {
 		
 	}
 	
-	public void parseFile(BufferedReader reader) {
+	public void parseFile(BufferedReader reader) throws IOException {
 		
 		start();
-			
-		try {
-			
-			for(String line = reader.readLine(); line != null; line = reader.readLine()) {
+		
+		for(String line = reader.readLine(); line != null; line = reader.readLine()) {
 				
-				parseLine(line);
+			try {
 				
+					parseLine(line);
+					
+			} catch (Exception ex) {
+				Logger.log(Logger.WARNING, "Coulnd't read line from file.");
+//				ex.printStackTrace();
 			}
 			
-		} catch (IOException ex) {
-			Logger.log(Logger.WARNING, "Coulnd't read line from file.");
-			ex.printStackTrace();
 		}
 		
 		stop();

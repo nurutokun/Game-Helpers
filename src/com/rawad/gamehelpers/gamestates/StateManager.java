@@ -1,12 +1,12 @@
 package com.rawad.gamehelpers.gamestates;
 
 import java.util.HashMap;
-import java.util.Set;
 
 import com.rawad.gamehelpers.display.DisplayManager;
 import com.rawad.gamehelpers.game.Game;
 import com.rawad.gamehelpers.game.Proxy;
 import com.rawad.gamehelpers.log.Logger;
+import com.rawad.gamehelpers.utils.Util;
 
 public class StateManager {
 	
@@ -20,7 +20,7 @@ public class StateManager {
 	
 	private Proxy client;
 	
-	private LoadingState loadingState;
+	private boolean currentStateShowing;
 	
 	public StateManager(Game game) {
 		
@@ -32,17 +32,21 @@ public class StateManager {
 		
 		this.client = game.getProxy();
 		
+		currentStateShowing = false;
+		
 	}
 	
 	/**
 	 * Handles changing state, should be called in postTick().
 	 */
-	public void update() {
+	public void update() {// TODO: Fix this.
 		
 		if(requestedStateIdHolder != null) {
 			
-			if(!requestedStateIdHolder.equals(currentState.getStateId())) {// Keeps state from being set multiple times.
-				setState(requestedStateIdHolder.toString());// Especially useful for keeping MP state from to connect twice.
+			State requestedState = states.get(requestedStateIdHolder.toString());
+			
+			if(requestedState != null && !requestedState.equals(currentState)) {
+				setState(requestedState.getStateId());
 			}
 			
 			requestedStateIdHolder = null;
@@ -50,48 +54,14 @@ public class StateManager {
 		}
 		
 		try {
-			currentState.update();
+			
+			if(currentState != null && currentStateShowing) {
+				currentState.update();
+			}
+			
 		} catch(Exception ex) {
-			Logger.log(Logger.WARNING, "Caught exception while trying to update state: " 
-					+ currentState.getStateId());
+//			Logger.log(Logger.WARNING, "Caught exception while trying to update state: " + currentState.getStateId());
 			ex.printStackTrace();
-		}
-		
-	}
-	
-	public void initializeLoadingScreen(Runnable loader) {
-		
-		loadingState = new LoadingState(loader);
-		
-		loadingState.setStateManager(this);// Don't add to list of states because that will get re-initialized.
-		
-		initializeState(loadingState);
-		
-		currentState = loadingState;
-		
-	}
-	
-	public void showLoadingScreen() {
-		
-		loadingState.onActivate();
-		
-		DisplayManager.show(loadingState.getStateId());
-		
-	}
-	
-	/**
-	 * Everything GUI-initialization related is done here; this is called on the Swing EDT.
-	 */
-	public void initialize() {
-		
-		Set<String> stateIds = states.keySet();
-		
-		for(String stateId: stateIds) {
-			
-			State state = states.get(stateId);
-			
-			initializeState(state);
-			
 		}
 		
 	}
@@ -146,10 +116,28 @@ public class StateManager {
 			
 			game.getProxy().setController(null);
 			
-			newState.onActivate();// Just so that this is called before any updating/rendering.
-			currentState = newState;
+			currentStateShowing = false;
 			
-			DisplayManager.show(stateId);
+			currentState = newState;
+						
+			Util.invokeLater(new Runnable() {
+				
+				@Override
+				public void run() {
+					
+					if(!newState.isLoaded()) {
+						initializeState(newState);
+					}
+					
+					newState.onActivate();// Just so that this is called before any updating/rendering.
+					
+					DisplayManager.show(currentState.getStateId());
+					
+					currentStateShowing = true;
+					
+				}
+				
+			});
 			
 		} catch(Exception ex) {
 			

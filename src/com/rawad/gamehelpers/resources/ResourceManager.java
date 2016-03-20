@@ -44,15 +44,19 @@ public class ResourceManager {
 	
 	static {
 		
-		String userDir = System.getProperty("user.dir");
+		percentLoaded = 0;
+		
+		String userDir = Util.getDefaultDirectory("");// This gives the current user directory (relative to where this
+		// program was started from) because that's what it defaults to when nothing else is found.
 		
 		String allProjectsDir = userDir.substring(0, userDir.lastIndexOf(File.separatorChar) + 1);
 		// +1 at the end includes the last path seperator.
 		
+		String userSpecificStorageFolder = Util.getDefaultDirectory(System.getProperty("os.name"));
+		
 		String[] repos = {
 				allProjectsDir,
-				System.getProperty("user.home") + "/AppData/Roaming/My Game Launcher/"
-				// TODO: Still gotta change that "/AppData/Roaming/"
+				userSpecificStorageFolder + File.separatorChar + "My Game Launcher"	+ File.separatorChar
 		};
 		
 		REPOSITORIES = repos;
@@ -384,7 +388,8 @@ public class ResourceManager {
 				reader = new BufferedReader(new FileReader(""));
 			} catch (FileNotFoundException e) {
 				
-				Logger.log(Logger.SEVERE, "Buffered Reader for the file at \"" + filePath + "\" couldn't be opened.");
+				Logger.log(Logger.SEVERE, "Buffered Reader for the file at \"" + file.getAbsolutePath() + "\" "
+						+ "couldn't be opened.");
 				e.printStackTrace();
 				
 			}
@@ -397,21 +402,19 @@ public class ResourceManager {
 	
 	public static void saveFile(String filePath, String content) {
 		
-		filePath = getFinalPath(basePath, filePath);
-		
 		for(String path: REPOSITORIES) {
 			
 			path = getFinalPath(path, filePath);
 			
 			// Don't append, start all over every time.
-			try (	PrintWriter writer = new PrintWriter(new FileWriter(filePath, false), true)
+			try (	PrintWriter writer = new PrintWriter(new FileWriter(path, false), true)
 					) {
 				
 				writer.write(content);
 				
 			} catch(IOException ex) {
 				
-				Logger.log(Logger.SEVERE, "Couldn't write to file at \"" + filePath + "\"");
+				Logger.log(Logger.SEVERE, "Couldn't write to file at \"" + path + "\"");
 				ex.printStackTrace();
 				
 			}

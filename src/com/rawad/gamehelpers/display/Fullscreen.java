@@ -14,6 +14,9 @@ import com.rawad.gamehelpers.log.Logger;
 
 public class Fullscreen extends com.rawad.gamehelpers.display.DisplayMode {
 	
+	public static final int DEFAULT_FULLSCREEN_WIDTH = 640;
+	public static final int DEFAULT_FULLSCREEN_HEIGHT = 480;
+	
 	@SuppressWarnings("unused") @Deprecated
 	private DisplayMode[] displayModes = {
 			
@@ -39,8 +42,6 @@ public class Fullscreen extends com.rawad.gamehelpers.display.DisplayMode {
 	
 	@Override
 	public void create(String displayTitle) {
-		
-		currentDevice = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
 		
 		try {
 			
@@ -195,7 +196,13 @@ public class Fullscreen extends com.rawad.gamehelpers.display.DisplayMode {
 	}
 	
 	public static DisplayMode[] getCompatibleDisplayModes() {
-		return currentDevice.getDisplayModes();
+		try {
+			return currentDevice.getDisplayModes();
+		} catch(Exception ex) {
+			return new DisplayMode[]{
+					new DisplayMode(DEFAULT_FULLSCREEN_WIDTH, DEFAULT_FULLSCREEN_HEIGHT, DisplayMode.BIT_DEPTH_MULTI, DisplayMode.REFRESH_RATE_UNKNOWN)
+					};
+		}
 	}
 	
 }

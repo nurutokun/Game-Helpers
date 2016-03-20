@@ -3,6 +3,8 @@ package com.rawad.gamehelpers.log;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import com.rawad.gamehelpers.utils.Util;
+
 public class Logger {
 	
 	public static final int DEBUG = 0;
@@ -27,7 +29,7 @@ public class Logger {
 		
 		System.out.println(output);
 		
-		buffer += output + "\n";
+		buffer += output + Util.NL;
 		
 	}
 	

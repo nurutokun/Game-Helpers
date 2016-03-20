@@ -11,9 +11,11 @@ import com.rawad.gamehelpers.display.RXCardLayout;
 import com.rawad.gamehelpers.gui.Button;
 import com.rawad.gamehelpers.gui.DropDown;
 import com.rawad.gamehelpers.gui.overlay.Overlay;
+import com.rawad.gamehelpers.input.EventHandler;
+import com.rawad.gamehelpers.utils.Loadable;
 import com.rawad.gamehelpers.utils.Util;
 
-public abstract class State {
+public abstract class State implements Loadable {
 	
 	protected final Listener listener = new Listener();
 	
@@ -57,6 +59,9 @@ public abstract class State {
 		
 		container = new CustomContainer();
 		
+		container.addComponentListener(EventHandler.instance());// Makes sense here because only one state is showing at a time;
+		// but also allows for better control than if it were bound to SuperContainer
+		
 		cl = new RXCardLayout();
 		container.setLayout(cl);
 		
@@ -65,7 +70,7 @@ public abstract class State {
 	}
 	
 	/**
-	 * This method is NOT EDT-safe.
+	 * This method is totally EDT-safe.
 	 * 
 	 */
 	protected void onActivate() {}
@@ -126,6 +131,16 @@ public abstract class State {
 			}
 		}
 		
+	}
+	
+	/**
+	 * 
+	 * Checks the <code>container</state> object to see if this <code>State</code> is loaded or not.
+	 * 
+	 * @return Whether or not this <code>State</code> is loaded or not.
+	 */
+	public boolean isLoaded() {
+		return container != null;
 	}
 	
 	private class Listener implements ActionListener {

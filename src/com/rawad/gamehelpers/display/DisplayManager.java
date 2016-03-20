@@ -85,16 +85,7 @@ public class DisplayManager {
 	 */
 	public static void show(final String name) {
 		
-		Util.invokeLater(new Runnable() {
-			
-			@Override
-			public void run() {
-
-				cl.show(superContainer, name);
-				
-			}
-			
-		});
+		cl.show(superContainer, name);
 		
 	}
 	
@@ -128,9 +119,18 @@ public class DisplayManager {
 	
 	public static void setIcon(BufferedImage icon) {
 		
-		for(Mode mode: Mode.values()) {
-			mode.getDisplayMode().setIcon(icon);
-		}
+		Util.invokeLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				
+				for(Mode mode: Mode.values()) {
+					mode.getDisplayMode().setIcon(icon);
+				}
+					
+			}
+			
+		});
 		
 	}
 	
@@ -179,8 +179,10 @@ public class DisplayManager {
 	
 	public static void changeFullScreenResolution(String resolution) {
 		
-		int width = Integer.parseInt(resolution.split("x")[0]);
-		int height = Integer.parseInt(resolution.split("x")[1]);
+		int[] dimensions = getResolutionAsInt(resolution);
+		
+		int width = dimensions[0];
+		int height = dimensions[1];
 		
 		FULLSCREEN_WIDTH = width;
 		FULLSCREEN_HEIGHT = height;
@@ -194,7 +196,33 @@ public class DisplayManager {
 	}
 	
 	public static String getFullScreenResolution() {
-		return getFullScreenWidth() + "x" + getFullScreenHeight();
+		return toResolution(getFullScreenWidth(), getFullScreenHeight());
+	}
+	
+	public static String toResolution(int width, int height) {
+		return width + "x" + height;
+	}
+	
+	public static int[] getResolutionAsInt(String resolution) {
+		
+		int[] re = new int[2];
+		
+		try {
+			
+			String[] splitString = resolution.split("x");
+			
+			re[0] = Util.parseInt(splitString[0]);
+			re[1] = Util.parseInt(splitString[1]);
+			
+		} catch(Exception ex) {
+			
+			re[0] = Fullscreen.DEFAULT_FULLSCREEN_WIDTH;
+			re[1] = Fullscreen.DEFAULT_FULLSCREEN_HEIGHT;
+			
+		}
+		
+		return re;
+		
 	}
 	
 	public static int getFullScreenWidth() {

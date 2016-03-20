@@ -26,8 +26,6 @@ public class LoadingState extends State {
 		
 	}
 	
-	double progress = 0;
-	
 	@Override
 	protected void update() {
 		super.update();

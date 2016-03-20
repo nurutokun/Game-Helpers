@@ -11,7 +11,6 @@ import javax.swing.UIDefaults;
 
 import com.rawad.gamehelpers.resources.GameHelpersLoader;
 import com.rawad.gamehelpers.resources.ResourceManager;
-import com.rawad.gamehelpers.utils.Util;
 
 public class TextLabel extends JLabel implements Painter<TextLabel> {
 	
@@ -65,23 +64,6 @@ public class TextLabel extends JLabel implements Painter<TextLabel> {
 			
 			g.drawImage(image, 0, 0, width, height, null);
 		}
-		
-	}
-	
-	/**
-	 * This is safe to call outside the EDT.
-	 */
-	@Override
-	public void setText(final String text) {
-		
-		Util.invokeLater(new Runnable() {
-			
-			@Override
-			public void run() {
-				TextLabel.super.setText(text);
-			}
-			
-		});
 		
 	}
 	

@@ -11,7 +11,7 @@ import com.rawad.gamehelpers.utils.Util;
 
 public class GameManager {
 	
-	private static int FPS = 60;
+	private static int FPS = 120;// Works fine with 300.
 	
 	private static GameManager instance;
 	

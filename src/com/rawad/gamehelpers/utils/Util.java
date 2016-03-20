@@ -12,11 +12,29 @@ import com.rawad.gamehelpers.log.Logger;
 
 public final class Util {
 	
-	public static final String NL = System.lineSeparator();
+	public static final String NL = "\r\n";// System.lineSeperator(); // Current one much better and more consistent.
 	
 	public static final Color TRANSPARENT = new Color(0, 0, 0, 0);
 	
 	private Util() {}
+	
+	public static String getDefaultDirectory(String os) {
+		
+		String re = System.getProperty("user.dir");
+		
+		os = os.toUpperCase();
+		
+		if(os.contains("WIN")) {
+			re = System.getenv("APPDATA");
+		} else if(os.contains("NUX")) {
+			re = System.getProperty("user.home");
+		} else if(os.contains("MAC")) {
+			re = System.getProperty("user.home") + "/Library/Application Support";
+		}
+		
+		return re;
+		
+	}
 	
 	/**
 	 * Should be used for setting text of swing text components, outside of EDT. Note that when the text is actually
