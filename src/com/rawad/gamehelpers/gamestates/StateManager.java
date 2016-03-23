@@ -120,7 +120,7 @@ public class StateManager {
 			
 			currentState = newState;
 						
-			Util.invokeLater(new Runnable() {
+			Util.invokeAndWait(new Runnable() {
 				
 				@Override
 				public void run() {

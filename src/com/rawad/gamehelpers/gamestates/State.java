@@ -27,6 +27,11 @@ public abstract class State implements Loadable {
 	
 	private RXCardLayout cl;
 	
+	// TODO: Reorganize this whole class -> change 'initialize' to 'initGUI', seperate onActivate and onDeactivate to run on
+	// separate threads from EDT (maybe have two versions, one on EDT other on loader thread; problem is, one on EDT might not
+	// be used as often). Also, very important, make a dedicated 'Loader' thread that runs a constant loop (like EDT) and make
+	// it so that different classes can push Runnable objects to it to be executed (e.g. loading a file) -> could have it run
+	// by Util, but should probably make a separate class for it.
 	public State(String stateId) {
 		super();
 		
