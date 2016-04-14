@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+
+<fx:root type="StackPane" xmlns:fx="http://javafx.com/fxml" >
+	<VBox alignment="CENTER" >
+		<children>
+			<Label fx:id="loadingProgressLabel" alignment="CENTER" text="Loading..." />
+			<ProgressBar id="progressBar" fx:id="progressBar" progress="0.0" VBox.vgrow="ALWAYS" />
+		</children>
+	</VBox>
+</fx:root>
