@@ -1,6 +1,7 @@
 package com.rawad.gamehelpers.gamestates;
 
 import com.rawad.gamehelpers.log.Logger;
+import com.rawad.gamehelpers.renderengine.BackgroundRender;
 import com.rawad.gamehelpers.resources.ResourceManager;
 import com.rawad.gamehelpers.resources.TextureResource;
 
@@ -69,6 +70,14 @@ public class LoadingState extends State {
 				
 			}
 		};
+		
+	}
+	
+	@Override
+	public void render() {
+		super.render();
+		
+		BackgroundRender.instance().render(canvas.getGraphicsContext2D(), canvas.getWidth(), canvas.getHeight());
 		
 	}
 	
