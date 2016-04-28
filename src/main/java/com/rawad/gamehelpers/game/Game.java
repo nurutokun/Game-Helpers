@@ -8,6 +8,8 @@ import com.rawad.gamehelpers.resources.GameHelpersLoader;
 import com.rawad.gamehelpers.resources.Loader;
 import com.rawad.gamehelpers.utils.Util;
 
+import javafx.beans.property.SimpleBooleanProperty;
+
 public abstract class Game {
 	
 	public static final int SCREEN_WIDTH = 640;// 640
@@ -20,7 +22,7 @@ public abstract class Game {
 	
 	protected GameHelpersLoader gameHelpersLoader;
 	
-	protected boolean debug;
+	protected SimpleBooleanProperty debug;
 	
 	/** Can be stopped by setting to null. */
 	private Background background;
@@ -46,6 +48,8 @@ public abstract class Game {
 		
 		loaders.put(GameHelpersLoader.class, gameHelpersLoader);
 		
+		debug = new SimpleBooleanProperty(false);
+		
 	}
 	
 	/**
@@ -61,8 +65,6 @@ public abstract class Game {
 		
 		running = true;
 		
-		debug = false;
-		
 	}
 	
 	public final void update(long timePassed) {
@@ -71,7 +73,7 @@ public abstract class Game {
 			background.update(timePassed);
 		}
 		
-		totalTime = timePassed + remainingTime;// +=
+		totalTime = timePassed + remainingTime;
 		
 		while(totalTime >= tickTime) {// Works better than for-loop; other one keeps tickTime and doesn't make totalTime 0.
 			
@@ -115,12 +117,16 @@ public abstract class Game {
 		// It get's it from that "<T extends FileType>"; whatever T extends.
 	}
 	
+	public SimpleBooleanProperty debugProperty() {
+		return debug;
+	}
+	
 	public void setDebug(boolean debug) {
-		this.debug = debug;
+		this.debug.set(debug);
 	}
 	
 	public boolean isDebug() {
-		return debug;
+		return debug.get();
 	}
 	
 	/**

@@ -7,6 +7,8 @@ import com.rawad.gamehelpers.game.Game;
 import com.rawad.gamehelpers.log.Logger;
 
 import javafx.application.Platform;
+import javafx.scene.Scene;
+import javafx.scene.layout.Pane;
 
 public class StateManager {
 	
@@ -20,6 +22,8 @@ public class StateManager {
 	
 	private AClient client;
 	
+	private Scene scene;
+	
 	public StateManager(Game game, AClient client) {
 		
 		states = new HashMap<Class<? extends State>, State>();
@@ -29,6 +33,8 @@ public class StateManager {
 		this.game = game;
 		
 		this.client = client;
+		
+		scene = new Scene(new Pane(), Game.SCREEN_WIDTH, Game.SCREEN_HEIGHT);// Creates empty scene.
 		
 	}
 	
@@ -139,6 +145,10 @@ public class StateManager {
 	
 	public AClient getClient() {
 		return client;
+	}
+	
+	public Scene getScene() {
+		return scene;
 	}
 	
 }

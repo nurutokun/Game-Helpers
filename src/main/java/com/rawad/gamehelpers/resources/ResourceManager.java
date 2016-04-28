@@ -67,11 +67,11 @@ public class ResourceManager {
 		
 	}
 	
-	public static void init(String[] args) {
+	public static void init(HashMap<String, String> commands) {
 		
 		try {
 			
-			boolean devEnv = Boolean.valueOf(args[0]);
+			boolean devEnv = Boolean.valueOf(commands.get("devEnv"));
 			
 			setBasePath(devEnv);
 			

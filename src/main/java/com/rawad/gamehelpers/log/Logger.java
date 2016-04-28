@@ -1,9 +1,9 @@
 package com.rawad.gamehelpers.log;
 
+import java.io.PrintStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
-
-import com.rawad.gamehelpers.utils.Util;
 
 public class Logger {
 	
@@ -11,36 +11,29 @@ public class Logger {
 	public static final int WARNING = 1;
 	public static final int SEVERE = 2;
 	
-	private static final SimpleDateFormat sdf;
+	private static final SimpleDateFormat timeFormat = new SimpleDateFormat("KK:mm:ss");
 	
-	private static String buffer;
+	private static ArrayList<PrintStream> printStreams = new ArrayList<PrintStream>();
 	
 	static {
-		buffer = "";
 		
-		sdf = new SimpleDateFormat("KK:mm:ss");
+		printStreams.add(System.out);
 		
 	}
 	
 	public static void log(int code, String message) {
 		
-		String output = "[" + sdf.format(Calendar.getInstance().getTime()) + "] " + "[" + Thread.currentThread().getName() + "]" 
-				+ " Code: " + code + " Message: " + message;
+		String output = "[" + timeFormat.format(Calendar.getInstance().getTime()) + "] " 
+				+ "[" + Thread.currentThread().getName() + "]" + " Code: " + code + " Message: " + message;
 		
-		System.out.println(output);
-		
-		buffer += output + Util.NL;
+		for(PrintStream printStream: printStreams) {
+			printStream.println(output);
+		}
 		
 	}
 	
-	public static String getBuffer() {
-		
-		String temp = buffer;
-		
-		buffer = "";
-		
-		return temp;
-		
+	public static ArrayList<PrintStream> getPrintStreams() {
+		return printStreams;
 	}
 	
 }

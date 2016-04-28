@@ -3,11 +3,7 @@ package com.rawad.gamehelpers.game;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
-import javax.swing.RepaintManager;
-
 import com.rawad.gamehelpers.log.Logger;
-import com.rawad.gamehelpers.resources.ResourceManager;
-import com.rawad.gamehelpers.utils.CustomRepainter;
 
 public class GameManager {
 	
@@ -32,12 +28,6 @@ public class GameManager {
 		games = new ArrayList<Game>();
 		
 		setFPS(120);// Works fine with 300.
-		
-	}
-	
-	static {
-		
-		RepaintManager.setCurrentManager(new CustomRepainter());
 		
 	}
 	
@@ -157,8 +147,6 @@ public class GameManager {
 				
 			}
 			
-			ResourceManager.releaseResources();
-			
 			game.setProxy(null);
 			
 		}
@@ -167,6 +155,7 @@ public class GameManager {
 	
 	/**
 	 * Sets the maximum frames per second that can be achieved.
+	 * 
 	 * @param fps
 	 */
 	public void setFPS(int fps) {
@@ -177,11 +166,16 @@ public class GameManager {
 	}
 	
 	/**
-	 * Gets the 
+	 * Gets the calculated, average frames per second achieved over the past frames defined by <code>fps</code>
+	 * 
 	 * @return
 	 */
 	public long getFPS() {
 		return averageFrameRate;
+	}
+	
+	public long getSleepTime() {
+		return sleepTime;
 	}
 	
 	public long getDeltaTime() {

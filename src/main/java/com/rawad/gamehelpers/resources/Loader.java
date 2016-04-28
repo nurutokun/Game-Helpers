@@ -12,6 +12,7 @@ public abstract class Loader {
 	private static final String TEXTURE_FILE_EXTENSION = ResourceManager.getString("GameHelpers.image");
 	private static final String FONT_FILE_EXTENSION = ResourceManager.getString("GameHelpers.font");
 	private static final String FXML_FILE_EXTENSION = ResourceManager.getString("GameHelpers.fxml");
+	private static final String CSS_FILE_EXTENSION = ResourceManager.getString("GameHelpers.css");
 	
 	/** Holds the name for the base texture folder. */
 	private static final String TEXTURE_FOLDER = ResourceManager.getString("GameHelpers.textures");
@@ -95,6 +96,10 @@ public abstract class Loader {
 	 */
 	public static URL getFxmlLocation(Class<? extends Object> clazz) {
 		return getFxmlLocation(clazz, clazz.getSimpleName());
+	}
+	
+	public static String getStyleSheetLocation(Class<? extends Object> clazz, String styleSheetName) {
+		return clazz.getResource(styleSheetName + CSS_FILE_EXTENSION).toExternalForm();
 	}
 	
 }

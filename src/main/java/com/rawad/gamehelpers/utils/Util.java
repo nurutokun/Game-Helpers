@@ -1,10 +1,10 @@
 package com.rawad.gamehelpers.utils;
 
-import java.awt.Color;
 import java.awt.EventQueue;
 import java.io.Closeable;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
 
 import javax.swing.text.JTextComponent;
 
@@ -14,9 +14,27 @@ public final class Util {
 	
 	public static final String NL = "\r\n";// System.lineSeperator(); // Current one much better and more consistent.
 	
-	public static final Color TRANSPARENT = new Color(0, 0, 0, 0);
-	
 	private Util() {}
+	
+	public static HashMap<String, String> parseCommandLineArguments(String... args) {
+		
+		HashMap<String, String> commands = new HashMap<String, String>();
+		
+		for(String command: args) {
+			
+			String[] tokens = command.split("=");
+			
+			try {
+				commands.put(tokens[0], tokens[1]);
+			} catch(Exception ex) {
+				Logger.log(Logger.WARNING, "Proper command usage: \"Identifier=Value\"");
+			}
+			
+		}
+		
+		return commands;
+		
+	}
 	
 	public static String getDefaultDirectory(String os) {
 		
@@ -137,7 +155,7 @@ public final class Util {
 		try {
 			streamToClose.close();
 		} catch(IOException | NullPointerException ex) {
-			Logger.log(Logger.WARNING, "The stream: " + streamToClose.toString() + " could not be closed");
+			Logger.log(Logger.WARNING, "The stream: " + streamToClose + " could not be closed");
 		}
 		
 	}

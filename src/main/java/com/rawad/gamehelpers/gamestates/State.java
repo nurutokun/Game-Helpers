@@ -3,7 +3,6 @@ package com.rawad.gamehelpers.gamestates;
 import java.io.IOException;
 
 import com.rawad.gamehelpers.client.IClientController;
-import com.rawad.gamehelpers.game.Game;
 import com.rawad.gamehelpers.resources.Loader;
 
 import javafx.fxml.FXMLLoader;
@@ -16,6 +15,8 @@ public abstract class State implements IClientController {
 	
 	protected StateManager sm;
 	
+//	protected Scene scene;
+	
 	/** Represents the parent used passed to the <code>Scene</code> to be displayed. */
 	protected StackPane root;
 	
@@ -27,6 +28,7 @@ public abstract class State implements IClientController {
 	public void initGui() {
 		
 		root = new StackPane();
+		root.getStylesheets().add(Loader.getStyleSheetLocation(getClass(), "StyleSheet"));
 		
 		fxmlLoader = new FXMLLoader(Loader.getFxmlLocation(getClass()));
 		fxmlLoader.setController(this);
@@ -44,7 +46,6 @@ public abstract class State implements IClientController {
 		
 		canvas = new Canvas();
 		root.getChildren().add(0, canvas);
-		root.setPrefSize(Game.SCREEN_WIDTH, Game.SCREEN_HEIGHT);
 		
 		canvas.widthProperty().bind(root.widthProperty());
 		canvas.heightProperty().bind(root.heightProperty());
