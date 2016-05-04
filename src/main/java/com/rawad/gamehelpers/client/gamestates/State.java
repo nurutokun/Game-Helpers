@@ -1,8 +1,10 @@
-package com.rawad.gamehelpers.gamestates;
+package com.rawad.gamehelpers.client.gamestates;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import com.rawad.gamehelpers.client.IClientController;
+import com.rawad.gamehelpers.game.GameSystem;
 import com.rawad.gamehelpers.resources.Loader;
 
 import javafx.fxml.FXMLLoader;
@@ -13,11 +15,12 @@ import javafx.scene.layout.StackPane;
 
 public abstract class State implements IClientController {
 	
+	/** Each {@code State} can have its own set of {@code GameSystem} objects; order of adding them is maintained. */
+	protected final ArrayList<GameSystem> gameSystems;
+	
 	protected StateManager sm;
 	
-//	protected Scene scene;
-	
-	/** Represents the parent used passed to the <code>Scene</code> to be displayed. */
+	/** Represents the parent used passed to the {@code Scene} to be displayed. */
 	protected StackPane root;
 	
 	/** Provides a default, paintable background for states to use. */
@@ -25,10 +28,16 @@ public abstract class State implements IClientController {
 	
 	protected FXMLLoader fxmlLoader;
 	
+	public State() {
+		
+		gameSystems = new ArrayList<GameSystem>();
+		
+	}
+	
 	public void initGui() {
 		
 		root = new StackPane();
-		root.getStylesheets().add(Loader.getStyleSheetLocation(getClass(), "StyleSheet"));
+		root.getStylesheets().add(Loader.getStyleSheetLocation(getClass(), getStyleSheet()));
 		
 		fxmlLoader = new FXMLLoader(Loader.getFxmlLocation(getClass()));
 		fxmlLoader.setController(this);
@@ -36,7 +45,6 @@ public abstract class State implements IClientController {
 		
 		try {
 			fxmlLoader.load();
-			
 		} catch(IOException ex) {
 			ex.printStackTrace();
 			
@@ -68,6 +76,15 @@ public abstract class State implements IClientController {
 	
 	protected IClientController getController() {
 		return this;
+	}
+	
+	/**
+	 * For <code>State</code>-specific stylesheets.
+	 * 
+	 * @return
+	 */
+	public String getStyleSheet() {
+		return "StyleSheet";
 	}
 	
 	public Parent getRoot() {

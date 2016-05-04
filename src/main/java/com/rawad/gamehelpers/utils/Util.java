@@ -169,7 +169,6 @@ public final class Util {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T extends A,A> T cast(A obj) {
-//		Logger.log(Logger.DEBUG, "Casted: " + obj + ", to: " + ((T) obj));
 		return (T) obj;
 	}
 	

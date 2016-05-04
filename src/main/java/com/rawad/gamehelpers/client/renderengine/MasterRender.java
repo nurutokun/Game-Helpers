@@ -1,4 +1,4 @@
-package com.rawad.gamehelpers.renderengine;
+package com.rawad.gamehelpers.client.renderengine;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,6 +10,8 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
 
+// TODO: Create a WritableImage as a buffer, pass all the renders an object that can draw actual shapes and images onto the
+// WritableRaster of the buffer; then separate the rendering in AClient's rendering thread and the IClientController.
 public class MasterRender {
 	
 	public static final Color DEFAULT_BACKGROUND_COLOR = Color.DARKGRAY;//new Color(202, 212, 227, 25);// Has to be 0.0-1.0

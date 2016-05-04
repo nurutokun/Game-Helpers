@@ -1,4 +1,4 @@
-package com.rawad.gamehelpers.renderengine;
+package com.rawad.gamehelpers.client.renderengine;
 
 /**
  * Should make two levels of these: one for accepting graphics object directly from the master render and another that

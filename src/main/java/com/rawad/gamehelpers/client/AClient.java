@@ -4,7 +4,6 @@ import com.rawad.gamehelpers.game.IController;
 import com.rawad.gamehelpers.game.Proxy;
 
 import javafx.application.Platform;
-import javafx.concurrent.Task;
 import javafx.stage.Stage;
 
 public abstract class AClient extends Proxy {
@@ -13,14 +12,14 @@ public abstract class AClient extends Proxy {
 	
 	private Thread renderingThread;
 	
-	private Task<Integer> renderingTask;
+	private Runnable renderingRunnable;
 	
 	@Override
 	public <T extends IController> void setController(T controller) {
 		super.setController(controller);
 		
 		if(renderingThread == null) {
-			renderingThread = new Thread(getRenderingTask(), "Rendering Thread");
+			renderingThread = new Thread(getRenderingRunnable(), "Rendering Thread");
 			renderingThread.setDaemon(true);
 			renderingThread.start();
 			
@@ -32,49 +31,41 @@ public abstract class AClient extends Proxy {
 		return stage;
 	}
 	
-	private final Task<Integer> getRenderingTask() {
+	private final Runnable getRenderingRunnable() {
 		
-		if(renderingTask == null) {
-			renderingTask = new Task<Integer>() {
-				
-				@Override
-				protected Integer call() throws Exception {
+		if(renderingRunnable == null) {
+			renderingRunnable = () -> {
 					
-					synchronized(renderingThread) {
+				synchronized(renderingThread) {
+					
+					while(controller != null) {
 						
-						while(controller != null) {
+						try {
 							
 							try {
-								
-								Platform.runLater(() -> {
-									
-									try {
-										AClient.this.<IClientController>getController().render();
-									} catch(NullPointerException ex) {
-										// Have to catch this exception b/c multiple runLater calls can be made and the 
-										// controller is set to null before they can be executed (when stopping).
-										return;
-									}
-									
-								});
-								
-								renderingThread.wait();
-								
-							} catch(InterruptedException ex) {
-								ex.printStackTrace();
+								IClientController controller = AClient.this.<IClientController>getController();
+								Platform.runLater(() -> controller.render());
+//								Platform.runLater(() -> controller.renderThreadSafe());
+							} catch(NullPointerException ex) {
+								// Have to catch this exception b/c multiple runLater calls can be made and the 
+								// controller is set to null before they can be executed (when stopping).
+								break;
 							}
 							
+							renderingThread.wait();
+							
+						} catch(InterruptedException ex) {
+							ex.printStackTrace();
 						}
 						
 					}
-					return 0;
 					
 				}
 				
 			};
 		}
 		
-		return renderingTask;
+		return renderingRunnable;
 		
 	}
 	
@@ -102,6 +93,10 @@ public abstract class AClient extends Proxy {
 		
 		render();// For resetting rendering thread (mainly for multi-game support.
 		
+	}
+	
+	public String getSettingsFileName() {
+		return "settings";
 	}
 	
 }

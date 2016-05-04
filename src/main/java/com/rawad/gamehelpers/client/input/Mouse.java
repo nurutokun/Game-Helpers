@@ -1,23 +1,28 @@
-package com.rawad.gamehelpers.input;
+package com.rawad.gamehelpers.client.input;
 
 import java.awt.AWTException;
+import java.awt.MouseInfo;
+import java.awt.Point;
 import java.awt.Robot;
 
 import com.rawad.gamehelpers.log.Logger;
 
-import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 
-public class Mouse {
+public final class Mouse {
 	
 	private static Robot bot;
 	
 	private static Cursor cursor;
 	
 	private static Region region;
+	
+	private static Point mouseLocation;
+	
+	private static double x;
+	private static double y;
 	
 	private static double clampX;
 	private static double clampY;
@@ -26,8 +31,6 @@ public class Mouse {
 	private static double dy;
 	
 	private static boolean clamped;
-	
-	private static final EventHandler<MouseEvent> CLAMPER_HANDLER;
 	
 	static {
 		
@@ -39,30 +42,37 @@ public class Mouse {
 			Logger.log(Logger.SEVERE, ex.getLocalizedMessage() + "; Robot wasn't initialized");
 		}
 		
-		CLAMPER_HANDLER = mouseEvent -> {// TODO: Add an update method to make this here smoother + more responsive.
-			
-			if(clamped && bot != null) {
-				
-				clampX = region.getWidth() / 2d;
-				clampY = region.getHeight() / 2d;
-				
-				dx = mouseEvent.getX() - clampX;
-				dy = mouseEvent.getY() - clampY;
-				
-				Point2D pos = region.localToScreen(clampX, clampY);
-				
-				bot.mouseMove((int) (pos.getX()), (int) (pos.getY()));
-				
-				setCursor(Cursors.BLANK);
-				
-			} else {
-				setCursor(Cursors.DEFAULT);
-			}
-			
-			region.setCursor(cursor);
-			
-		};
+	}
+	
+	public static void update() {
 		
+		mouseLocation = MouseInfo.getPointerInfo().getLocation();
+		
+		x = mouseLocation.getX();
+		y = mouseLocation.getY();
+		
+		if(region != null) {
+			
+			Point2D relativeMouseLocation = region.screenToLocal(mouseLocation.getX(), mouseLocation.getY());
+			
+			x = relativeMouseLocation.getX();
+			y = relativeMouseLocation.getY();
+			
+		}
+		
+		if(clamped && bot != null) {
+			
+			clampX = region.getWidth() / 2d;
+			clampY = region.getHeight() / 2d;
+			
+			dx = x - clampX;
+			dy = y - clampY;
+			
+			Point2D pos = region.localToScreen(clampX, clampY);
+			
+			bot.mouseMove((int) (pos.getX()), (int) (pos.getY()));
+			
+		}
 	}
 	
 	public static void clamp(Region region) {
@@ -74,8 +84,7 @@ public class Mouse {
 		
 		Mouse.region = region;
 		
-		Mouse.region.addEventHandler(MouseEvent.MOUSE_MOVED, CLAMPER_HANDLER);
-		Mouse.region.addEventHandler(MouseEvent.MOUSE_DRAGGED, CLAMPER_HANDLER);
+		setCursor(Cursors.DEFAULT);
 		
 	}
 	
@@ -83,6 +92,18 @@ public class Mouse {
 		
 		Mouse.clamped = false;
 		
+		setCursor(Cursors.BLANK);
+		
+		Mouse.region = null;
+		
+	}
+	
+	public static double getX() {
+		return x;
+	}
+	
+	public static double getY() {
+		return y;
 	}
 	
 	public static double getDx() {
@@ -107,6 +128,9 @@ public class Mouse {
 	
 	public static void setCursor(Cursors cursor) {
 		Mouse.cursor = cursor.getValue();
+		
+		if(region != null) region.setCursor(getCursor());
+		
 	}
 	
 	public static Cursor getCursor() {

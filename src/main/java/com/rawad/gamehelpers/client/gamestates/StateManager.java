@@ -1,4 +1,4 @@
-package com.rawad.gamehelpers.gamestates;
+package com.rawad.gamehelpers.client.gamestates;
 
 import java.util.HashMap;
 
@@ -115,6 +115,8 @@ public class StateManager {
 			currentState = newState;
 			
 			client.setController(currentState.getController());
+			
+			game.getGameEngine().setGameSystems(currentState.gameSystems);
 			
 			currentState.onActivate();
 			

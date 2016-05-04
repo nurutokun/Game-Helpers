@@ -3,7 +3,6 @@ package com.rawad.gamehelpers.game;
 import java.util.ArrayList;
 
 import com.rawad.gamehelpers.log.Logger;
-import com.rawad.gamehelpers.resources.ILoading;
 import com.rawad.gamehelpers.utils.Util;
 
 import javafx.concurrent.Task;
@@ -14,7 +13,7 @@ import javafx.concurrent.Task;
  * @author Rawad
  *
  */
-public abstract class Proxy implements ILoading {
+public abstract class Proxy {
 	
 	protected IController controller;
 	
@@ -49,7 +48,6 @@ public abstract class Proxy implements ILoading {
 		return Util.cast(controller);
 	}
 	
-	@Override
 	public Runnable getLoadingRunnable() {
 		
 		if(loadingRunnable == null) {
@@ -65,7 +63,8 @@ public abstract class Proxy implements ILoading {
 								task.run();
 								tasks.remove(0);
 							} catch(Exception ex) {
-								Logger.log(Logger.DEBUG, "Task: " + task + ", task count: " + tasks.size());
+								Logger.log(Logger.DEBUG, "Task: " + task + ", task count: " + tasks.size() + ", tasks: " 
+										+ tasks);
 								ex.printStackTrace();
 							}
 						}
@@ -80,9 +79,10 @@ public abstract class Proxy implements ILoading {
 		
 	}
 	
-	@Override
 	public void addTask(Task<Integer> taskToLoad) {
-		tasks.add(taskToLoad);
+		synchronized(tasks) {
+			tasks.add(taskToLoad);
+		}
 	}
 	
 	public Game getGame() {

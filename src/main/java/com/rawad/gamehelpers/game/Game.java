@@ -3,7 +3,7 @@ package com.rawad.gamehelpers.game;
 import java.util.HashMap;
 
 import com.rawad.gamehelpers.fileparser.FileParser;
-import com.rawad.gamehelpers.gui.Background;
+import com.rawad.gamehelpers.game.world.World;
 import com.rawad.gamehelpers.resources.GameHelpersLoader;
 import com.rawad.gamehelpers.resources.Loader;
 import com.rawad.gamehelpers.utils.Util;
@@ -17,15 +17,14 @@ public abstract class Game {
 	
 	protected Proxy clientOrServer;
 	
+	protected GameEngine gameEngine;
+	
+	protected World world;
+	
 	protected HashMap<Class<? extends FileParser>, FileParser> fileParsers;
 	protected HashMap<Class<? extends Loader>, Loader> loaders;
 	
-	protected GameHelpersLoader gameHelpersLoader;
-	
 	protected SimpleBooleanProperty debug;
-	
-	/** Can be stopped by setting to null. */
-	private Background background;
 	
 	/** Time a single tick lasts in milliseconds. */
 	private long tickTime;
@@ -39,14 +38,8 @@ public abstract class Game {
 		
 		tickTime = 50;
 		
-		stopRequested = false;
-		
 		fileParsers = new HashMap<Class<? extends FileParser>, FileParser>();
 		loaders = new HashMap<Class<? extends Loader>, Loader>();
-		
-		gameHelpersLoader = new GameHelpersLoader();// Loaders moved to constructor from init() method for icon loading.
-		
-		loaders.put(GameHelpersLoader.class, gameHelpersLoader);
 		
 		debug = new SimpleBooleanProperty(false);
 		
@@ -63,23 +56,33 @@ public abstract class Game {
 	 */
 	protected void init() {
 		
+		gameEngine = new GameEngine();
+		
+		world = new World();
+		
+		loaders.put(GameHelpersLoader.class, new GameHelpersLoader());
+		
+		stopRequested = false;
+		
 		running = true;
 		
 	}
 	
 	public final void update(long timePassed) {
 		
-		if(background != null) {
-			background.update(timePassed);
-		}
-		
 		totalTime = timePassed + remainingTime;
 		
-		while(totalTime >= tickTime) {// Works better than for-loop; other one keeps tickTime and doesn't make totalTime 0.
+		while(totalTime >= tickTime) {
 			
 			totalTime -= tickTime;
 			
-			clientOrServer.tick();
+			gameEngine.tick(world.getEntitiesAsList());// Populates GameSystem objects with entities to work with.
+			
+			clientOrServer.tick();// Calls tick() on every GameSystem, in proper order to perform the game logic.
+			
+			gameEngine.postTick();// Clears entites of systems after every time they are processed.
+			// Could move thiss method into the tick() method of the game systems, after entities are processed, if the proxy
+			// has no use for them.
 			
 		}
 		
@@ -99,6 +102,10 @@ public abstract class Game {
 	public abstract int getIconLocation();
 	
 	public abstract void registerTextures();
+	
+	public GameEngine getGameEngine() {
+		return gameEngine;
+	}
 	
 	public void setProxy(Proxy clientOrServer) {
 		this.clientOrServer = clientOrServer;
@@ -127,23 +134,6 @@ public abstract class Game {
 	
 	public boolean isDebug() {
 		return debug.get();
-	}
-	
-	/**
-	 * Can be optionally overriden.
-	 * 
-	 * @return
-	 */
-	public String getSettingsFileName() {
-		return "settings";
-	}
-	
-	public void setBackground(Background background) {
-		this.background = background;
-	}
-	
-	public Background getBackground() {
-		return background;
 	}
 	
 	public boolean isRunning() {
