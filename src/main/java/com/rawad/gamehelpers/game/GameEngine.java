@@ -17,6 +17,8 @@ public class GameEngine {
 		
 		for(GameSystem system: gameSystems) {
 			
+			system.getCompatibleEntities().clear();
+			
 			ArrayList<Class<? extends Component>> compatibleComponentTypes = system.getCompatibleComponentTypes();
 			
 			ArrayList<Entity> compatibleEntities = new ArrayList<Entity>();
@@ -45,14 +47,6 @@ public class GameEngine {
 		// Separate from calculating entities for system-system communication?
 		for(GameSystem gameSystem: gameSystems) {
 			gameSystem.tick();
-		}
-		
-	}
-	
-	public void postTick() {
-		
-		for(GameSystem system: gameSystems) {
-			system.getCompatibleEntities().clear();
 		}
 		
 	}

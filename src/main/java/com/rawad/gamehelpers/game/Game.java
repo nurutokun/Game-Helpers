@@ -78,11 +78,7 @@ public abstract class Game {
 			
 			gameEngine.tick(world.getEntitiesAsList());// Populates GameSystem objects with entities to work with.
 			
-			clientOrServer.tick();// Calls tick() on every GameSystem, in proper order to perform the game logic.
-			
-			gameEngine.postTick();// Clears entites of systems after every time they are processed.
-			// Could move thiss method into the tick() method of the game systems, after entities are processed, if the proxy
-			// has no use for them.
+			clientOrServer.tick();// Able to get info from game systems (e.g. for rendering).
 			
 		}
 		

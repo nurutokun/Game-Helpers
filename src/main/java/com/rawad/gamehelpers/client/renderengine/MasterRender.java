@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.rawad.gamehelpers.game.entity.Entity;
 import com.rawad.gamehelpers.utils.Util;
 
 import javafx.scene.canvas.GraphicsContext;
@@ -34,7 +35,9 @@ public class MasterRender {
 		
 		for(LayeredRender render: iterableRenders) {
 			
-			render.render(g);
+			for(Entity e: render.getEntities()) {
+				render.render(g, e);
+			}
 			
 		}
 		
