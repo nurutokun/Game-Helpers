@@ -1,14 +1,15 @@
 package com.rawad.gamehelpers.game.entity;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.rawad.gamehelpers.utils.Util;
 
-public class Entity {
+public final class Entity {
 	
 	private HashMap<Class<? extends Component>, Component> components;
 	
-	public Entity() {
+	private Entity() {
 		components = new HashMap<Class<? extends Component>, Component>();
 	}
 	
@@ -18,6 +19,20 @@ public class Entity {
 	
 	public <T extends Component> T getComponent(Class<T> compClass) {
 		return Util.cast(components.get(compClass));
+	}
+	
+	public static Entity createEntity(Object blueprintId) {
+		Entity e = new Entity();
+		
+		ArrayList<Component> components = BlueprintManager.getBlueprint(blueprintId).getComponents();
+		
+		for(Component comp: components) {
+			
+			e.addComponent(comp.clone());
+			
+		}
+		
+		return e;
 	}
 	
 }

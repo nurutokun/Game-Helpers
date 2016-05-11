@@ -117,6 +117,7 @@ public class StateManager {
 			client.setController(currentState.getController());
 			
 			game.getGameEngine().setGameSystems(currentState.gameSystems);
+			game.setWorld(currentState.getWorld());
 			
 			currentState.onActivate();
 			
@@ -151,6 +152,10 @@ public class StateManager {
 	
 	public Scene getScene() {
 		return scene;
+	}
+	
+	public State getCurrentState() {
+		return currentState;
 	}
 	
 }

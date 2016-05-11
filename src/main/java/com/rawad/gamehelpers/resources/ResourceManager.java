@@ -1,7 +1,5 @@
 package com.rawad.gamehelpers.resources;
 
-import java.awt.Color;
-import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -20,7 +18,10 @@ import javax.imageio.ImageIO;
 import com.rawad.gamehelpers.log.Logger;
 import com.rawad.gamehelpers.utils.Util;
 
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
 
 public class ResourceManager {
 	
@@ -148,26 +149,30 @@ public class ResourceManager {
 		
 	}
 	
-	private static BufferedImage generateUnkownTexture() {
+	private static Image generateUnkownTexture() {
 		
-		BufferedImage temp = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
+		final int width = 16;
+		final int height = 16;
 		
-		for(int x = 0; x < temp.getWidth(); x++) {
-			for(int y = 0; y < temp.getHeight(); y++) {
+		WritableImage unknownTexture = new WritableImage(width, height);
+		PixelWriter unkownTextureWriter = unknownTexture.getPixelWriter();
+		
+		for(int x = 0; x < width; x++) {
+			for(int y = 0; y < height; y++) {
 				
-				int violet_rgb = new Color(250, 0, 255).getRGB();
+				int violet_rgb = 0xFA00FFFF;
 				
-				if(x >= temp.getWidth()/2) {// right
-					if(y < temp.getHeight()/2) {
-						temp.setRGB(x, y, 0xFF000000);// top right corner
+				if(x >= width/2) {// right
+					if(y < height/2) {
+						unkownTextureWriter.setArgb(x, y, 0xFF000000);// top right corner
 					} else {
-						temp.setRGB(x, y, violet_rgb);// bottom right corner
+						unkownTextureWriter.setArgb(x, y, violet_rgb);// bottom right corner
 					}
 				} else {
-					if(y < temp.getHeight()/2) {
-						temp.setRGB(x, y, violet_rgb);// top left corner
+					if(y < height/2) {
+						unkownTextureWriter.setArgb(x, y, violet_rgb);// top left corner
 					} else {
-						temp.setRGB(x, y, 0xFF000000);// bottom right corner
+						unkownTextureWriter.setArgb(x, y, 0xFF000000);// bottom right corner
 					}
 				}
 				
@@ -177,15 +182,14 @@ public class ResourceManager {
 		String fileFormat = UNKNOWN_TEXTURE_PATH.substring(UNKNOWN_TEXTURE_PATH.length() - 3);// "png"
 		
 		try {
-			ImageIO.write(temp, fileFormat, new File(getFinalPath(basePath, UNKNOWN_TEXTURE_PATH)));// excludes ".png"
-			
+			ImageIO.write(SwingFXUtils.fromFXImage(unknownTexture, null), fileFormat, new File(getFinalPath(basePath, UNKNOWN_TEXTURE_PATH)));// excludes ".png"
 		} catch(Exception ex) {
 			Logger.log(Logger.WARNING, ex.getLocalizedMessage() + "; the \"unknown texture\" was created but "
 					+ "not saved.");
 			
 		}
 		
-		return temp;
+		return unknownTexture;
 		
 	}
 	
@@ -373,12 +377,14 @@ public class ResourceManager {
 			
 		} catch(IOException ex) {
 			
+			Logger.log(Logger.WARNING, "Buffered Reader for file at \"" + file.getAbsolutePath() + "\" couldn't be opened;"
+					+ " creating an empty Buffered Reader instead.");
+			
 			try {
 				reader = new BufferedReader(new FileReader(""));
 			} catch (FileNotFoundException e) {
 				
-				Logger.log(Logger.SEVERE, "Buffered Reader for the file at \"" + file.getAbsolutePath() + "\" "
-						+ "couldn't be opened.");
+				Logger.log(Logger.SEVERE, "Empty buffered Reader couldn't be opened because empty file wasn't found?");
 				e.printStackTrace();
 				
 			}

@@ -76,7 +76,8 @@ public abstract class Game {
 			
 			totalTime -= tickTime;
 			
-			gameEngine.tick(world.getEntitiesAsList());// Populates GameSystem objects with entities to work with.
+			gameEngine.tick(world.getEntitiesAsList());// Populates GameSystem objects with entities 
+			// to work with.
 			
 			clientOrServer.tick();// Able to get info from game systems (e.g. for rendering).
 			
@@ -101,6 +102,12 @@ public abstract class Game {
 	
 	public GameEngine getGameEngine() {
 		return gameEngine;
+	}
+	
+	public void setWorld(World world) {
+		if(world == null) return;
+		
+		this.world = world;
 	}
 	
 	public void setProxy(Proxy clientOrServer) {

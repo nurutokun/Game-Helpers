@@ -28,7 +28,7 @@ public abstract class GameSystem {
 	 * 
 	 * @see #tick(Entity)
 	 */
-	public final void tick() {
+	public void tick() {
 		for(Entity e: compatibleEntities) {
 			tick(e);
 		}

@@ -1,12 +1,9 @@
 package com.rawad.gamehelpers.utils;
 
-import java.awt.EventQueue;
 import java.io.Closeable;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
 import java.util.HashMap;
-
-import javax.swing.text.JTextComponent;
 
 import com.rawad.gamehelpers.log.Logger;
 
@@ -51,44 +48,6 @@ public final class Util {
 		}
 		
 		return re;
-		
-	}
-	
-	/**
-	 * Should be used for setting text of swing text components, outside of EDT. Note that when the text is actually
-	 * set is not known. Also note that custom GUI components do this automatically (e.g. <code>TextLabel</code>).
-	 * 
-	 * @param textComp
-	 * @param textToSet
-	 */
-	public static void setTextSafely(final JTextComponent textComp, final String textToSet) {
-		
-		invokeLater(new Runnable() {
-			
-			@Override
-			public void run() {
-				textComp.setText(textToSet);
-			}
-			
-		});
-		
-	}
-	
-	public static void invokeLater(Runnable runnable) {
-		
-		EventQueue.invokeLater(runnable);
-		
-	}
-	
-	public static void invokeAndWait(Runnable runnable) {
-		
-		try {
-			EventQueue.invokeAndWait(runnable);
-		} catch (InvocationTargetException | InterruptedException ex) {
-			ex.printStackTrace();
-			Logger.log(Logger.SEVERE, "Error occured while trying to run thread " + runnable + " the thread "
-					+ "didn't seem to like that...");
-		}
 		
 	}
 	
@@ -160,6 +119,19 @@ public final class Util {
 		
 	}
 	
+	@SafeVarargs
+	public static <T> T[] append(T[] arr, T... lastElements) {
+		final int length = arr.length;
+		
+		arr = Arrays.copyOf(arr, length + lastElements.length);
+		
+		for(int i = 0; i < lastElements.length; i++) {
+			arr[length + i] = lastElements[i];
+		}
+		
+	    return arr;
+	}
+	
 	/**
 	 * Should only give an error at the level of another class using this method. Putting a log on that shows that
 	 * it's casting to the same object...
@@ -168,7 +140,7 @@ public final class Util {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T extends A,A> T cast(A obj) {
+	public static <T extends A, A> T cast(A obj) {
 		return (T) obj;
 	}
 	

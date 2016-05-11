@@ -16,6 +16,12 @@ public abstract class LayeredRender extends Render {
 	
 	private ArrayList<Entity> entities;
 	
+	public void render(GraphicsContext g) {
+		for(Entity e: entities) {
+			render(g, e);
+		}
+	}
+	
 	public abstract void render(GraphicsContext g, Entity e);
 	
 	public void setEntities(ArrayList<Entity> entities) {

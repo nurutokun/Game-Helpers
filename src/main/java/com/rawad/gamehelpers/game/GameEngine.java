@@ -7,11 +7,7 @@ import com.rawad.gamehelpers.game.entity.Entity;
 
 public class GameEngine {
 	
-	protected final ArrayList<GameSystem> gameSystems;
-	
-	protected GameEngine() {
-		gameSystems = new ArrayList<GameSystem>();
-	}
+	protected final ArrayList<GameSystem> gameSystems = new ArrayList<GameSystem>();
 	
 	public void tick(ArrayList<Entity> entities) {
 		

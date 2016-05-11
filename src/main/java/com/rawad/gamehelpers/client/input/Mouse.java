@@ -32,6 +32,8 @@ public final class Mouse {
 	
 	private static boolean clamped;
 	
+	private Mouse() {}
+	
 	static {
 		
 		try {
