@@ -2,7 +2,6 @@ package com.rawad.gamehelpers.game;
 
 import java.util.ArrayList;
 
-import com.rawad.gamehelpers.log.Logger;
 import com.rawad.gamehelpers.utils.Util;
 
 import javafx.concurrent.Task;
@@ -63,8 +62,6 @@ public abstract class Proxy {
 								task.run();
 								tasks.remove(0);
 							} catch(Exception ex) {
-								Logger.log(Logger.DEBUG, "Task: " + task + ", task count: " + tasks.size() + ", tasks: " 
-										+ tasks);
 								ex.printStackTrace();
 							}
 						}

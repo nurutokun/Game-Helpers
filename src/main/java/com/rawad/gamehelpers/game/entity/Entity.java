@@ -35,4 +35,13 @@ public final class Entity {
 		return e;
 	}
 	
+	@Override
+	public String toString() {
+		
+		final String original = super.toString();
+		final String regex = ".";
+		
+		return original.substring(original.lastIndexOf(regex) + regex.length());
+	}
+	
 }

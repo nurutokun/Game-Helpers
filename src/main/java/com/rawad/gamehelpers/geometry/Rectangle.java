@@ -17,17 +17,6 @@ public class Rectangle extends Shape {
 		setHeight(height);
 	}
 	
-	public boolean intersects(Rectangle otherRectangle) {
-		
-		if(getX() + getWidth() < otherRectangle.getX() || otherRectangle.getX() + otherRectangle.getWidth() < getX() ||
-				getY() + getHeight() < otherRectangle.getY() || otherRectangle.getY() + otherRectangle.getHeight() < getY()) {
-			return false;
-		}
-		
-		return true;
-		
-	}
-	
 	@Override
 	public boolean contains(double x, double y) {
 		if(x >= getX() && x < getX() + getWidth() && y >= getY() && y < getY() + getHeight()) return true;
