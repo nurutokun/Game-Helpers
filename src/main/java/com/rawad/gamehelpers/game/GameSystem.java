@@ -8,6 +8,8 @@ import com.rawad.gamehelpers.game.entity.Entity;
 // Graphics system (Updates rendering components), physics system (updates moving/collision components), game logic, GUI/input
 public abstract class GameSystem {
 	
+	protected GameEngine gameEngine;
+	
 	protected final ArrayList<Class<? extends Component>> compatibleComponentTypes;
 	
 	protected ArrayList<Entity> compatibleEntities;
@@ -42,6 +44,10 @@ public abstract class GameSystem {
 	
 	public ArrayList<Entity> getCompatibleEntities() {
 		return compatibleEntities;
+	}
+	
+	protected void setGameEngine(GameEngine gameEngine) {
+		this.gameEngine = gameEngine;
 	}
 	
 }

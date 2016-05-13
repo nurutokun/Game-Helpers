@@ -137,12 +137,13 @@ public class GameManager {
 				
 				prevTime = currentTime;
 				
-				game.update(getDeltaTime());
-				
 				try {
+					game.update(getDeltaTime());
+					
 					Thread.sleep(sleepTime);
-				} catch(InterruptedException ex) {
-					Logger.log(Logger.SEVERE, "Thread was interrupted");
+					
+				} catch(Exception ex) {
+					Logger.log(Logger.SEVERE, "Game thread is broken.");
 				}
 				
 			}

@@ -130,7 +130,7 @@ public class Camera {
 	}
 	
 	public void setX(double x) {
-		
+		/**/
 		double minX = outerBounds.getX();
 		
 		double maxWidth = outerBounds.getWidth();
@@ -140,7 +140,7 @@ public class Camera {
 			x = minX;
 		} else if(x > maxWidth - camWidth) {
 			x = maxWidth - camWidth;
-		}
+		}/**/
 		
 		cameraBounds.setX(x);
 		
@@ -151,7 +151,7 @@ public class Camera {
 	}
 	
 	public void setY(double y) {
-		
+		/**/
 		double minY = outerBounds.getY();
 		
 		double maxHeight = outerBounds.getHeight();
@@ -161,7 +161,7 @@ public class Camera {
 			y = minY;
 		} else if(y > maxHeight - camHeight) {
 			y = maxHeight - camHeight;
-		}
+		}/**/
 		
 		cameraBounds.setY(y);
 		

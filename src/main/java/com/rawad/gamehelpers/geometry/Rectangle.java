@@ -75,4 +75,9 @@ public class Rectangle extends Shape {
 		return heightProperty().get();
 	}
 	
+	@Override
+	public String toString() {
+		return super.toString() + "[" + getX() + ", " + getY() + ", " + getWidth() + ", " + getHeight() + "]";
+	}
+	
 }

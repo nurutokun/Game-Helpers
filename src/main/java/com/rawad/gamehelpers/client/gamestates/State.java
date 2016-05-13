@@ -84,10 +84,6 @@ public abstract class State implements IClientController {
 	@Override
 	public void tick() {}
 	
-	protected IClientController getController() {
-		return this;
-	}
-	
 	/**
 	 * For {@code State}-specific stylesheets.
 	 * 

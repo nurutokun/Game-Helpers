@@ -114,7 +114,7 @@ public class StateManager {
 			
 			currentState = newState;
 			
-			client.setController(currentState.getController());
+			client.setController(currentState);
 			
 			game.getGameEngine().setGameSystems(currentState.gameSystems);
 			game.setWorld(currentState.getWorld());
