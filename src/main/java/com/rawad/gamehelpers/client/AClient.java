@@ -1,6 +1,8 @@
 package com.rawad.gamehelpers.client;
 
-import com.rawad.gamehelpers.game.IController;
+import java.util.concurrent.TimeUnit;
+
+import com.rawad.gamehelpers.game.Game;
 import com.rawad.gamehelpers.game.Proxy;
 import com.rawad.gamehelpers.log.Logger;
 
@@ -15,17 +17,21 @@ public abstract class AClient extends Proxy {
 	
 	private Runnable renderingRunnable;
 	
-	@Override
-	public <T extends IController> void setController(T controller) {
-		super.setController(controller);
-		
-		if(renderingThread == null) {
-			renderingThread = new Thread(getRenderingRunnable(), "Rendering Thread");
-			renderingThread.setDaemon(true);
-			renderingThread.start();
-			
-		}
-		
+	private int frames;
+	private int maximumFps;
+	private int averageFps;
+	
+	public AClient() {
+		frames = 0;
+		maximumFps = 120;
+	}
+	
+	public void setMaximumFps(int maximumFps) {
+		this.maximumFps = maximumFps;
+	}
+	
+	public int getAverageFps() {
+		return averageFps;
 	}
 	
 	public Stage getStage() {
@@ -36,29 +42,49 @@ public abstract class AClient extends Proxy {
 		
 		if(renderingRunnable == null) {
 			renderingRunnable = () -> {
+				
+				long totalTime = 0;
+				
+				long currentTime = System.currentTimeMillis();
+				long prevTime = currentTime;
+				
+				while(game.isRunning()) {
 					
-				synchronized(renderingThread) {
+					currentTime = System.currentTimeMillis();
 					
-					while(controller != null) {
+					long deltaTime = currentTime - prevTime;
+					
+					totalTime += (deltaTime <= 0? 1:deltaTime);// timePassed in ().
+					
+					prevTime = currentTime;
+					
+					if(frames >= maximumFps) {
+						averageFps = (int) (frames * TimeUnit.SECONDS.toMillis(1) / totalTime);
 						
-						try {
-							
-							try {
-								Platform.runLater(() -> render());
-//								Platform.runLater(() -> controller.renderThreadSafe());
-							} catch(NullPointerException ex) {
-								// Have to catch this exception b/c multiple runLater calls can be made and the 
-								// controller is set to null before they can be executed (when stopping).
-								Logger.log(Logger.WARNING, "Got null controller when rendering.");
-								break;
-							}
-							
-							renderingThread.wait();
-							
-						} catch(InterruptedException ex) {
-							ex.printStackTrace();
+						frames = 0;
+						totalTime = 0;
+						
+					}
+					
+					try {
+						
+						Platform.runLater(() -> {
+							render();
+							frames++;
+						});
+//						Platform.runLater(() -> controller.renderThreadSafe());
+						
+						if(maximumFps > 0) {// "Unlocked Framerate"; also prevents divide by zero exception.
+							Thread.sleep(TimeUnit.SECONDS.toMillis(1)/maximumFps);
 						}
 						
+					} catch(InterruptedException ex) {
+						ex.printStackTrace();
+					} catch(NullPointerException ex) {
+						// Have to catch this exception b/c multiple runLater calls can be made and the 
+						// controller is set to null before they can be executed (when stopping).
+						Logger.log(Logger.WARNING, "Got null controller when rendering.");
+						break;
 					}
 					
 				}
@@ -70,20 +96,12 @@ public abstract class AClient extends Proxy {
 		
 	}
 	
-	public void requestRender() {
-		synchronized(renderingThread) {
-			renderingThread.notify();
-		}
-	}
-	
 	@Override
 	public void tick() {
 		
 		if(controller != null) {
 			
 			controller.tick();
-			
-			requestRender();
 			
 		}
 		
@@ -95,11 +113,19 @@ public abstract class AClient extends Proxy {
 	protected abstract void render();
 	
 	@Override
+	public void init(Game game) {
+		super.init(game);
+		
+		renderingThread = new Thread(getRenderingRunnable(), "Rendering Thread");
+		renderingThread.setDaemon(true);
+		renderingThread.start();
+		
+	}
+	
+	@Override
 	public void stop() {
 		
 		setController(null);
-		
-		requestRender();// For resetting rendering thread.
 		
 	}
 	

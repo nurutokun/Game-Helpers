@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import com.rawad.gamehelpers.client.IClientController;
-import com.rawad.gamehelpers.client.renderengine.Camera;
+import com.rawad.gamehelpers.client.renderengine.MasterRender;
 import com.rawad.gamehelpers.game.GameSystem;
 import com.rawad.gamehelpers.game.world.World;
 import com.rawad.gamehelpers.resources.Loader;
@@ -30,17 +30,17 @@ public abstract class State implements IClientController {
 	
 	protected FXMLLoader fxmlLoader;
 	
-	protected World world;
+	protected MasterRender masterRender;
 	
-	protected Camera camera;
+	protected World world;
 	
 	public State() {
 		
 		gameSystems = new ArrayList<GameSystem>();
 		
-		world = new World();
+		masterRender = new MasterRender();
 		
-		camera = new Camera();
+		world = new World();
 		
 	}
 	
@@ -68,9 +68,6 @@ public abstract class State implements IClientController {
 		canvas.widthProperty().bind(root.widthProperty());
 		canvas.heightProperty().bind(root.heightProperty());
 		
-		camera.getCameraBounds().widthProperty().bind(root.widthProperty());
-		camera.getCameraBounds().heightProperty().bind(root.heightProperty());
-		
 	}
 	
 	protected void onActivate() {}
@@ -83,6 +80,10 @@ public abstract class State implements IClientController {
 	
 	@Override
 	public void tick() {}
+	
+	public void render() {
+		masterRender.render(canvas.getGraphicsContext2D());
+	}
 	
 	/**
 	 * For {@code State}-specific stylesheets.
@@ -103,10 +104,6 @@ public abstract class State implements IClientController {
 	
 	public World getWorld() {
 		return world;
-	}
-	
-	public Camera getCamera() {
-		return camera;
 	}
 	
 }

@@ -19,38 +19,29 @@ import javafx.scene.transform.Affine;
  * @author Rawad
  *
  */
-public abstract class AMasterRender {
+public class MasterRender {
 	
 	public static final Color DEFAULT_BACKGROUND_COLOR = Color.DARKGRAY;//new Color(202, 212, 227, 25);// Has to be 0.0-1.0
 	
-	private Map<Class<? extends LayeredRender>, LayeredRender> renders;
-	private ArrayList<LayeredRender> iterableRenders;
+	private Map<Class<? extends LayerRender>, LayerRender> renders;
+	private ArrayList<LayerRender> iterableRenders;
 	
-	public AMasterRender() {
+	public MasterRender() {
 		
-		renders = new HashMap<Class<? extends LayeredRender>, LayeredRender>();
-		iterableRenders = new ArrayList<LayeredRender>();
+		renders = new HashMap<Class<? extends LayerRender>, LayerRender>();
+		iterableRenders = new ArrayList<LayerRender>();
 		
 	}
 	
-	public void render(GraphicsContext g, Camera camera) {
+	public void render(GraphicsContext g) {
 		
 		Affine affine = g.getTransform();
 		
-		g.setFill(DEFAULT_BACKGROUND_COLOR);
-		g.fillRect(0, 0, camera.getCameraBounds().getWidth(), camera.getCameraBounds().getHeight());
-		
-		g.scale(camera.getScaleX(), camera.getScaleY());
-		
-		g.rotate(camera.getRotation());
-		
-		g.translate(-camera.getX(), -camera.getY());
-		
-		for(LayeredRender render: iterableRenders) {
+		for(LayerRender render: iterableRenders) {
 			render.render(g);
+			
+			g.setTransform(affine);
 		}
-		
-		g.setTransform(affine);
 		
 	}
 	
@@ -60,7 +51,7 @@ public abstract class AMasterRender {
 	 * @param key
 	 * @param render
 	 */
-	public void registerRender(Class<? extends LayeredRender> key, LayeredRender render) {
+	public void registerRender(Class<? extends LayerRender> key, LayerRender render) {
 		renders.put(key, render);
 		iterableRenders.add(render);
 	}
@@ -70,11 +61,11 @@ public abstract class AMasterRender {
 	 * 
 	 * @param render
 	 */
-	public void registerRender(LayeredRender render) {
+	public void registerRender(LayerRender render) {
 		registerRender(render.getClass(), render);
 	}
 	
-	public <T extends LayeredRender> T getRender(Class<T> key) {
+	public <T extends LayerRender> T getRender(Class<T> key) {
 		return Util.cast(renders.get(key));
 	}
 	
