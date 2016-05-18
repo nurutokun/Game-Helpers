@@ -9,7 +9,7 @@ public class TextureResource extends Resource {
 	private Image texture;
 	private int location;
 	
-	private Runnable action;
+	private LoadListener<TextureResource> loadListener;
 	
 	public TextureResource(String path, int location) {
 		super(path);
@@ -18,16 +18,12 @@ public class TextureResource extends Resource {
 		
 	}
 	
-	public void onLoad() {
-		
-		if(action != null) {
-			action.run();
-		}
-		
+	public void setOnloadAction(LoadListener<TextureResource> loadListsner) {
+		this.loadListener = loadListsner;
 	}
 	
-	public void setOnloadAction(Runnable action) {
-		this.action = action;
+	public LoadListener<TextureResource> getLoadListener() {
+		return loadListener;
 	}
 	
 	/**

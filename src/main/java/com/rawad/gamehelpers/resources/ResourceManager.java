@@ -247,7 +247,7 @@ public class ResourceManager {
 		
 		texture.setLocation(location);
 		
-		texture.onLoad();
+		if(texture.getLoadListener() != null) texture.getLoadListener().onLoad(texture);
 		
 		return location;
 		
