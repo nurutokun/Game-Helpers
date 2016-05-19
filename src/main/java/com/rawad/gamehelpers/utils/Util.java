@@ -57,7 +57,7 @@ public final class Util {
 		
 		for(int i = 0; i < lines.length; i++) {
 			
-			if(lines[i].isEmpty()) continue;// Questionable...
+			if(lines[i] == null || lines[i].isEmpty()) continue;// Questionable...
 			
 			re += lines[i];
 			

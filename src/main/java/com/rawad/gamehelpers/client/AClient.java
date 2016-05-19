@@ -11,6 +11,9 @@ import javafx.stage.Stage;
 
 public abstract class AClient extends Proxy {
 	
+	/** How many {@code frames} to wait before calculating {@code averageFps}. */
+	private static final int FPS_SAMPLE_RATE = 60;
+	
 	protected Stage stage;
 	
 	private Thread renderingThread;
@@ -18,16 +21,16 @@ public abstract class AClient extends Proxy {
 	private Runnable renderingRunnable;
 	
 	private int frames;
-	private int maximumFps;
+	private int targetFps;
 	private int averageFps;
 	
 	public AClient() {
 		frames = 0;
-		maximumFps = 120;
+		targetFps = 120;
 	}
 	
-	public void setMaximumFps(int maximumFps) {
-		this.maximumFps = maximumFps;
+	public void setTargetFps(int targetFps) {
+		this.targetFps = targetFps;
 	}
 	
 	public int getAverageFps() {
@@ -58,7 +61,7 @@ public abstract class AClient extends Proxy {
 					
 					prevTime = currentTime;
 					
-					if(frames >= maximumFps) {
+					if(frames >= FPS_SAMPLE_RATE) {
 						averageFps = (int) (frames * TimeUnit.SECONDS.toMillis(1) / totalTime);
 						
 						frames = 0;
@@ -74,8 +77,8 @@ public abstract class AClient extends Proxy {
 						});
 //						Platform.runLater(() -> controller.renderThreadSafe());
 						
-						if(maximumFps > 0) {// "Unlocked Framerate"; also prevents divide by zero exception.
-							Thread.sleep(TimeUnit.SECONDS.toMillis(1)/maximumFps);
+						if(targetFps > 0) {// "Unlocked Framerate"; also prevents divide by zero exception.
+							Thread.sleep(TimeUnit.SECONDS.toMillis(1)/targetFps);
 						}
 						
 					} catch(InterruptedException ex) {

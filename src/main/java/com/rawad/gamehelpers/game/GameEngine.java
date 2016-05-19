@@ -9,8 +9,8 @@ import com.rawad.gamehelpers.utils.Util;
 
 public class GameEngine {
 	
-	protected final HashMap<Class<? extends GameSystem>, GameSystem> gameSystemsMap = new HashMap<Class<? extends GameSystem>, 
-			GameSystem>();
+	protected final HashMap<Class<? extends GameSystem>, GameSystem> gameSystemsMap = new HashMap
+			<Class<? extends GameSystem>, GameSystem>();
 	protected final ArrayList<GameSystem> gameSystems = new ArrayList<GameSystem>();
 	
 	public void tick(ArrayList<Entity> entities) {
@@ -25,18 +25,7 @@ public class GameEngine {
 			
 			for(Entity entity: entities) {
 				
-				boolean compatible = true;
-				
-				for(Class<? extends Component> compatibleComponentType: compatibleComponentTypes) {
-					
-					if(entity.getComponent(compatibleComponentType) == null) {
-						compatible = false;
-						break;
-					}
-					
-				}
-				
-				if(compatible) compatibleEntities.add(entity);
+				if(Entity.compare(entity, compatibleComponentTypes)) compatibleEntities.add(entity);
 				
 			}
 			

@@ -1,21 +1,14 @@
 package com.rawad.gamehelpers.game.entity;
 
-import java.util.ArrayList;
-
 public class Blueprint {
 	
-	private final ArrayList<Component> components;
+	private final Class<? extends Component>[] components;
 	
-	public Blueprint(Component... components) {
-		this.components = new ArrayList<Component>();
-		
-		for(Component comp: components) {
-			this.components.add(comp);
-		}
-		
+	public Blueprint(Class<? extends Component>[] classes) {
+		this.components = classes;
 	}
 	
-	public ArrayList<Component> getComponents() {
+	public Class<? extends Component>[] getComponents() {
 		return components;
 	}
 	

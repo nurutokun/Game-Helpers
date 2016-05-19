@@ -1,6 +1,8 @@
 package com.rawad.gamehelpers.game.entity;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 
 import com.rawad.gamehelpers.utils.Util;
@@ -24,15 +26,56 @@ public final class Entity {
 	public static Entity createEntity(Object blueprintId) {
 		Entity e = new Entity();
 		
-		ArrayList<Component> components = BlueprintManager.getBlueprint(blueprintId).getComponents();
+		Class<? extends Component>[] components = BlueprintManager.getBlueprint(blueprintId).getComponents();
 		
-		for(Component comp: components) {
+		for(Class<? extends Component> comp: components) {
 			
-			e.addComponent(comp.clone());
+			try {
+				e.addComponent(comp.getConstructor().newInstance());// Might have to add something special for non-primitive
+				// data (e.g. Rectangle)
+			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+					| InvocationTargetException | NoSuchMethodException | SecurityException ex) {
+				ex.printStackTrace();
+				continue;
+			}
 			
 		}
 		
 		return e;
+	}
+	public static boolean compare(Entity e1, Entity e2) {
+		
+		if(e1.components.keySet().size() != e2.components.keySet().size()) {
+			return false;// Small optimization (hopefully).
+		}
+		
+		return compare(e1, e2.components.keySet());
+		
+	}
+	
+	public static boolean compare(Entity e, Class<? extends Component>[] comps) {
+		
+		if(e.components.keySet().size() != comps.length) {
+			return false;// Small optimization (hopefully).
+		}
+		
+		ArrayList<Class<? extends Component>> list = new ArrayList<Class<? extends Component>>();
+		
+		for(Class<? extends Component> comp: comps) {
+			list.add(comp);
+		}
+		
+		return compare(e, list);
+	}
+	
+	public static boolean compare(Entity e, Collection<Class<? extends Component>> comps) {
+		
+		for(Class<? extends Component> compClazz: comps) {
+			if(e.getComponent(compClazz) == null) return false;
+		}
+		
+		return true;
+		
 	}
 	
 	@Override
