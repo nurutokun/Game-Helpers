@@ -86,7 +86,7 @@ public final class Mouse {
 		
 		Mouse.region = region;
 		
-		setCursor(Cursors.DEFAULT);
+		setCursor(Cursors.BLANK);
 		
 	}
 	
@@ -94,9 +94,7 @@ public final class Mouse {
 		
 		Mouse.clamped = false;
 		
-		setCursor(Cursors.BLANK);
-		
-		Mouse.region = null;
+		setCursor(Cursors.DEFAULT);
 		
 	}
 	

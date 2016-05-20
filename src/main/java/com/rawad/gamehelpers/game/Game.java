@@ -72,15 +72,16 @@ public abstract class Game {
 		
 		totalTime = timePassed + remainingTime;
 		
-		while(totalTime >= tickTime) {
-			
-			totalTime -= tickTime;
-			
-			gameEngine.tick(world.getEntitiesAsList());// Populates GameSystem objects with entities 
-			// to work with.
-			
-			clientOrServer.tick();// Able to get info from game systems (e.g. for rendering).
-			
+		synchronized(world.getEntitiesAsList()) {
+			while(totalTime >= tickTime) {
+				
+				totalTime -= tickTime;
+				
+				gameEngine.tick(world.getEntitiesAsList());// Populates GameSystem objects with entities to work with.
+				
+				clientOrServer.tick();// Able to get info from game systems (e.g. for rendering).
+				
+			}
 		}
 		
 		remainingTime = totalTime;
