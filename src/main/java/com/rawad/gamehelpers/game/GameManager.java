@@ -123,8 +123,11 @@ public class GameManager {
 					
 					Thread.sleep(sleepTime);
 					
+				} catch(InterruptedException ex) {
+					Logger.log(Logger.WARNING, "Game thread interrupted.");
 				} catch(Exception ex) {
 					Logger.log(Logger.SEVERE, "Game thread is broken.");
+					ex.printStackTrace();
 				}
 				
 			}

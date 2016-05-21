@@ -3,19 +3,17 @@ package com.rawad.gamehelpers.client.gamestates;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import com.rawad.gamehelpers.client.IClientController;
 import com.rawad.gamehelpers.client.renderengine.MasterRender;
 import com.rawad.gamehelpers.game.GameSystem;
 import com.rawad.gamehelpers.game.world.World;
 import com.rawad.gamehelpers.resources.Loader;
 
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 
-public abstract class State implements IClientController {
+public abstract class State {
 	
 	/** Each {@code State} can have its own set of {@code GameSystem} objects; order of adding them is maintained. */
 	protected final ArrayList<GameSystem> gameSystems;
@@ -78,9 +76,6 @@ public abstract class State implements IClientController {
 		this.sm = sm;
 	}
 	
-	@Override
-	public void tick() {}
-	
 	public void render() {
 		masterRender.render(canvas.getGraphicsContext2D());
 	}
@@ -94,7 +89,7 @@ public abstract class State implements IClientController {
 		return "StyleSheet";
 	}
 	
-	public Parent getRoot() {
+	public StackPane getRoot() {
 		return root;
 	}
 	

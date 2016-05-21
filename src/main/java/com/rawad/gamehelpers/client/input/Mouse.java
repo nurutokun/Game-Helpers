@@ -9,6 +9,7 @@ import com.rawad.gamehelpers.log.Logger;
 
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
+import javafx.scene.Parent;
 import javafx.scene.layout.Region;
 
 public final class Mouse {
@@ -46,14 +47,25 @@ public final class Mouse {
 		
 	}
 	
-	public static void update() {
+	public static void update(Parent parent) {
 		
 		mouseLocation = MouseInfo.getPointerInfo().getLocation();
 		
 		x = mouseLocation.getX();
 		y = mouseLocation.getY();
 		
+		Region region = null;
+		
+		try {
+			region = (Region) parent;
+		} catch(NullPointerException | ClassCastException ex) {
+			Logger.log(Logger.DEBUG, "Parent isn't a region.");
+			ex.printStackTrace();
+		}
+		
 		if(region != null) {
+			
+			Mouse.region = region;
 			
 			Point2D relativeMouseLocation = region.screenToLocal(mouseLocation.getX(), mouseLocation.getY());
 			
@@ -77,14 +89,12 @@ public final class Mouse {
 		}
 	}
 	
-	public static void clamp(Region region) {
+	public static void clamp() {
 		
 		Mouse.clamped = true;
 		
 		Mouse.clampX = region.getWidth() / 2d;
 		Mouse.clampY = region.getHeight() / 2d;
-		
-		Mouse.region = region;
 		
 		setCursor(Cursors.BLANK);
 		

@@ -2,6 +2,7 @@ package com.rawad.gamehelpers.client;
 
 import java.util.concurrent.TimeUnit;
 
+import com.rawad.gamehelpers.client.gamestates.StateManager;
 import com.rawad.gamehelpers.game.Game;
 import com.rawad.gamehelpers.game.Proxy;
 import com.rawad.gamehelpers.log.Logger;
@@ -12,9 +13,13 @@ import javafx.stage.Stage;
 public abstract class AClient extends Proxy {
 	
 	/** How many {@code frames} to wait before calculating {@code averageFps}. */
-	private static final int FPS_SAMPLE_RATE = 60;
+	private static final int FPS_SAMPLE_RATE = 30;
 	
 	protected Stage stage;
+	
+	protected StateManager sm;
+	
+	protected boolean readyToRender;
 	
 	private Thread renderingThread;
 	
@@ -26,7 +31,7 @@ public abstract class AClient extends Proxy {
 	
 	public AClient() {
 		frames = 0;
-		targetFps = 120;
+		targetFps = 60;
 	}
 	
 	public void setTargetFps(int targetFps) {
@@ -61,7 +66,7 @@ public abstract class AClient extends Proxy {
 					
 					prevTime = currentTime;
 					
-					if(frames >= FPS_SAMPLE_RATE) {
+					if(frames >= FPS_SAMPLE_RATE && totalTime > 0) {
 						averageFps = (int) (frames * TimeUnit.SECONDS.toMillis(1) / totalTime);
 						
 						frames = 0;
@@ -72,8 +77,12 @@ public abstract class AClient extends Proxy {
 					try {
 						
 						Platform.runLater(() -> {
-							render();
-							frames++;
+							
+							if(readyToRender && sm.getCurrentState() != null) {
+								sm.getCurrentState().render();
+								frames++;
+							}
+							
 						});
 //						Platform.runLater(() -> controller.renderThreadSafe());
 						
@@ -100,35 +109,16 @@ public abstract class AClient extends Proxy {
 	}
 	
 	@Override
-	public void tick() {
-		
-		if(controller != null) {
-			
-			controller.tick();
-			
-		}
-		
-	}
-	
-	/**
-	 * JavaFX thread safe (for now).
-	 */
-	protected abstract void render();
-	
-	@Override
 	public void init(Game game) {
 		super.init(game);
+		
+		sm = new StateManager(game, this);
 		
 		renderingThread = new Thread(getRenderingRunnable(), "Rendering Thread");
 		renderingThread.setDaemon(true);
 		renderingThread.start();
 		
-	}
-	
-	@Override
-	public void stop() {
-		
-		setController(null);
+		readyToRender = false;
 		
 	}
 	

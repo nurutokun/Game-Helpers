@@ -2,8 +2,6 @@ package com.rawad.gamehelpers.game;
 
 import java.util.ArrayList;
 
-import com.rawad.gamehelpers.utils.Util;
-
 import javafx.concurrent.Task;
 
 /**
@@ -14,8 +12,6 @@ import javafx.concurrent.Task;
  */
 public abstract class Proxy {
 	
-	protected IController controller;
-	
 	protected Thread loadingThread;
 	
 	protected Runnable loadingRunnable;
@@ -23,6 +19,8 @@ public abstract class Proxy {
 	protected ArrayList<Task<Integer>> tasks;
 	
 	protected Game game;
+	
+	protected boolean readyToUpdate;
 	
 	public void init(Game game) {
 		this.game = game;
@@ -33,19 +31,13 @@ public abstract class Proxy {
 		loadingThread.setDaemon(true);
 		loadingThread.start();
 		
+		readyToUpdate = false;
+		
 	}
 	
 	public abstract void tick();
 	
 	public abstract void stop();
-	
-	public <T extends IController> void setController(T controller) {
-		this.controller = controller;
-	}
-	
-	public final <T extends IController> T getController() {
-		return Util.cast(controller);
-	}
 	
 	public Runnable getLoadingRunnable() {
 		
