@@ -25,7 +25,7 @@ public class GameEngine {
 			
 			for(Entity entity: entities) {
 				
-				if(Entity.compare(entity, compatibleComponentTypes)) compatibleEntities.add(entity);
+				if(Entity.contains(entity, compatibleComponentTypes)) compatibleEntities.add(entity);
 				
 			}
 			

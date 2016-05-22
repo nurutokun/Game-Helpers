@@ -25,7 +25,6 @@ public abstract class Game {
 	protected HashMap<Class<? extends Loader>, Loader> loaders;
 	
 	protected SimpleBooleanProperty debug;
-	protected SimpleBooleanProperty paused;
 	
 	/** Time a single tick lasts in milliseconds. */
 	private long tickTime;
@@ -33,6 +32,7 @@ public abstract class Game {
 	private long remainingTime;
 	
 	private boolean running;
+	private boolean paused;
 	private boolean stopRequested;
 	
 	public Game() {
@@ -153,12 +153,11 @@ public abstract class Game {
 		return running;
 	}
 	
-	private boolean isPaused() {
-		return pausedProperty().get();
+	public void setPaused(boolean paused) {
+		this.paused = paused;
 	}
 	
-	public SimpleBooleanProperty pausedProperty() {
-		if(paused == null) paused = new SimpleBooleanProperty();
+	private boolean isPaused() {
 		return paused;
 	}
 	

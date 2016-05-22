@@ -11,7 +11,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
 
 // TODO: Create a WritableImage as a buffer, pass all the renders an object that can draw actual shapes and images onto the
-// WritableRaster of the buffer; then separate the rendering in AClient's rendering thread and the IClientController.
+// WritableRaster of the buffer.
 /**
  * Responsible for giving each {@code LayeredRender} its apropriate {@code Entity} objects before 
  * {@link #render(GraphicsContext, double, double)} gets called.

@@ -26,6 +26,8 @@ public final class Entity {
 	public static Entity createEntity(Object blueprintId) {
 		Entity e = new Entity();
 		
+		if(blueprintId == null) return e;
+		
 		Class<? extends Component>[] components = BlueprintManager.getBlueprint(blueprintId).getComponents();
 		
 		for(Class<? extends Component> comp: components) {
@@ -49,10 +51,18 @@ public final class Entity {
 			return false;// Small optimization (hopefully).
 		}
 		
-		return compare(e1, e2.components.keySet());
+		return contains(e1, e2.components.keySet());
 		
 	}
 	
+	/**
+	 * Returns {@code false} if the number of component in {@code e} is not equal to the length of {@code comps}. To get
+	 * around this, use the other method {@link Entity#contains(Entity, Collection)}.
+	 * 
+	 * @param e
+	 * @param comps
+	 * @return
+	 */
 	public static boolean compare(Entity e, Class<? extends Component>[] comps) {
 		
 		if(e.components.keySet().size() != comps.length) {
@@ -65,10 +75,17 @@ public final class Entity {
 			list.add(comp);
 		}
 		
-		return compare(e, list);
+		return contains(e, list);
 	}
 	
-	public static boolean compare(Entity e, Collection<Class<? extends Component>> comps) {
+	/**
+	 * 
+	 * @param e
+	 * @param comps
+	 * @return {@code true} if {@code e} contains all the {@code Component} types contained in {@code comps}; {@code false} 
+	 * 			otherwise.
+	 */
+	public static boolean contains(Entity e, Collection<Class<? extends Component>> comps) {
 		
 		for(Class<? extends Component> compClazz: comps) {
 			if(e.getComponent(compClazz) == null) return false;
