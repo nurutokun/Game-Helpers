@@ -8,7 +8,7 @@ import com.rawad.gamehelpers.log.Logger;
 
 public abstract class FileParser {
 	
-	/** Just a unified object for holding all the day from the parsed file(s). */
+	/** Just a unified object for holding all the data from the parsed file(s). */
 	protected HashMap<String, String> data;
 	
 	public FileParser() {
@@ -25,7 +25,7 @@ public abstract class FileParser {
 				
 			try {
 				
-					parseLine(line);
+				parseLine(line);
 					
 			} catch (Exception ex) {
 				Logger.log(Logger.WARNING, "Coulnd't read line from file.");

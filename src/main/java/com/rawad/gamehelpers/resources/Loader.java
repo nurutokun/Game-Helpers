@@ -61,7 +61,7 @@ public abstract class Loader {
 				+ TEXT_FILE_EXTENSION);
 	}
 	
-	protected void saveFile(String content, String folderName, String fileName) {
+	public void saveFile(String content, String folderName, String fileName) {
 		ResourceManager.saveFile(ResourceManager.getProperPath(basePath, RES_FOLDER, folderName, fileName) 
 				+ TEXT_FILE_EXTENSION, content);
 	}
@@ -77,8 +77,8 @@ public abstract class Loader {
 	}
 	
 	/**
-	 * Assumes the fxml file is in the same package as the the <code>clazz</code> given. Note: can be in completely different
-	 * src file.
+	 * Assumes the fxml file is in the same package as the the {@code clazz} given. <b>Note:</b> can be in completely 
+	 * different src file.
 	 * 
 	 * @param clazz
 	 * @param fileName

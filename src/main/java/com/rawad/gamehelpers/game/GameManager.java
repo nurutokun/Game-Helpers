@@ -15,19 +15,14 @@ public class GameManager {
 	
 	private Thread gameThread;
 	
-	private int fps;
-	
 	private long sleepTime;
-	
-	private long prevTime;
 	private long timePassed;
-	private long averageFrameRate;
 	
 	private GameManager() {
 		
 		games = new ArrayList<Game>();
 		
-		setFPS(120);// Works fine with 300.
+		setUpdateRate(120);// Works fine with 300.
 		
 	}
 	
@@ -107,10 +102,9 @@ public class GameManager {
 			
 			clientOrServer.init(game);
 			
-			int frames = 0;
-			int totalTime = 0;
-			
 			long currentTime = System.currentTimeMillis();
+			
+			long prevTime;
 			
 			prevTime = currentTime;// To keep the initial value limited to zero, just in case.
 			
@@ -122,27 +116,18 @@ public class GameManager {
 				
 				timePassed = (deltaTime <= 0? 1:deltaTime);
 				
-				totalTime += timePassed;
-				
-				frames++;
-				
-				if(frames >= fps) {
-					
-					averageFrameRate = frames * TimeUnit.SECONDS.toMillis(1) / totalTime;
-					
-					frames = 0;
-					totalTime = 0;
-					
-				}
-				
 				prevTime = currentTime;
 				
-				game.update(getDeltaTime());
-				
 				try {
+					game.update(getTimePassed());
+					
 					Thread.sleep(sleepTime);
+					
 				} catch(InterruptedException ex) {
-					Logger.log(Logger.SEVERE, "Thread was interrupted");
+					Logger.log(Logger.WARNING, "Game thread interrupted.");
+				} catch(Exception ex) {
+					Logger.log(Logger.SEVERE, "Game thread is broken.");
+					ex.printStackTrace();
 				}
 				
 			}
@@ -154,31 +139,22 @@ public class GameManager {
 	}
 	
 	/**
-	 * Sets the maximum frames per second that can be achieved.
+	 * Number of times this {@code GameManager} tries to update the {@code currentGame} every second (in Hz).
 	 * 
-	 * @param fps
+	 * @param updateRate
 	 */
-	public void setFPS(int fps) {
+	public void setUpdateRate(int updateRate) {
 		
-		this.fps = fps;
-		sleepTime = TimeUnit.SECONDS.toMillis(1)/fps;
+		sleepTime = TimeUnit.SECONDS.toMillis(1)/updateRate;
 		
 	}
 	
 	/**
-	 * Gets the calculated, average frames per second achieved over the past frames defined by <code>fps</code>
 	 * 
-	 * @return
+	 * @return The amount of time that has passed, in milliseconds, since the last update loop.
+	 * @see GameThread#run()
 	 */
-	public long getFPS() {
-		return averageFrameRate;
-	}
-	
-	public long getSleepTime() {
-		return sleepTime;
-	}
-	
-	public long getDeltaTime() {
+	public long getTimePassed() {
 		return timePassed;
 	}
 	

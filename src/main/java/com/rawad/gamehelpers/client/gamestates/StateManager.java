@@ -1,4 +1,4 @@
-package com.rawad.gamehelpers.gamestates;
+package com.rawad.gamehelpers.client.gamestates;
 
 import java.util.HashMap;
 
@@ -67,8 +67,6 @@ public class StateManager {
 			currentState.onDeactivate();
 		}
 		
-		client.setController(null);
-		
 		currentState = null;
 		requestedStateIdHolder = null;
 		
@@ -102,7 +100,7 @@ public class StateManager {
 		requestedStateIdHolder = stateIdHolder;
 	}
 	
-	private void setState(Class<? extends State> stateId) {
+	public void setState(Class<? extends State> stateId) {
 		
 		try {
 			
@@ -114,7 +112,8 @@ public class StateManager {
 			
 			currentState = newState;
 			
-			client.setController(currentState.getController());
+			game.getGameEngine().setGameSystems(currentState.gameSystems);
+			game.setWorld(currentState.getWorld());
 			
 			currentState.onActivate();
 			
@@ -149,6 +148,10 @@ public class StateManager {
 	
 	public Scene getScene() {
 		return scene;
+	}
+	
+	public State getCurrentState() {
+		return currentState;
 	}
 	
 }

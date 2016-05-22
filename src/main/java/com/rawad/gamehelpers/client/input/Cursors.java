@@ -1,4 +1,4 @@
-package com.rawad.gamehelpers.input;
+package com.rawad.gamehelpers.client.input;
 
 import javafx.scene.Cursor;
 
