@@ -78,9 +78,11 @@ public abstract class AClient extends Proxy {
 						
 						Platform.runLater(() -> {
 							
-							if(readyToRender && sm.getCurrentState() != null) {
-								sm.getCurrentState().render();
-								frames++;
+							if(readyToRender) {
+								synchronized(game.getWorld().getEntitiesAsList()) {
+									sm.getCurrentState().render();
+									frames++;
+								}
 							}
 							
 						});

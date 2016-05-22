@@ -25,6 +25,7 @@ public abstract class Game {
 	protected HashMap<Class<? extends Loader>, Loader> loaders;
 	
 	protected SimpleBooleanProperty debug;
+	protected SimpleBooleanProperty paused;
 	
 	/** Time a single tick lasts in milliseconds. */
 	private long tickTime;
@@ -76,8 +77,10 @@ public abstract class Game {
 			
 			totalTime -= tickTime;
 			
-			synchronized(world.getEntitiesAsList()) {
-				gameEngine.tick(world.getEntitiesAsList());// Populates GameSystem objects with entities to work with.
+			if(!isPaused()) {
+				synchronized(world.getEntitiesAsList()) {
+					gameEngine.tick(world.getEntitiesAsList());// Populates GameSystem objects with entities to work with.
+				}
 			}
 			
 			if(clientOrServer.readyToUpdate) {
@@ -113,6 +116,10 @@ public abstract class Game {
 		this.world = world;
 	}
 	
+	public World getWorld() {
+		return world;
+	}
+	
 	public void setProxy(Proxy clientOrServer) {
 		this.clientOrServer = clientOrServer;
 	}
@@ -144,6 +151,15 @@ public abstract class Game {
 	
 	public boolean isRunning() {
 		return running;
+	}
+	
+	private boolean isPaused() {
+		return pausedProperty().get();
+	}
+	
+	public SimpleBooleanProperty pausedProperty() {
+		if(paused == null) paused = new SimpleBooleanProperty();
+		return paused;
 	}
 	
 	public void requestStop() {

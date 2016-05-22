@@ -69,8 +69,10 @@ public final class Mouse {
 			
 			Point2D relativeMouseLocation = region.screenToLocal(mouseLocation.getX(), mouseLocation.getY());
 			
-			x = relativeMouseLocation.getX();
-			y = relativeMouseLocation.getY();
+			if(relativeMouseLocation != null) {
+				x = relativeMouseLocation.getX();
+				y = relativeMouseLocation.getY();
+			}
 			
 		}
 		
