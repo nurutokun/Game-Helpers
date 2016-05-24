@@ -23,6 +23,27 @@ public final class Entity {
 		return Util.cast(components.get(compClass));
 	}
 	
+	public static Entity createEntity(Entity e, Object blueprintId) {
+		
+		Entity newEntity = createEntity(blueprintId);// Creates new Entity with empty components.
+		
+		for(Class<? extends Component> compClass: e.components.keySet()) {
+			
+			Component newEntityComp = newEntity.getComponent(compClass);
+			
+			e.getComponent(compClass).copyData(newEntityComp);// Copies component data from e into that of the new Entity.
+			
+		}
+		
+		return newEntity;
+	}
+	
+	/**
+	 * Creates a new {@code Entity} with all the components defined by the {@code blueprintId} with no additional data.
+	 * 
+	 * @param blueprintId
+	 * @return
+	 */
 	public static Entity createEntity(Object blueprintId) {
 		Entity e = new Entity();
 		
@@ -45,6 +66,7 @@ public final class Entity {
 		
 		return e;
 	}
+	
 	public static boolean compare(Entity e1, Entity e2) {
 		
 		if(e1.components.keySet().size() != e2.components.keySet().size()) {

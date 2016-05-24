@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import com.rawad.gamehelpers.game.entity.Component;
 import com.rawad.gamehelpers.game.entity.Entity;
 
-// Graphics system (Updates rendering components), physics system (updates moving/collision components), game logic, GUI/input
 public abstract class GameSystem {
 	
 	protected GameEngine gameEngine;
