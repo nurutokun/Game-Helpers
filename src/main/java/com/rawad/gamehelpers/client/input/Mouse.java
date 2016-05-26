@@ -76,7 +76,7 @@ public final class Mouse {
 			
 		}
 		
-		if(clamped && bot != null) {
+		if(clamped && bot != null && region.isFocused()) {
 			
 			clampX = region.getWidth() / 2d;
 			clampY = region.getHeight() / 2d;
