@@ -27,13 +27,7 @@ public final class Entity {
 		
 		Entity newEntity = createEntity(blueprintId);// Creates new Entity with empty components.
 		
-		for(Class<? extends Component> compClass: e.components.keySet()) {
-			
-			Component newEntityComp = newEntity.getComponent(compClass);
-			
-			e.getComponent(compClass).copyData(newEntityComp);// Copies component data from e into that of the new Entity.
-			
-		}
+		Entity.copyComponentData(newEntity, e);
 		
 		return newEntity;
 	}
@@ -65,6 +59,21 @@ public final class Entity {
 		}
 		
 		return e;
+	}
+	
+	public static void copyComponentData(Entity entityToCopyTo, Entity entityToCopyFrom) {
+		
+		for(Class<? extends Component> compClass: entityToCopyTo.components.keySet()) {
+			// Only loop through components we need which is are that in the target entity.
+			
+			Component compToCopyTo = entityToCopyTo.getComponent(compClass);
+			
+			Component compToCopyFrom = entityToCopyFrom.getComponent(compClass);
+			
+			if(compToCopyFrom != null) compToCopyFrom.copyData(compToCopyTo);
+			
+		}
+		
 	}
 	
 	public static boolean compare(Entity e1, Entity e2) {

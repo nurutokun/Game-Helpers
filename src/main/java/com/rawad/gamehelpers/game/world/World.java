@@ -22,8 +22,12 @@ public class World {
 		
 	}
 	
-	public void addEntity(Entity e) {
-		entities.add(e);
+	public boolean addEntity(Entity e) {
+		return entities.add(e);
+	}
+	
+	public boolean removeEntity(Entity e) {
+		return entities.remove(e);
 	}
 	
 	public ReadOnlyListWrapper<Entity> getObservableEntities() {
