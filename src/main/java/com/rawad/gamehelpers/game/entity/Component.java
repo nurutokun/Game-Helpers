@@ -16,4 +16,12 @@ public abstract class Component {
 	 */
 	public Component() {}
 	
+	/**
+	 * 
+	 * 
+	 * @param comp {@code Component} to copy data from {@code this} into.
+	 * @return {@code comp} with copied data.
+	 */
+	public abstract Component copyData(Component comp);
+	
 }

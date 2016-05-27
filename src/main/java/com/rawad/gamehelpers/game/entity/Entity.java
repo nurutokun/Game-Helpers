@@ -23,6 +23,21 @@ public final class Entity {
 		return Util.cast(components.get(compClass));
 	}
 	
+	public static Entity createEntity(Entity e, Object blueprintId) {
+		
+		Entity newEntity = createEntity(blueprintId);// Creates new Entity with empty components.
+		
+		Entity.copyComponentData(newEntity, e);
+		
+		return newEntity;
+	}
+	
+	/**
+	 * Creates a new {@code Entity} with all the components defined by the {@code blueprintId} with no additional data.
+	 * 
+	 * @param blueprintId
+	 * @return
+	 */
 	public static Entity createEntity(Object blueprintId) {
 		Entity e = new Entity();
 		
@@ -45,6 +60,22 @@ public final class Entity {
 		
 		return e;
 	}
+	
+	public static void copyComponentData(Entity entityToCopyTo, Entity entityToCopyFrom) {
+		
+		for(Class<? extends Component> compClass: entityToCopyTo.components.keySet()) {
+			// Only loop through components we need which is are that in the target entity.
+			
+			Component compToCopyTo = entityToCopyTo.getComponent(compClass);
+			
+			Component compToCopyFrom = entityToCopyFrom.getComponent(compClass);
+			
+			if(compToCopyFrom != null) compToCopyFrom.copyData(compToCopyTo);
+			
+		}
+		
+	}
+	
 	public static boolean compare(Entity e1, Entity e2) {
 		
 		if(e1.components.keySet().size() != e2.components.keySet().size()) {
