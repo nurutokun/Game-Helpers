@@ -143,9 +143,9 @@ public class GameManager {
 	 * 
 	 * @param updateRate
 	 */
-	public void setUpdateRate(int updateRate) {
+	public void setUpdateRate(long updateRate) {
 		
-		sleepTime = TimeUnit.SECONDS.toMillis(1)/updateRate;
+		sleepTime = TimeUnit.SECONDS.toMillis(1) / updateRate;
 		
 	}
 	

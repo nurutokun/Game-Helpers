@@ -144,6 +144,19 @@ public final class Util {
 	    return arr;
 	}
 	
+	@SafeVarargs
+	public static <T> T[] prepend(T[] arr, T... firstElements) {
+		final int length = firstElements.length;
+		
+		firstElements = Arrays.copyOf(firstElements, length + arr.length);
+		
+		for(int i = length; i < firstElements.length; i++) {
+			firstElements[i] = arr[i - length];
+		}
+		
+	    return firstElements;
+	}
+	
 	/**
 	 * Should only give an error at the level of another class using this method. Putting a log on that shows that
 	 * it's casting to the same object...

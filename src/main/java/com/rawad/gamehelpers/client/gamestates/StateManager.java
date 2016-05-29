@@ -110,7 +110,7 @@ public class StateManager {
 				currentState.onDeactivate();
 			}
 			
-			currentState = newState;
+			setState(newState);
 			
 			game.getGameEngine().setGameSystems(currentState.gameSystems);
 			game.setWorld(currentState.getWorld());
@@ -131,6 +131,10 @@ public class StateManager {
 			
 		}
 		
+	}
+	
+	public void setState(State state) {
+		this.currentState = state;
 	}
 	
 	/**

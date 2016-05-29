@@ -110,6 +110,16 @@ public abstract class AClient extends Proxy {
 		
 	}
 	
+	/**
+	 * Sets {@link #stage} to the given {@code stage} parameter. This method should be called before 
+	 * {@link #init(Game)}.
+	 * 
+	 * @param stage
+	 */
+	public void initGui(Stage stage) {
+		this.stage = stage;
+	}
+	
 	@Override
 	public void init(Game game) {
 		super.init(game);
