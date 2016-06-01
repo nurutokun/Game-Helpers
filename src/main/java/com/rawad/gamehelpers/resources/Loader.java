@@ -13,6 +13,7 @@ public abstract class Loader {
 	private static final String FONT_FILE_EXTENSION = ResourceManager.getString("GameHelpers.font");
 	private static final String FXML_FILE_EXTENSION = ResourceManager.getString("GameHelpers.fxml");
 	private static final String CSS_FILE_EXTENSION = ResourceManager.getString("GameHelpers.css");
+	private static final String ENTITY_BLUEPRINT_FILE_EXTENSION = ResourceManager.getString("GameHeleprs.xml");
 	
 	/** Holds the name for the base texture folder. */
 	private static final String TEXTURE_FOLDER = ResourceManager.getString("GameHelpers.textures");
@@ -22,7 +23,7 @@ public abstract class Loader {
 	private final String basePath;
 	
 	/**
-	 * Supports multi-folder specification (like in methods).
+	 * Takes parts representing the path to the directory this {@code Loader} should load from.
 	 * 
 	 * @param basePathParts
 	 */
@@ -89,7 +90,7 @@ public abstract class Loader {
 	}
 	
 	/**
-	 * Assumes the name of the fxml file is that of the given <code>clazz</code>.
+	 * Assumes the name of the fxml file is that of the given {@code clazz}.
 	 * 
 	 * @param clazz
 	 * @return
@@ -100,6 +101,10 @@ public abstract class Loader {
 	
 	public static String getStyleSheetLocation(Class<? extends Object> clazz, String styleSheetName) {
 		return clazz.getResource(styleSheetName + CSS_FILE_EXTENSION).toExternalForm();
+	}
+	
+	public static File getEntityBlueprintFileLocation(Class<?extends Object> clazz, String fileName) {
+		return new File(clazz.getResource(fileName + ENTITY_BLUEPRINT_FILE_EXTENSION).toExternalForm());
 	}
 	
 }

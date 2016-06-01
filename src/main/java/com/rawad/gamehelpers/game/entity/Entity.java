@@ -33,23 +33,36 @@ public final class Entity {
 	}
 	
 	/**
+	 * Creates an empty {@code Entity} object.
+	 * 
+	 * @return New {@code Entity} instance.
+	 */
+	public static Entity createEntity() {
+		return new Entity();
+	}
+	
+	/**
 	 * Creates a new {@code Entity} with all the components defined by the {@code blueprintId} with no additional data.
 	 * 
 	 * @param blueprintId
 	 * @return
 	 */
 	public static Entity createEntity(Object blueprintId) {
-		Entity e = new Entity();
+		Entity e = Entity.createEntity();
 		
 		if(blueprintId == null) return e;
 		
-		Class<? extends Component>[] components = BlueprintManager.getBlueprint(blueprintId).getComponents();
+		Entity entityBase = BlueprintManager.getBlueprint(blueprintId).getEntityBase();
 		
-		for(Class<? extends Component> comp: components) {
+		for(Component baseComp: entityBase.components.values()) {
 			
 			try {
-				e.addComponent(comp.getConstructor().newInstance());// Might have to add something special for non-primitive
-				// data (e.g. Rectangle)
+				
+				Component newComp = baseComp.getClass().getConstructor().newInstance();
+				e.addComponent(newComp);
+				
+				baseComp.copyData(newComp);
+				
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 					| InvocationTargetException | NoSuchMethodException | SecurityException ex) {
 				ex.printStackTrace();

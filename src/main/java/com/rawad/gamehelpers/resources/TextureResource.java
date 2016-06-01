@@ -9,7 +9,7 @@ public class TextureResource extends Resource {
 	private Image texture;
 	private int location;
 	
-	private LoadListener<TextureResource> loadListener;
+	private ILoadListener<TextureResource> loadListener;
 	
 	public TextureResource(String path, int location) {
 		super(path);
@@ -18,11 +18,11 @@ public class TextureResource extends Resource {
 		
 	}
 	
-	public void setOnloadAction(LoadListener<TextureResource> loadListsner) {
+	public void setOnloadAction(ILoadListener<TextureResource> loadListsner) {
 		this.loadListener = loadListsner;
 	}
 	
-	public LoadListener<TextureResource> getLoadListener() {
+	public ILoadListener<TextureResource> getLoadListener() {
 		return loadListener;
 	}
 	
