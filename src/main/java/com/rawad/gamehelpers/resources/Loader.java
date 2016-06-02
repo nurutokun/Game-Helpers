@@ -9,11 +9,11 @@ public abstract class Loader {
 	private static final String RES_FOLDER = ResourceManager.getString("GameHelpers.res");
 	
 	private static final String TEXT_FILE_EXTENSION = ResourceManager.getString("GameHelpers.text");
-	private static final String TEXTURE_FILE_EXTENSION = ResourceManager.getString("GameHelpers.image");
+	private static final String TEXTURE_FILE_EXTENSION = ResourceManager.getString("GameHelpers.texture");
 	private static final String FONT_FILE_EXTENSION = ResourceManager.getString("GameHelpers.font");
-	private static final String FXML_FILE_EXTENSION = ResourceManager.getString("GameHelpers.fxml");
-	private static final String CSS_FILE_EXTENSION = ResourceManager.getString("GameHelpers.css");
-	private static final String ENTITY_BLUEPRINT_FILE_EXTENSION = ResourceManager.getString("GameHeleprs.xml");
+	private static final String LAYOUT_FILE_EXTENSION = ResourceManager.getString("GameHelpers.layout");
+	private static final String STYLESHEET_FILE_EXTENSION = ResourceManager.getString("GameHelpers.stylesheet");
+	private static final String ENTITY_BLUEPRINT_FILE_EXTENSION = ResourceManager.getString("GameHeleprs.entity");
 	
 	/** Holds the name for the base texture folder. */
 	private static final String TEXTURE_FOLDER = ResourceManager.getString("GameHelpers.textures");
@@ -86,7 +86,7 @@ public abstract class Loader {
 	 * @return
 	 */
 	public static URL getFxmlLocation(Class<? extends Object> clazz, String fileName) {
-		return clazz.getResource(fileName + FXML_FILE_EXTENSION);
+		return clazz.getResource(fileName + LAYOUT_FILE_EXTENSION);
 	}
 	
 	/**
@@ -100,7 +100,7 @@ public abstract class Loader {
 	}
 	
 	public static String getStyleSheetLocation(Class<? extends Object> clazz, String styleSheetName) {
-		return clazz.getResource(styleSheetName + CSS_FILE_EXTENSION).toExternalForm();
+		return clazz.getResource(styleSheetName + STYLESHEET_FILE_EXTENSION).toExternalForm();
 	}
 	
 	public static File getEntityBlueprintFileLocation(Class<?extends Object> clazz, String fileName) {
