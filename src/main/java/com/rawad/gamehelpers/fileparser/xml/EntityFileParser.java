@@ -1,29 +1,78 @@
-package com.rawad.gamehelpers.fileparser;
+package com.rawad.gamehelpers.fileparser.xml;
+
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.stream.StreamSource;
 
+import com.rawad.gamehelpers.game.entity.Component;
 import com.rawad.gamehelpers.game.entity.Entity;
+import com.rawad.gamehelpers.log.Logger;
 import com.rawad.gamehelpers.resources.Loader;
+import com.rawad.gamehelpers.utils.Util;
 
 public final class EntityFileParser {
 	
-	public Entity parseEntityFile(Class<? extends Object> clazz, String entityFileName) {
+	/** When set with {@link Marshaller#setProperty(String, Object)} as the key, the value will be placed. */
+	private static final String ADD_STRING_PROPERTY = "com.sun.xml.internal.bind.xmlHeaders";
+	
+	private EntityFileParser() {}
+	
+	@SafeVarargs
+	public static Entity parseEntityFile(Class<? extends Object> clazz, String entityFileName, 
+			Class<? extends Component>... classes) {
+		
 		Entity e = Entity.createEntity();
 		
 		try {
-			JAXBContext jaxbContext = JAXBContext.newInstance(Entity.class);
+			
+//			Class<? extends Object>[] classesArray = (Class<? extends Object>[]) classes.toArray();
+			
+			JAXBContext jaxbContext = JAXBContext.newInstance(classes);// TODO: Fix parsing.
 			
 			Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
 			
-			e = (Entity) unmarshaller.unmarshal(Loader.getEntityBlueprintFileLocation(clazz, entityFileName));
+			Components components = unmarshaller.unmarshal(new StreamSource(Loader.getEntityBlueprintAsStream(clazz,
+					entityFileName)), Components.class).getValue();
+			
+			for(Component comp: components.getComponents()) {
+				Logger.log(Logger.DEBUG, "Adding comp: " + comp);
+				e.addComponent(comp);
+			}
 			
 		} catch (JAXBException ex) {
 			ex.printStackTrace();
 		}
 		
 		return e;
+	}
+	
+	@SafeVarargs
+	public static void saveEntityBlueprint(Entity e, String entitySaveFileLocation, 
+			Class<? extends Component>... classes) {
+		
+		try {
+			
+			JAXBContext jaxbContext = JAXBContext.newInstance(Util.append(classes, Components.class));
+			
+			Marshaller marshaller = jaxbContext.createMarshaller();
+			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);// So format looks nice.
+			marshaller.setProperty(ADD_STRING_PROPERTY, "<!DOCTYPE " + Entity.class.getSimpleName() + ">" + Util.NL);
+			// Helps make document Valid and/or Well-formed.
+			
+			Components components = new Components();
+			components.getComponents().addAll(e.getComponentsAsList());
+			
+			marshaller.marshal(components, new PrintWriter(entitySaveFileLocation));
+			
+		} catch (JAXBException | FileNotFoundException ex) {
+			ex.printStackTrace();
+		}
+		
 	}
 	
 	/*/
@@ -77,7 +126,9 @@ public final class EntityFileParser {
 						
 					}
 					
-				} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException ex1) {
+				} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | 
+						IllegalArgumentException | InvocationTargetException | NoSuchMethodException | 
+						SecurityException ex1) {
 					Logger.log(Logger.WARNING, "The component class " + componentNode.getNodeName() + " could not be found"
 							+ " in the package " + clazz.getPackage().getName());
 				}

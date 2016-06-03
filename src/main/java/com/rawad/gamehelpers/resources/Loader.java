@@ -2,6 +2,7 @@ package com.rawad.gamehelpers.resources;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStream;
 import java.net.URL;
 
 public abstract class Loader {
@@ -13,11 +14,13 @@ public abstract class Loader {
 	private static final String FONT_FILE_EXTENSION = ResourceManager.getString("GameHelpers.font");
 	private static final String LAYOUT_FILE_EXTENSION = ResourceManager.getString("GameHelpers.layout");
 	private static final String STYLESHEET_FILE_EXTENSION = ResourceManager.getString("GameHelpers.stylesheet");
-	private static final String ENTITY_BLUEPRINT_FILE_EXTENSION = ResourceManager.getString("GameHeleprs.entity");
+	private static final String ENTITY_BLUEPRINT_FILE_EXTENSION = ResourceManager.getString("GameHelpers.entity");
 	
 	/** Holds the name for the base texture folder. */
 	private static final String TEXTURE_FOLDER = ResourceManager.getString("GameHelpers.textures");
 	private static final String FONT_FOLDER = ResourceManager.getString("Font.base");
+	/** Used solely for saving {@code Entity} blueprint .xml files.*/
+	private static final String ENTITY_BLUEPRINT_FOLDER = "entity";
 	
 	/** Subclasses don't really need access to this... Either of the two methods below should work fine. */
 	private final String basePath;
@@ -77,6 +80,11 @@ public abstract class Loader {
 				+ FONT_FILE_EXTENSION);
 	}
 	
+	public String getEntityBlueprintSaveFileLocation(String fileName) {
+		return ResourceManager.getProperPath(ResourceManager.basePath, basePath, RES_FOLDER, ENTITY_BLUEPRINT_FOLDER, fileName 
+				+ ENTITY_BLUEPRINT_FILE_EXTENSION);
+	}
+	
 	/**
 	 * Assumes the fxml file is in the same package as the the {@code clazz} given. <b>Note:</b> can be in completely 
 	 * different src file.
@@ -103,8 +111,8 @@ public abstract class Loader {
 		return clazz.getResource(styleSheetName + STYLESHEET_FILE_EXTENSION).toExternalForm();
 	}
 	
-	public static File getEntityBlueprintFileLocation(Class<?extends Object> clazz, String fileName) {
-		return new File(clazz.getResource(fileName + ENTITY_BLUEPRINT_FILE_EXTENSION).toExternalForm());
+	public static InputStream getEntityBlueprintAsStream(Class<?extends Object> clazz, String fileName) {
+		return clazz.getResourceAsStream(fileName + ENTITY_BLUEPRINT_FILE_EXTENSION);
 	}
 	
 }
