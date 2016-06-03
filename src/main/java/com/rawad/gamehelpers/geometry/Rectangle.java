@@ -1,17 +1,21 @@
 package com.rawad.gamehelpers.geometry;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlTransient;
-
 import javafx.beans.property.SimpleDoubleProperty;
 
 public class Rectangle extends Shape {
 	
-	@XmlTransient private SimpleDoubleProperty x;
-	@XmlTransient private SimpleDoubleProperty y;
+	private SimpleDoubleProperty x;
+	private SimpleDoubleProperty y;
 	
-	@XmlTransient private SimpleDoubleProperty width;
-	@XmlTransient private SimpleDoubleProperty height;
+	private SimpleDoubleProperty width;
+	private SimpleDoubleProperty height;
+	
+	/**
+	 * Empty constructor required for unmarshalling from xml.
+	 */
+	public Rectangle() {
+		this(0, 0, 0, 0);
+	}
 	
 	public Rectangle(double x, double y, double width, double height) {
 		setX(x);
@@ -31,7 +35,6 @@ public class Rectangle extends Shape {
 		return x;
 	}
 	
-	@XmlElement
 	public void setX(double x) {
 		xProperty().set(x);
 	}
@@ -45,7 +48,6 @@ public class Rectangle extends Shape {
 		return y;
 	}
 	
-	@XmlElement
 	public void setY(double y) {
 		yProperty().set(y);
 	}
@@ -59,7 +61,6 @@ public class Rectangle extends Shape {
 		return width;
 	}
 	
-	@XmlElement
 	public void setWidth(double width) {
 		widthProperty().set(width);
 	}
@@ -73,7 +74,6 @@ public class Rectangle extends Shape {
 		return height;
 	}
 	
-	@XmlElement
 	public void setHeight(double height) {
 		heightProperty().set(height);
 	}

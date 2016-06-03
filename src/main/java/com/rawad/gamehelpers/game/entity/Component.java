@@ -1,7 +1,6 @@
 package com.rawad.gamehelpers.game.entity;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * This class represent either a chunk of data or simply a marker for use the appropriate {@code GameSystem}.
@@ -11,14 +10,14 @@ import javax.xml.bind.annotation.XmlAccessorType;
  * @author Rawad
  *
  */
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement
 public abstract class Component {
 	
 	/**
 	 * Default constructor such that subclasses don't have to declare it but is required by {@code Entity}. Subclasses should
 	 * avoid redeclaring this (mainly for neat-ness) and just use setters instead and declaring defaults in-line.
 	 */
-	public Component() {}// TODO: Consider making private.
+	public Component() {}
 	
 	/**
 	 * 
