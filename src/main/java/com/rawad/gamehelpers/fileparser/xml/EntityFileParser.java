@@ -25,7 +25,9 @@ public final class EntityFileParser {
 	private static final String ADD_STRING_PROPERTY = "com.sun.xml.internal.bind.xmlHeaders";
 	/** Sets the {@code NamespacePrefixMapper} for the {@code Marshaller}; used to remove reduntant namespaces here. */
 	private static final String NAMESPACE_PREFIX_MAPPER_PROPERTY = "com.sun.xml.internal.bind.namespacePrefixMapper";
-	private static final String DEFAULT_CONTEXT = EntityFileParser.class.getPackage().getName() + PACKAGE_SEPARATOR;
+	private static final String DEFAULT_CONTEXT = EntityFileParser.class.getPackage().getName() + PACKAGE_SEPARATOR
+//			+ Component.class.getPackage().getName() + PACKAGE_SEPARATOR
+			;
 	
 	private EntityFileParser() {}
 	
@@ -37,7 +39,7 @@ public final class EntityFileParser {
 		try {
 			
 			JAXBContext jaxbContext = JAXBContext.newInstance(DEFAULT_CONTEXT + Util.getStringFromLines(contextPaths,
-					PACKAGE_SEPARATOR,false));
+					PACKAGE_SEPARATOR, false));
 			
 			Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
 			
