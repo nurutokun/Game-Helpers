@@ -2,14 +2,14 @@ package com.rawad.gamehelpers.game.entity;
 
 public class Blueprint {
 	
-	private final Class<? extends Component>[] components;
+	private final Entity entityBase;
 	
-	public Blueprint(Class<? extends Component>[] classes) {
-		this.components = classes;
+	public Blueprint(Entity entityBase) {
+		this.entityBase = entityBase;
 	}
 	
-	public Class<? extends Component>[] getComponents() {
-		return components;
+	public Entity getEntityBase() {
+		return entityBase;
 	}
 	
 }

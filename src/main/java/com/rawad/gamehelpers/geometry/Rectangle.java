@@ -10,6 +10,13 @@ public class Rectangle extends Shape {
 	private SimpleDoubleProperty width;
 	private SimpleDoubleProperty height;
 	
+	/**
+	 * Empty constructor required for unmarshalling from xml.
+	 */
+	public Rectangle() {
+		this(0, 0, 0, 0);
+	}
+	
 	public Rectangle(double x, double y, double width, double height) {
 		setX(x);
 		setY(y);

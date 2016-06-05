@@ -16,7 +16,7 @@ public abstract class Proxy {
 	
 	protected Runnable loadingRunnable;
 	
-	protected ArrayList<Task<Integer>> tasks;
+	protected ArrayList<Task<Integer>> tasks = new ArrayList<Task<Integer>>();// Might pose issue upon re-init.
 	
 	protected Game game;
 	
@@ -24,8 +24,6 @@ public abstract class Proxy {
 	
 	public void init(Game game) {
 		this.game = game;
-		
-		tasks = new ArrayList<Task<Integer>>();
 		
 		loadingThread = new Thread(getLoadingRunnable(), "Loading Thread");
 		loadingThread.setDaemon(true);

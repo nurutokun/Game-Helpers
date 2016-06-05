@@ -70,15 +70,17 @@ public class ResourceManager {
 	
 	public static void init(HashMap<String, String> commands) {
 		
+		boolean devEnv = true;
+		
 		try {
 			
-			boolean devEnv = Boolean.valueOf(commands.get("devEnv"));
-			
-			setBasePath(devEnv);
+			devEnv = Boolean.valueOf(commands.get("devEnv"));
 			
 		} catch(Exception ex) {
 			Logger.log(Logger.WARNING, "Error; can be ignored. Caused by improper command line argument(s).");
 		}
+		
+		setBasePath(devEnv);
 		
 	}
 	
@@ -182,7 +184,8 @@ public class ResourceManager {
 		String fileFormat = UNKNOWN_TEXTURE_PATH.substring(UNKNOWN_TEXTURE_PATH.length() - 3);// "png"
 		
 		try {
-			ImageIO.write(SwingFXUtils.fromFXImage(unknownTexture, null), fileFormat, new File(getFinalPath(basePath, UNKNOWN_TEXTURE_PATH)));// excludes ".png"
+			ImageIO.write(SwingFXUtils.fromFXImage(unknownTexture, null), fileFormat, new File(getFinalPath(basePath, 
+					UNKNOWN_TEXTURE_PATH)));// excludes ".png"
 		} catch(Exception ex) {
 			Logger.log(Logger.WARNING, ex.getLocalizedMessage() + "; the \"unknown texture\" was created but "
 					+ "not saved.");

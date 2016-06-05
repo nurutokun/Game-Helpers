@@ -23,6 +23,14 @@ public final class Entity {
 		return Util.cast(components.get(compClass));
 	}
 	
+	public Collection<Component> getComponentsAsList() {
+		return components.values();
+	}
+	
+	private HashMap<Class<? extends Component>, Component> getComponents() {
+		return components;
+	}
+	
 	public static Entity createEntity(Entity e, Object blueprintId) {
 		
 		Entity newEntity = createEntity(blueprintId);// Creates new Entity with empty components.
@@ -33,23 +41,36 @@ public final class Entity {
 	}
 	
 	/**
+	 * Creates an empty {@code Entity} object.
+	 * 
+	 * @return New {@code Entity} instance.
+	 */
+	public static Entity createEntity() {
+		return new Entity();
+	}
+	
+	/**
 	 * Creates a new {@code Entity} with all the components defined by the {@code blueprintId} with no additional data.
 	 * 
 	 * @param blueprintId
 	 * @return
 	 */
 	public static Entity createEntity(Object blueprintId) {
-		Entity e = new Entity();
+		Entity e = Entity.createEntity();
 		
 		if(blueprintId == null) return e;
 		
-		Class<? extends Component>[] components = BlueprintManager.getBlueprint(blueprintId).getComponents();
+		Entity entityBase = BlueprintManager.getBlueprint(blueprintId).getEntityBase();
 		
-		for(Class<? extends Component> comp: components) {
+		for(Component baseComp: entityBase.getComponents().values()) {
 			
 			try {
-				e.addComponent(comp.getConstructor().newInstance());// Might have to add something special for non-primitive
-				// data (e.g. Rectangle)
+				
+				Component newComp = baseComp.getClass().getConstructor().newInstance();
+				e.addComponent(newComp);
+				
+				baseComp.copyData(newComp);
+				
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 					| InvocationTargetException | NoSuchMethodException | SecurityException ex) {
 				ex.printStackTrace();
@@ -63,7 +84,7 @@ public final class Entity {
 	
 	public static void copyComponentData(Entity entityToCopyTo, Entity entityToCopyFrom) {
 		
-		for(Class<? extends Component> compClass: entityToCopyTo.components.keySet()) {
+		for(Class<? extends Component> compClass: entityToCopyTo.getComponents().keySet()) {
 			// Only loop through components we need which is are that in the target entity.
 			
 			Component compToCopyTo = entityToCopyTo.getComponent(compClass);
@@ -78,11 +99,11 @@ public final class Entity {
 	
 	public static boolean compare(Entity e1, Entity e2) {
 		
-		if(e1.components.keySet().size() != e2.components.keySet().size()) {
+		if(e1.getComponents().keySet().size() != e2.getComponents().keySet().size()) {
 			return false;// Small optimization (hopefully).
 		}
 		
-		return contains(e1, e2.components.keySet());
+		return contains(e1, e2.getComponents().keySet());
 		
 	}
 	
@@ -96,7 +117,7 @@ public final class Entity {
 	 */
 	public static boolean compare(Entity e, Class<? extends Component>[] comps) {
 		
-		if(e.components.keySet().size() != comps.length) {
+		if(e.getComponents().keySet().size() != comps.length) {
 			return false;// Small optimization (hopefully).
 		}
 		
@@ -113,8 +134,8 @@ public final class Entity {
 	 * 
 	 * @param e
 	 * @param comps
-	 * @return {@code true} if {@code e} contains all the {@code Component} types contained in {@code comps}; {@code false} 
-	 * 			otherwise.
+	 * @return {@code true} if {@code e} contains all the {@code Component} types contained in {@code comps};
+	 * 			{@code false} otherwise.
 	 */
 	public static boolean contains(Entity e, Collection<Class<? extends Component>> comps) {
 		
