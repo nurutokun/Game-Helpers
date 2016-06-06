@@ -102,6 +102,10 @@ public class GameManager {
 			
 			clientOrServer.init(game);
 			
+			synchronized(game) {
+				game.notify();
+			}
+			
 			long currentTime = System.currentTimeMillis();
 			
 			long prevTime;
