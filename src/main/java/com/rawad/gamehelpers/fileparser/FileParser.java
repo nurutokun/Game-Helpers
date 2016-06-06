@@ -26,7 +26,7 @@ public abstract class FileParser {
 			try {
 				
 				parseLine(line);
-					
+				
 			} catch (Exception ex) {
 				Logger.log(Logger.WARNING, "Coulnd't read line from file.");
 //				ex.printStackTrace();

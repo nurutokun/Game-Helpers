@@ -64,7 +64,7 @@ public class ResourceManager {
 		
 		UNKNOWN_TEXTURE_PATH = getProperPath(getString("GameHelpers.name"),
 				getString("GameHelpers.res"), getString("GameHelpers.textures"), "unknown")
-				+ getString("GameHelpers.image");
+				+ getString("GameHelpers.texture");
 		
 	}
 	
@@ -334,7 +334,7 @@ public class ResourceManager {
 			if(tex != null) {
 				return tex;
 			} else {
-				throw new NullPointerException();
+				throw new NullPointerException("Texture at location " + location + " is null.");
 			}
 			
 		} catch(NullPointerException ex) {
