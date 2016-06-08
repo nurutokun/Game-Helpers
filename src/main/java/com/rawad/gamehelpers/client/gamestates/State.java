@@ -3,6 +3,7 @@ package com.rawad.gamehelpers.client.gamestates;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import com.rawad.gamehelpers.client.AClient;
 import com.rawad.gamehelpers.client.renderengine.MasterRender;
 import com.rawad.gamehelpers.game.GameSystem;
 import com.rawad.gamehelpers.game.world.World;
@@ -18,6 +19,8 @@ public abstract class State {
 	/** Each {@code State} can have its own set of {@code GameSystem} objects; order of adding them is maintained. */
 	protected final ArrayList<GameSystem> gameSystems;
 	
+	protected AClient client;
+	
 	protected StateManager sm;
 	
 	/** Represents the parent used passed to the {@code Scene} to be displayed. */
@@ -32,7 +35,11 @@ public abstract class State {
 	
 	protected World world;
 	
-	public State() {
+	public State(AClient client) {
+		
+		this.client = client;
+		
+		this.sm = client.getStateManager();
 		
 		gameSystems = new ArrayList<GameSystem>();
 		
@@ -71,10 +78,6 @@ public abstract class State {
 	protected void onActivate() {}
 	
 	protected void onDeactivate() {}
-	
-	protected void setStateManager(StateManager sm) {
-		this.sm = sm;
-	}
 	
 	public void render() {
 		masterRender.render(canvas.getGraphicsContext2D());

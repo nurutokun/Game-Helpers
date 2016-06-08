@@ -134,6 +134,10 @@ public abstract class AClient extends Proxy {
 		
 	}
 	
+	public StateManager getStateManager() {
+		return sm;
+	}
+	
 	public String getSettingsFileName() {
 		return "settings";
 	}

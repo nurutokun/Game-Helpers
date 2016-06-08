@@ -76,8 +76,6 @@ public class StateManager {
 		
 		states.put(state.getClass(), state);
 		
-		state.setStateManager(this);
-		
 	}
 	
 	public void initGui() {
@@ -144,10 +142,6 @@ public class StateManager {
 	 */
 	public Game getGame() {
 		return game;
-	}
-	
-	public AClient getClient() {
-		return client;
 	}
 	
 	public Scene getScene() {
