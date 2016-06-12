@@ -3,6 +3,7 @@ package com.rawad.gamehelpers.client;
 import java.util.concurrent.TimeUnit;
 
 import com.rawad.gamehelpers.client.gamestates.StateManager;
+import com.rawad.gamehelpers.client.input.InputBindings;
 import com.rawad.gamehelpers.game.Game;
 import com.rawad.gamehelpers.game.Proxy;
 import com.rawad.gamehelpers.log.Logger;
@@ -18,6 +19,8 @@ public abstract class AClient extends Proxy {
 	protected Stage stage;
 	
 	protected StateManager sm;
+	
+	protected InputBindings inputBindings;
 	
 	protected boolean readyToRender;
 	
@@ -124,6 +127,10 @@ public abstract class AClient extends Proxy {
 	public void init(Game game) {
 		super.init(game);
 		
+		inputBindings = new InputBindings();
+		
+		initInputBindings();
+		
 		sm = new StateManager(game, this);
 		
 		renderingThread = new Thread(getRenderingRunnable(), "Rendering Thread");
@@ -132,6 +139,12 @@ public abstract class AClient extends Proxy {
 		
 		readyToRender = false;
 		
+	}
+	
+	protected abstract void initInputBindings();
+	
+	public InputBindings getInputBindings() {
+		return inputBindings;
 	}
 	
 	public StateManager getStateManager() {
