@@ -8,7 +8,7 @@ import javafx.scene.input.MouseButton;
 public class InputBindings {
 	
 	private HashMap<MouseButton, Object> mouseBindings;
-	private HashMap<KeyCode, Object> keyBindings;// TODO: Change to use KeyCodeCombination.
+	private HashMap<KeyCode, Object> keyBindings;// Don't use KeyCombination because it would complicate getting key.
 	
 	/** Gets returned instead of {@code null}. */
 	private Object defaultBinding;
@@ -26,7 +26,7 @@ public class InputBindings {
 	}
 	
 	public Object get(MouseButton button) {
-		return mouseBindings.get(button);
+		return mouseBindings.get(button) == null? defaultBinding:mouseBindings.get(button);
 	}
 	
 	public void put(KeyCode key, Object value) {
@@ -37,7 +37,7 @@ public class InputBindings {
 	}
 	
 	public Object get(KeyCode key) {
-		return keyBindings.get(key);
+		return keyBindings.get(key) == null? defaultBinding:keyBindings.get(key);
 	}
 	
 	public void setDefaultBinding(Object defaultBinding) {
