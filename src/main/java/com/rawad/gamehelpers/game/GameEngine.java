@@ -7,13 +7,15 @@ import com.rawad.gamehelpers.game.entity.Component;
 import com.rawad.gamehelpers.game.entity.Entity;
 import com.rawad.gamehelpers.utils.Util;
 
+import javafx.collections.ObservableList;
+
 public class GameEngine {
 	
 	protected final HashMap<Class<? extends GameSystem>, GameSystem> gameSystemsMap = new HashMap
 			<Class<? extends GameSystem>, GameSystem>();
 	protected final ArrayList<GameSystem> gameSystems = new ArrayList<GameSystem>();
 	
-	public void tick(ArrayList<Entity> entities) {
+	public void tick(ObservableList<Entity> entities) {
 		
 		for(GameSystem system: gameSystems) {
 			

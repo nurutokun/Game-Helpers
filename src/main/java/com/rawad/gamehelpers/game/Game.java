@@ -78,8 +78,8 @@ public abstract class Game {
 			totalTime -= tickTime;
 			
 			if(!isPaused()) {
-				synchronized(world.getEntitiesAsList()) {
-					gameEngine.tick(world.getEntitiesAsList());// Populates GameSystem objects with entities to work with.
+				synchronized(world.getEntities()) {
+					gameEngine.tick(world.getEntities());// Populates GameSystem objects with entities to work with.
 				}
 			}
 			

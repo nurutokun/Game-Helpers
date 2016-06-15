@@ -8,6 +8,9 @@ public class ArrayObservableList<E> extends ModifiableObservableListBase<E> {
 	
 	private final ArrayList<E> delegate = new ArrayList<>();
 	
+	public ArrayObservableList() {
+	}
+	
 	public E get(int index) {
 		return delegate.get(index);
 	}

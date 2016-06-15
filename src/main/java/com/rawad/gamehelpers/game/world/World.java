@@ -1,21 +1,22 @@
 package com.rawad.gamehelpers.game.world;
 
-import java.util.ArrayList;
-
 import com.rawad.gamehelpers.game.entity.Entity;
-import com.rawad.gamehelpers.utils.ArrayObservableList;
 
-import javafx.beans.property.ReadOnlyListWrapper;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 public class World {
 	
-	private ArrayObservableList<Entity> entities;
+	private ObservableList<Entity> entities;
+	private ObservableList<Entity> readOnlyEntities;
 	
 	private double width;
 	private double height;
 	
 	public World() {
-		entities = new ArrayObservableList<Entity>();
+		
+		entities = FXCollections.observableArrayList();
+		readOnlyEntities = FXCollections.unmodifiableObservableList(entities);
 		
 		width = 2048;
 		height = 2048;
@@ -26,16 +27,16 @@ public class World {
 		return entities.add(e);
 	}
 	
+	public void clearEntities() {
+		entities.clear();
+	}
+	
 	public boolean removeEntity(Entity e) {
 		return entities.remove(e);
 	}
 	
-	public ReadOnlyListWrapper<Entity> getObservableEntities() {
-		return new ReadOnlyListWrapper<Entity>(entities);
-	}
-	
-	public ArrayList<Entity> getEntitiesAsList() {
-		return entities.getArrayList();
+	public ObservableList<Entity> getEntities() {
+		return readOnlyEntities;
 	}
 	
 	/**
