@@ -1,13 +1,13 @@
 package com.rawad.gamehelpers.client.gamestates;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
-import com.rawad.gamehelpers.client.AClient;
 import com.rawad.gamehelpers.client.renderengine.MasterRender;
+import com.rawad.gamehelpers.game.Game;
 import com.rawad.gamehelpers.game.GameSystem;
 import com.rawad.gamehelpers.game.world.World;
 import com.rawad.gamehelpers.resources.Loader;
+import com.rawad.gamehelpers.utils.ClassMap;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.canvas.Canvas;
@@ -17,11 +17,11 @@ import javafx.scene.layout.StackPane;
 public abstract class State {
 	
 	/** Each {@code State} can have its own set of {@code GameSystem} objects; order of adding them is maintained. */
-	protected final ArrayList<GameSystem> gameSystems;
-	
-	protected AClient client;
+	protected final ClassMap<GameSystem> gameSystems;
 	
 	protected StateManager sm;
+	
+	protected Game game;
 	
 	/** Represents the parent used passed to the {@code Scene} to be displayed. */
 	protected StackPane root;
@@ -35,13 +35,13 @@ public abstract class State {
 	
 	protected World world;
 	
-	public State(AClient client) {
+	public State(StateManager sm) {
 		
-		this.client = client;
+		this.sm = sm;
 		
-		this.sm = client.getStateManager();
+		this.game = sm.getGame();
 		
-		gameSystems = new ArrayList<GameSystem>();
+		gameSystems = new ClassMap<GameSystem>(true);
 		
 		masterRender = new MasterRender();
 		

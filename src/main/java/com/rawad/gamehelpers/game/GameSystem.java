@@ -17,6 +17,9 @@ public abstract class GameSystem {
 	 * Add compatible component types here.
 	 */
 	protected GameSystem() {
+		
+		setGameEngine(GameManager.instance().getCurrentGame().getGameEngine());
+		
 		compatibleComponentTypes = new ArrayList<Class<? extends Component>>();
 		
 		compatibleEntities = new ArrayList<Entity>();
@@ -24,8 +27,8 @@ public abstract class GameSystem {
 	}
 	
 	/**
-	 * Loops through all the compatible {@code Entity} objects stored in {@code compatibleEntities} and forwards them to the
-	 * aabstract {@link #tick(Entity)} method for individual processing.
+	 * Loops through all the compatible {@code Entity} objects stored in {@code compatibleEntities} and forwards them to 
+	 * the abstract {@link #tick(Entity)} method for individual processing.
 	 * 
 	 * @see #tick(Entity)
 	 */

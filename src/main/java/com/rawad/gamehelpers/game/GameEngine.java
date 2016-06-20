@@ -1,23 +1,20 @@
 package com.rawad.gamehelpers.game;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import com.rawad.gamehelpers.game.entity.Component;
 import com.rawad.gamehelpers.game.entity.Entity;
-import com.rawad.gamehelpers.utils.Util;
+import com.rawad.gamehelpers.utils.ClassMap;
 
 import javafx.collections.ObservableList;
 
 public class GameEngine {
 	
-	protected final HashMap<Class<? extends GameSystem>, GameSystem> gameSystemsMap = new HashMap
-			<Class<? extends GameSystem>, GameSystem>();
-	protected final ArrayList<GameSystem> gameSystems = new ArrayList<GameSystem>();
+	protected final ClassMap<GameSystem> gameSystems = new ClassMap<GameSystem>(true);
 	
 	public void tick(ObservableList<Entity> entities) {
 		
-		for(GameSystem system: gameSystems) {
+		for(GameSystem system: gameSystems.getOrderedMap()) {
 			
 			system.getCompatibleEntities().clear();
 			
@@ -36,38 +33,25 @@ public class GameEngine {
 		}
 		
 		// Separate from calculating entities for system-system communication.
-		for(GameSystem gameSystem: gameSystems) {
+		for(GameSystem gameSystem: gameSystems.getOrderedMap()) {
 			gameSystem.tick();
 		}
 		
 	}
 	
-	/**
-	 * {@param gameSystem} order maintained when updated in the {@code tick()} method.
-	 * 
-	 * @param gameSystem
-	 */
-	public void addGameSystem(GameSystem gameSystem) {
+	public void setGameSystems(ClassMap<GameSystem> gameSystems) {
 		
-		gameSystemsMap.put(gameSystem.getClass(), gameSystem);
-		gameSystems.add(gameSystem);
-		
-		gameSystem.setGameEngine(this);
-		
-	}
-	
-	public void setGameSystems(ArrayList<GameSystem> gameSystems) {
 		this.gameSystems.clear();
-		gameSystemsMap.clear();
 		
-		for(GameSystem gameSystem: gameSystems) {
-			addGameSystem(gameSystem);
+		for(GameSystem gameSystem: gameSystems.getOrderedMap()) {
+			this.gameSystems.put(gameSystem);
+			gameSystem.setGameEngine(this);
 		}
 		
 	}
 	
-	public <T extends GameSystem> T getGameSystem(Class<T> gameSystemKey) {
-		return Util.cast(gameSystemsMap.get(gameSystemKey));
+	public ClassMap<GameSystem> getGameSystems() {
+		return gameSystems;
 	}
 	
 }

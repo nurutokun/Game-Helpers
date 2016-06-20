@@ -1,28 +1,34 @@
 package com.rawad.gamehelpers.game;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 
 import com.rawad.gamehelpers.fileparser.FileParser;
 import com.rawad.gamehelpers.game.world.World;
 import com.rawad.gamehelpers.resources.GameHelpersLoader;
 import com.rawad.gamehelpers.resources.Loader;
-import com.rawad.gamehelpers.utils.Util;
+import com.rawad.gamehelpers.utils.ClassMap;
 
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.concurrent.Task;
 
 public abstract class Game {
 	
 	public static final int SCREEN_WIDTH = 640;// 640
 	public static final int SCREEN_HEIGHT = 480;// 480
 	
-	protected Proxy clientOrServer;
+	protected ClassMap<Proxy> proxies;
 	
 	protected GameEngine gameEngine;
 	
 	protected World world;
 	
-	protected HashMap<Class<? extends FileParser>, FileParser> fileParsers;
-	protected HashMap<Class<? extends Loader>, Loader> loaders;
+	protected ClassMap<FileParser> fileParsers;
+	protected ClassMap<Loader> loaders;
+	
+	protected Thread loadingThread;
+	protected Runnable loadingRunnable;
+	
+	protected ArrayList<Task<Integer>> tasks = new ArrayList<Task<Integer>>();// Might pose issue upon re-init.
 	
 	protected SimpleBooleanProperty debug;
 	
@@ -39,8 +45,10 @@ public abstract class Game {
 		
 		tickTime = 50;
 		
-		fileParsers = new HashMap<Class<? extends FileParser>, FileParser>();
-		loaders = new HashMap<Class<? extends Loader>, Loader>();
+		proxies = new ClassMap<Proxy>(true);
+		
+		fileParsers = new ClassMap<FileParser>();
+		loaders = new ClassMap<Loader>();
 		
 		debug = new SimpleBooleanProperty(false);
 		
@@ -57,11 +65,15 @@ public abstract class Game {
 	 */
 	protected void init() {
 		
+		loadingThread = new Thread(getLoadingRunnable(), "Loading Thread");
+		loadingThread.setDaemon(true);
+		loadingThread.start();
+		
 		gameEngine = new GameEngine();
 		
 		world = new World();
 		
-		loaders.put(GameHelpersLoader.class, new GameHelpersLoader());
+		loaders.put(new GameHelpersLoader());
 		
 		stopRequested = false;
 		
@@ -83,8 +95,8 @@ public abstract class Game {
 				}
 			}
 			
-			if(clientOrServer.readyToUpdate) {
-				clientOrServer.tick();
+			for(Proxy proxy: proxies.getOrderedMap()) {
+				if(proxy.readyToUpdate) proxy.tick();
 			}
 			
 		}
@@ -93,7 +105,9 @@ public abstract class Game {
 		
 		if(stopRequested) {
 			
-			clientOrServer.stop();
+			for(Proxy proxy: proxies.getOrderedMap()) {
+				proxy.stop();
+			}
 			
 			running = false;
 			stopRequested = false;
@@ -105,6 +119,41 @@ public abstract class Game {
 	public abstract int getIconLocation();
 	
 	public abstract void registerTextures();
+	
+	public Runnable getLoadingRunnable() {
+		
+		if(loadingRunnable == null) {
+			
+			loadingRunnable = () -> {
+				
+				while(isRunning()) {
+					
+					synchronized(tasks) {
+						if(tasks.size() > 0) {
+							Task<Integer> task = tasks.get(0);
+							try {
+								task.run();
+								tasks.remove(0);
+							} catch(Exception ex) {
+								ex.printStackTrace();
+							}
+						}
+					}
+					
+				}
+			};
+			
+		}
+		
+		return loadingRunnable;
+		
+	}
+	
+	public void addTask(Task<Integer> taskToLoad) {
+		synchronized(tasks) {
+			tasks.add(taskToLoad);
+		}
+	}
 	
 	public GameEngine getGameEngine() {
 		return gameEngine;
@@ -120,21 +169,16 @@ public abstract class Game {
 		return world;
 	}
 	
-	public void setProxy(Proxy clientOrServer) {
-		this.clientOrServer = clientOrServer;
+	public ClassMap<Proxy> getProxies() {
+		return proxies;
 	}
 	
-	public Proxy getProxy() {
-		return clientOrServer;
+	public ClassMap<Loader> getLoaders() {
+		return loaders;
 	}
 	
-	public <T extends Loader> T getLoader(Class<T> key) {
-		return Util.cast(loaders.get(key));
-	}
-	
-	public <T extends FileParser> T getFileParser(Class<T> key) {
-		return Util.cast(fileParsers.get(key));// Now, how it knows what to cast the object to, not quite sure...
-		// It get's it from that "<T extends FileType>"; whatever T extends.
+	public ClassMap<FileParser> getFileParsers() {
+		return fileParsers;
 	}
 	
 	public SimpleBooleanProperty debugProperty() {

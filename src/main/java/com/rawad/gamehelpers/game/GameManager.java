@@ -33,14 +33,14 @@ public class GameManager {
 	 * @param gameToLaunch
 	 * @see #registerGame(Game)
 	 */
-	public void launchGame(Game gameToLaunch, Proxy clientOrServer) {
+	public void launchGame(Game gameToLaunch) {
 		
 		registerGame(gameToLaunch);
 		
 		// Any game can only be run once but multiple games can be run concurrently.
 		if(!gameToLaunch.isRunning()) {
 			
-			gameThread = new Thread(new GameThread(currentGame, clientOrServer), "Game Thread");
+			gameThread = new Thread(new GameThread(currentGame), "Game Thread");
 			
 			gameThread.start();
 			
@@ -86,24 +86,18 @@ public class GameManager {
 	private class GameThread implements Runnable {
 		
 		private final Game game;
-		private final Proxy clientOrServer;
 		
-		public GameThread(Game game, Proxy clientOrServer) {
+		public GameThread(Game game) {
 			this.game = game;
-			this.clientOrServer = clientOrServer;
 		}
 		
 		@Override
 		public void run() {
 			
-			game.setProxy(clientOrServer);
-			
 			game.init();
 			
-			clientOrServer.init(game);
-			
-			synchronized(game) {
-				game.notify();
+			for(Proxy proxy: game.getProxies().getOrderedMap()) {
+				proxy.init(game);
 			}
 			
 			long currentTime = System.currentTimeMillis();
@@ -135,8 +129,6 @@ public class GameManager {
 				}
 				
 			}
-			
-			game.setProxy(null);
 			
 		}
 		

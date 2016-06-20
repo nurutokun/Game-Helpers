@@ -1,10 +1,6 @@
 package com.rawad.gamehelpers.client.renderengine;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
-import com.rawad.gamehelpers.utils.Util;
+import com.rawad.gamehelpers.utils.ClassMap;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
@@ -23,13 +19,11 @@ public class MasterRender {
 	
 	public static final Color DEFAULT_BACKGROUND_COLOR = Color.DARKGRAY;//new Color(202, 212, 227, 25);// Has to be 0.0-1.0
 	
-	private Map<Class<? extends LayerRender>, LayerRender> renders;
-	private ArrayList<LayerRender> iterableRenders;
+	private ClassMap<LayerRender> renders;
 	
 	public MasterRender() {
 		
-		renders = new HashMap<Class<? extends LayerRender>, LayerRender>();
-		iterableRenders = new ArrayList<LayerRender>();
+		renders = new ClassMap<LayerRender>(true);
 		
 	}
 	
@@ -37,7 +31,7 @@ public class MasterRender {
 		
 		Affine affine = g.getTransform();
 		
-		for(LayerRender render: iterableRenders) {
+		for(LayerRender render: renders.getOrderedMap()) {
 			render.render(g);
 			
 			g.setTransform(affine);
@@ -45,28 +39,8 @@ public class MasterRender {
 		
 	}
 	
-	/**
-	 * Registers the given {@code render} with the given {@code key} value.
-	 * 
-	 * @param key
-	 * @param render
-	 */
-	public void registerRender(Class<? extends LayerRender> key, LayerRender render) {
-		renders.put(key, render);
-		iterableRenders.add(render);
-	}
-	
-	/**
-	 * Use default {@code class} variable of the given {@code render}.
-	 * 
-	 * @param render
-	 */
-	public void registerRender(LayerRender render) {
-		registerRender(render.getClass(), render);
-	}
-	
-	public <T extends LayerRender> T getRender(Class<T> key) {
-		return Util.cast(renders.get(key));
+	public ClassMap<LayerRender> getRenders() {
+		return renders;
 	}
 	
 }
