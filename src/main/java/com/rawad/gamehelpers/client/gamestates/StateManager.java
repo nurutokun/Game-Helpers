@@ -1,10 +1,9 @@
 package com.rawad.gamehelpers.client.gamestates;
 
-import java.util.HashMap;
-
 import com.rawad.gamehelpers.client.AClient;
 import com.rawad.gamehelpers.game.Game;
 import com.rawad.gamehelpers.log.Logger;
+import com.rawad.gamehelpers.utils.ClassMap;
 
 import javafx.application.Platform;
 import javafx.scene.Scene;
@@ -12,7 +11,7 @@ import javafx.scene.layout.Pane;
 
 public class StateManager {
 	
-	private HashMap<Class<? extends State>, State> states;
+	private ClassMap<State> states;
 	
 	private State currentState;
 	
@@ -26,7 +25,7 @@ public class StateManager {
 	
 	public StateManager(Game game, AClient client) {
 		
-		states = new HashMap<Class<? extends State>, State>();
+		states = new ClassMap<State>();
 		
 		requestedStateIdHolder = null;
 		
@@ -72,10 +71,8 @@ public class StateManager {
 		
 	}
 	
-	public void addState(State state) {
-		
-		states.put(state.getClass(), state);
-		
+	protected void addState(State state) {
+		states.put(state);
 	}
 	
 	public void initGui() {

@@ -1,5 +1,6 @@
 package com.rawad.gamehelpers.client;
 
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.concurrent.TimeUnit;
 
 import com.rawad.gamehelpers.client.gamestates.StateManager;
@@ -121,6 +122,15 @@ public abstract class AClient extends Proxy {
 	 */
 	public void initGui(Stage stage) {
 		this.stage = stage;
+		
+		Thread.currentThread().setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+			@Override
+			public void uncaughtException(Thread t, Throwable ex) {
+				Logger.log(Logger.SEVERE, "Uncaught Exception.");
+				ex.printStackTrace();
+			}
+		});
+		
 	}
 	
 	@Override

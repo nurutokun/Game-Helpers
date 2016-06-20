@@ -12,8 +12,17 @@ public abstract class Proxy {
 	
 	protected boolean readyToUpdate;
 	
+	/**
+	 * Provides an extra layer of control for initializing, especially useful now that there is support for multiple
+	 * {@code Proxy} instances.
+	 * 
+	 * @param game
+	 */
+	public void preInit(Game game) {
+		this.game = game;		
+	}
+	
 	public void init(Game game) {
-		this.game = game;
 		
 		readyToUpdate = false;
 		

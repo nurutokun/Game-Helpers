@@ -37,6 +37,8 @@ public abstract class State {
 	
 	public State(StateManager sm) {
 		
+		sm.addState(this);
+		
 		this.sm = sm;
 		
 		this.game = sm.getGame();

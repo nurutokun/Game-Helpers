@@ -54,20 +54,7 @@ public abstract class Game {
 		
 	}
 	
-	/**
-	 * <del>
-	 * <b>Note:</b> it is up to the inheriting class to initialize the proxy.
-	 * clientOrServer
-	 * </del>
-	 * 
-	 * - Not anymore it isn't...
-	 * 
-	 */
 	protected void init() {
-		
-		loadingThread = new Thread(getLoadingRunnable(), "Loading Thread");
-		loadingThread.setDaemon(true);
-		loadingThread.start();
 		
 		gameEngine = new GameEngine();
 		
@@ -78,6 +65,10 @@ public abstract class Game {
 		stopRequested = false;
 		
 		running = true;
+		
+		loadingThread = new Thread(getLoadingRunnable(), "Loading Thread");
+		loadingThread.setDaemon(true);
+		loadingThread.start();
 		
 	}
 	

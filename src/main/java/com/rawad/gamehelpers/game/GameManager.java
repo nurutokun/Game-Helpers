@@ -97,6 +97,10 @@ public class GameManager {
 			game.init();
 			
 			for(Proxy proxy: game.getProxies().getOrderedMap()) {
+				proxy.preInit(game);
+			}
+			
+			for(Proxy proxy: game.getProxies().getOrderedMap()) {
 				proxy.init(game);
 			}
 			
