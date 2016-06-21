@@ -5,6 +5,7 @@ import com.rawad.gamehelpers.game.Game;
 import com.rawad.gamehelpers.log.Logger;
 import com.rawad.gamehelpers.utils.ClassMap;
 
+import javafx.animation.Transition;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
@@ -111,11 +112,18 @@ public class StateManager {
 			game.setWorld(currentState.getWorld());
 			
 			currentState.onActivate();
-			
-			Platform.runLater(() -> {
-				client.getStage().getScene().setRoot(currentState.getRoot());
-				currentState.getRoot().requestFocus();
+			Transition transition = currentState.getTransition();
+			transition.setOnFinished(e -> {
+				Platform.runLater(() -> {
+					currentState.guiContainer.setLayoutX(0);
+					currentState.guiContainer.setLayoutY(0);
+					currentState.guiContainer.setTranslateX(0);
+					currentState.guiContainer.setTranslateY(0);
+					client.getStage().getScene().setRoot(currentState.getRoot());
+					currentState.getRoot().requestFocus();
+				});
 			});
+			transition.playFromStart();
 			
 		} catch(Exception ex) {
 			

@@ -9,10 +9,13 @@ import com.rawad.gamehelpers.game.world.World;
 import com.rawad.gamehelpers.resources.Loader;
 import com.rawad.gamehelpers.utils.ClassMap;
 
+import javafx.animation.Transition;
+import javafx.animation.TranslateTransition;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
+import javafx.util.Duration;
 
 public abstract class State {
 	
@@ -28,6 +31,8 @@ public abstract class State {
 	
 	/** Provides a default, paintable background for states to use. */
 	protected Canvas canvas;
+	/** Holds all nodes. */
+	protected StackPane guiContainer;
 	
 	protected FXMLLoader fxmlLoader;
 	
@@ -54,11 +59,18 @@ public abstract class State {
 	public void initGui() {
 		
 		root = new StackPane();
-		root.getStylesheets().add(Loader.getStyleSheetLocation(getClass(), getStyleSheet()));
+		
+		canvas = new Canvas();
+		guiContainer = new StackPane();
+		
+		canvas.widthProperty().bind(root.widthProperty());
+		canvas.heightProperty().bind(root.heightProperty());
+		
+		guiContainer.getStylesheets().add(Loader.getStyleSheetLocation(getClass(), getStyleSheet()));
 		
 		fxmlLoader = new FXMLLoader(Loader.getFxmlLocation(getClass()));
 		fxmlLoader.setController(this);
-		fxmlLoader.setRoot(root);
+		fxmlLoader.setRoot(guiContainer);
 		
 		try {
 			fxmlLoader.load();
@@ -69,11 +81,8 @@ public abstract class State {
 					+ ex.getMessage()));
 		}
 		
-		canvas = new Canvas();
-		root.getChildren().add(0, canvas);
-		
-		canvas.widthProperty().bind(root.widthProperty());
-		canvas.heightProperty().bind(root.heightProperty());
+		root.getChildren().add(canvas);
+		root.getChildren().add(guiContainer);
 		
 	}
 	
@@ -83,6 +92,14 @@ public abstract class State {
 	
 	public void render() {
 		masterRender.render(canvas.getGraphicsContext2D());
+	}
+	
+	public Transition getTransition() {
+		TranslateTransition transition = new TranslateTransition(Duration.seconds(1), guiContainer);
+		transition.setFromX(0);
+		transition.setToX(-guiContainer.getWidth());
+		transition.setRate(2);
+		return transition;// TODO: Reset guiContainer position after translate...
 	}
 	
 	/**
