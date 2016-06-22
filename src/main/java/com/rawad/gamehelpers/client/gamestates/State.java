@@ -9,6 +9,8 @@ import com.rawad.gamehelpers.game.world.World;
 import com.rawad.gamehelpers.resources.Loader;
 import com.rawad.gamehelpers.utils.ClassMap;
 
+import javafx.animation.FadeTransition;
+import javafx.animation.ParallelTransition;
 import javafx.animation.Transition;
 import javafx.animation.TranslateTransition;
 import javafx.fxml.FXMLLoader;
@@ -40,6 +42,9 @@ public abstract class State {
 	
 	protected World world;
 	
+	/** Duration of the transition from this state to another. */
+	protected Duration transitionDuration;
+	
 	public State(StateManager sm) {
 		
 		sm.addState(this);
@@ -53,6 +58,8 @@ public abstract class State {
 		masterRender = new MasterRender();
 		
 		world = new World();
+		
+		transitionDuration = Duration.millis(500);
 		
 	}
 	
@@ -95,11 +102,29 @@ public abstract class State {
 	}
 	
 	public Transition getTransition() {
-		TranslateTransition transition = new TranslateTransition(Duration.seconds(1), guiContainer);
-		transition.setFromX(0);
-		transition.setToX(-guiContainer.getWidth());
-		transition.setRate(2);
-		return transition;// TODO: Reset guiContainer position after translate...
+		TranslateTransition slide = getSlideTransition();
+		FadeTransition fadeOut = getFadeOutTransition();
+		
+		ParallelTransition transition = new ParallelTransition(guiContainer, slide, fadeOut);
+		
+		slide.setOnFinished(e -> transition.getNode().setTranslateX(0));
+		fadeOut.setOnFinished(e -> transition.getNode().setOpacity(1.0d));
+		
+		return transition;
+	}
+	
+	public TranslateTransition getSlideTransition() {
+		TranslateTransition slide = new TranslateTransition(transitionDuration);
+		slide.setFromX(0);
+		slide.setToX(guiContainer.getWidth());
+		return slide;
+	}
+	
+	public FadeTransition getFadeOutTransition() {
+		FadeTransition fade = new FadeTransition(transitionDuration);
+		fade.setFromValue(1.0d);
+		fade.setToValue(0.1d);
+		return fade;
 	}
 	
 	/**

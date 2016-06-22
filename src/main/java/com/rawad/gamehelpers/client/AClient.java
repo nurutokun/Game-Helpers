@@ -9,8 +9,15 @@ import com.rawad.gamehelpers.game.Game;
 import com.rawad.gamehelpers.game.Proxy;
 import com.rawad.gamehelpers.log.Logger;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.Scene;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public abstract class AClient extends Proxy {
 	
@@ -19,15 +26,15 @@ public abstract class AClient extends Proxy {
 	
 	protected Stage stage;
 	
+	protected Scene scene;
+	
 	protected StateManager sm;
 	
 	protected InputBindings inputBindings;
 	
 	protected boolean readyToRender;
 	
-	private Thread renderingThread;
-	
-	private Runnable renderingRunnable;
+	private Timeline renderingLoop;
 	
 	private int frames;
 	private int targetFps;
@@ -36,6 +43,9 @@ public abstract class AClient extends Proxy {
 	public AClient() {
 		frames = 0;
 		targetFps = 60;
+		
+		scene = new Scene(new Pane(), Game.SCREEN_WIDTH, Game.SCREEN_HEIGHT);// Creates empty scene.
+		
 	}
 	
 	public void setTargetFps(int targetFps) {
@@ -50,68 +60,52 @@ public abstract class AClient extends Proxy {
 		return stage;
 	}
 	
-	private final Runnable getRenderingRunnable() {
-		
-		if(renderingRunnable == null) {
-			renderingRunnable = () -> {
+	private final KeyFrame getRenderingKeyFrame() {
+		return new KeyFrame(Duration.ONE, new EventHandler<ActionEvent>() {
+			
+			private long totalTime = 0;
+			
+			private long currentTime = System.nanoTime();
+			private long prevTime = currentTime;
+			
+			@Override
+			public void handle(ActionEvent event) {
 				
-				long totalTime = 0;
+				if(!game.isRunning()) {
+					renderingLoop.stop();
+					return;
+				}
 				
-				long currentTime = System.currentTimeMillis();
-				long prevTime = currentTime;
+				currentTime = System.nanoTime();
 				
-				while(game.isRunning()) {
+				long deltaTime = currentTime - prevTime;
+				
+				totalTime += (deltaTime <= 0? 1:deltaTime);// timePassed in ().
+				
+				prevTime = currentTime;
+				
+				if(frames >= FPS_SAMPLE_RATE && totalTime > 0) {
+					averageFps = (int) (frames * TimeUnit.SECONDS.toNanos(1) / totalTime);
 					
-					currentTime = System.currentTimeMillis();
+					Logger.log(Logger.DEBUG, "frames: " + frames + ", total time: " + totalTime);
 					
-					long deltaTime = currentTime - prevTime;
-					
-					totalTime += (deltaTime <= 0? 1:deltaTime);// timePassed in ().
-					
-					prevTime = currentTime;
-					
-					if(frames >= FPS_SAMPLE_RATE && totalTime > 0) {
-						averageFps = (int) (frames * TimeUnit.SECONDS.toMillis(1) / totalTime);
-						
-						frames = 0;
-						totalTime = 0;
-						
-					}
-					
-					try {
-						
-						Platform.runLater(() -> {
-							
-							if(readyToRender) {
-								synchronized(game.getWorld().getEntities()) {
-									sm.getCurrentState().render();
-									frames++;
-								}
-							}
-							
-						});
-//						Platform.runLater(() -> controller.renderThreadSafe());
-						
-						if(targetFps > 0) {// "Unlocked Framerate"; also prevents divide by zero exception.
-							Thread.sleep(TimeUnit.SECONDS.toMillis(1)/targetFps);
-						}
-						
-					} catch(InterruptedException ex) {
-						ex.printStackTrace();
-					} catch(NullPointerException ex) {
-						// Have to catch this exception b/c multiple runLater calls can be made and the 
-						// controller is set to null before they can be executed (when stopping).
-						Logger.log(Logger.WARNING, "Got null controller when rendering.");
-						break;
-					}
+					frames = 0;
+					totalTime = 0;
 					
 				}
 				
-			};
-		}
-		
-		return renderingRunnable;
-		
+				if(readyToRender) {
+					Platform.runLater(() -> {
+						synchronized(game.getWorld().getEntities()) {
+							sm.getCurrentState().render();
+							frames++;
+						}
+					});
+				}
+				
+			}
+			
+		});
 	}
 	
 	/**
@@ -122,6 +116,14 @@ public abstract class AClient extends Proxy {
 	 */
 	public void initGui(Stage stage) {
 		this.stage = stage;
+		
+		stage.setScene(scene);
+		
+	}
+	
+	@Override
+	public void preInit(Game game) {
+		super.preInit(game);
 		
 		Thread.currentThread().setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
 			@Override
@@ -141,11 +143,14 @@ public abstract class AClient extends Proxy {
 		
 		initInputBindings();
 		
-		sm = new StateManager(game, this);
+		sm = new StateManager(game, scene);
 		
-		renderingThread = new Thread(getRenderingRunnable(), "Rendering Thread");
-		renderingThread.setDaemon(true);
-		renderingThread.start();
+		renderingLoop = new Timeline(targetFps);
+		renderingLoop.setCycleCount(Timeline.INDEFINITE);
+		
+		renderingLoop.getKeyFrames().add(getRenderingKeyFrame());
+		
+		renderingLoop.playFromStart();
 		
 		readyToRender = false;
 		

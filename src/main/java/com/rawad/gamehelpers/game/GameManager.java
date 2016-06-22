@@ -5,6 +5,12 @@ import java.util.concurrent.TimeUnit;
 
 import com.rawad.gamehelpers.log.Logger;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.util.Duration;
+
 public class GameManager {
 	
 	private static GameManager instance;
@@ -104,35 +110,42 @@ public class GameManager {
 				proxy.init(game);
 			}
 			
-			long currentTime = System.currentTimeMillis();
+			final Timeline gameLoop = new Timeline();
+			gameLoop.setCycleCount(Timeline.INDEFINITE);
 			
-			long prevTime;
-			
-			prevTime = currentTime;// To keep the initial value limited to zero, just in case.
-			
-			while(game.isRunning()) {
+			KeyFrame gameLoopHandler = new KeyFrame(Duration.millis(sleepTime), new EventHandler<ActionEvent>() {
 				
-				currentTime = System.currentTimeMillis();
+				private long currentTime = System.currentTimeMillis();
+				private long prevTime = currentTime;// To keep the initial value limited to zero.
 				
-				long deltaTime = currentTime - prevTime;
-				
-				timePassed = (deltaTime <= 0? 1:deltaTime);
-				
-				prevTime = currentTime;
-				
-				try {
-					game.update(getTimePassed());
+				@Override
+				public void handle(ActionEvent event) {
 					
-					Thread.sleep(sleepTime);
+					if(!game.isRunning()) {
+						gameLoop.stop();
+						return;// stop() is asynchronous but it is called from the timeline itself but just in case.
+					}
 					
-				} catch(InterruptedException ex) {
-					Logger.log(Logger.WARNING, "Game thread interrupted.");
-				} catch(Exception ex) {
-					Logger.log(Logger.SEVERE, "Game thread is broken.");
-					ex.printStackTrace();
+					currentTime = System.currentTimeMillis();
+					
+					long deltaTime = currentTime - prevTime;
+					
+					timePassed = (deltaTime <= 0? 1:deltaTime);
+					
+					prevTime = currentTime;
+					
+					try {
+						game.update(getTimePassed());
+					} catch(Exception ex) {
+						Logger.log(Logger.DEBUG, "Error in game thread.");
+						ex.printStackTrace();
+					}
+					
 				}
-				
-			}
+			});
+			
+			gameLoop.getKeyFrames().add(gameLoopHandler);
+			gameLoop.playFromStart();
 			
 		}
 		

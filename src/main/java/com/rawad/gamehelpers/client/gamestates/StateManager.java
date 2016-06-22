@@ -1,6 +1,5 @@
 package com.rawad.gamehelpers.client.gamestates;
 
-import com.rawad.gamehelpers.client.AClient;
 import com.rawad.gamehelpers.game.Game;
 import com.rawad.gamehelpers.log.Logger;
 import com.rawad.gamehelpers.utils.ClassMap;
@@ -8,7 +7,6 @@ import com.rawad.gamehelpers.utils.ClassMap;
 import javafx.animation.Transition;
 import javafx.application.Platform;
 import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
 
 public class StateManager {
 	
@@ -20,11 +18,9 @@ public class StateManager {
 	
 	private Game game;
 	
-	private AClient client;
-	
 	private Scene scene;
 	
-	public StateManager(Game game, AClient client) {
+	public StateManager(Game game, Scene scene) {
 		
 		states = new ClassMap<State>();
 		
@@ -32,9 +28,7 @@ public class StateManager {
 		
 		this.game = game;
 		
-		this.client = client;
-		
-		scene = new Scene(new Pane(), Game.SCREEN_WIDTH, Game.SCREEN_HEIGHT);// Creates empty scene.
+		this.scene = scene;
 		
 	}
 	
@@ -104,6 +98,22 @@ public class StateManager {
 			
 			if(currentState != null) {
 				currentState.onDeactivate();
+				
+				Transition transition = currentState.getTransition();
+				transition.setOnFinished(e -> {
+					scene.setRoot(currentState.getRoot());
+					currentState.getRoot().requestFocus();
+				});
+				
+				transition.playFromStart();
+				
+			} else {
+				
+				Platform.runLater(() -> {
+					scene.setRoot(currentState.getRoot());
+					currentState.getRoot().requestFocus();
+				});
+				
 			}
 			
 			setState(newState);
@@ -112,18 +122,6 @@ public class StateManager {
 			game.setWorld(currentState.getWorld());
 			
 			currentState.onActivate();
-			Transition transition = currentState.getTransition();
-			transition.setOnFinished(e -> {
-				Platform.runLater(() -> {
-					currentState.guiContainer.setLayoutX(0);
-					currentState.guiContainer.setLayoutY(0);
-					currentState.guiContainer.setTranslateX(0);
-					currentState.guiContainer.setTranslateY(0);
-					client.getStage().getScene().setRoot(currentState.getRoot());
-					currentState.getRoot().requestFocus();
-				});
-			});
-			transition.playFromStart();
 			
 		} catch(Exception ex) {
 			
@@ -147,10 +145,6 @@ public class StateManager {
 	 */
 	public Game getGame() {
 		return game;
-	}
-	
-	public Scene getScene() {
-		return scene;
 	}
 	
 	public State getCurrentState() {
