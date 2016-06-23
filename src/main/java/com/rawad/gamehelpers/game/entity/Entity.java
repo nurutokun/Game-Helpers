@@ -3,31 +3,30 @@ package com.rawad.gamehelpers.game.entity;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 
-import com.rawad.gamehelpers.utils.Util;
+import com.rawad.gamehelpers.utils.ClassMap;
 
 public final class Entity {
 	
-	private HashMap<Class<? extends Component>, Component> components;
+	private ClassMap<Component> components;
 	
 	private Entity() {
-		components = new HashMap<Class<? extends Component>, Component>();
+		components = new ClassMap<Component>();
 	}
 	
 	public void addComponent(Component comp) {
-		components.put(comp.getClass(), comp);
+		components.put(comp);
 	}
 	
 	public <T extends Component> T getComponent(Class<T> compClass) {
-		return Util.cast(components.get(compClass));
+		return components.get(compClass);
 	}
 	
 	public Collection<Component> getComponentsAsList() {
-		return components.values();
+		return components.getMap().values();
 	}
 	
-	private HashMap<Class<? extends Component>, Component> getComponents() {
+	private ClassMap<Component> getComponents() {
 		return components;
 	}
 	
@@ -62,7 +61,7 @@ public final class Entity {
 		
 		Entity entityBase = BlueprintManager.getBlueprint(blueprintId).getEntityBase();
 		
-		for(Component baseComp: entityBase.getComponents().values()) {
+		for(Component baseComp: entityBase.getComponents().getMap().values()) {
 			
 			try {
 				
@@ -84,7 +83,7 @@ public final class Entity {
 	
 	public static void copyComponentData(Entity entityToCopyTo, Entity entityToCopyFrom) {
 		
-		for(Class<? extends Component> compClass: entityToCopyTo.getComponents().keySet()) {
+		for(Class<? extends Component> compClass: entityToCopyTo.getComponents().getMap().keySet()) {
 			// Only loop through components we need which is are that in the target entity.
 			
 			Component compToCopyTo = entityToCopyTo.getComponent(compClass);
@@ -99,11 +98,11 @@ public final class Entity {
 	
 	public static boolean compare(Entity e1, Entity e2) {
 		
-		if(e1.getComponents().keySet().size() != e2.getComponents().keySet().size()) {
+		if(e1.getComponents().getMap().keySet().size() != e2.getComponents().getMap().keySet().size()) {
 			return false;// Small optimization (hopefully).
 		}
 		
-		return contains(e1, e2.getComponents().keySet());
+		return contains(e1, e2.getComponents().getMap().keySet());
 		
 	}
 	
@@ -117,7 +116,7 @@ public final class Entity {
 	 */
 	public static boolean compare(Entity e, Class<? extends Component>[] comps) {
 		
-		if(e.getComponents().keySet().size() != comps.length) {
+		if(e.getComponents().getMap().keySet().size() != comps.length) {
 			return false;// Small optimization (hopefully).
 		}
 		

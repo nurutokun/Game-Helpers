@@ -1,7 +1,6 @@
 package com.rawad.gamehelpers.utils;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -67,13 +66,13 @@ public class ClassMap<T> {
 		// It gets it from that "<K extends T>"; whatever K extends.
 	}
 	
-	public Collection<T> values() {
-		return map.values();
-	}
-	
 	public void clear() {
 		map.clear();
 		if(saveOrder) orderedMap.clear();
+	}
+	
+	public HashMap<Class<? extends T>, T> getMap() {
+		return map;
 	}
 	
 	public List<T> getOrderedMap() {

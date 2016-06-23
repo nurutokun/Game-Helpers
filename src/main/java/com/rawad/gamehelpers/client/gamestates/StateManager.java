@@ -72,7 +72,7 @@ public class StateManager {
 	
 	public void initGui() {
 		
-		for(State state: states.values()) {
+		for(State state: states.getMap().values()) {
 			
 			if(state.getRoot() == null) state.initGui();// Avoids re-initializing LoadingState.
 			
@@ -81,8 +81,8 @@ public class StateManager {
 	}
 	
 	/**
-	 * Changes to the provided <code>State</code>'s id upon the next <code>update()</code> as to allow it to be
-	 * consistently called from the <code>Game Thread</code>.
+	 * Changes to the provided {@code State}'s id upon the next {@link #update()} as to allow it to be
+	 * consistently called from the {@code Game Thread}.
 	 * 
 	 * @param stateIdHolder
 	 */
@@ -99,21 +99,12 @@ public class StateManager {
 			if(currentState != null) {
 				currentState.onDeactivate();
 				
-				Transition transition = currentState.getTransition();
-				transition.setOnFinished(e -> {
-					scene.setRoot(currentState.getRoot());
-					currentState.getRoot().requestFocus();
-				});
-				
+				Transition transition = currentState.getOnDeactivateTransition();
+				transition.setOnFinished(e -> setNewStateRoot(newState));
 				transition.playFromStart();
 				
 			} else {
-				
-				Platform.runLater(() -> {
-					scene.setRoot(currentState.getRoot());
-					currentState.getRoot().requestFocus();
-				});
-				
+				Platform.runLater(() -> setNewStateRoot(newState));
 			}
 			
 			setState(newState);
@@ -122,6 +113,7 @@ public class StateManager {
 			game.setWorld(currentState.getWorld());
 			
 			currentState.onActivate();
+			
 			
 		} catch(Exception ex) {
 			
@@ -136,6 +128,12 @@ public class StateManager {
 	
 	public void setState(State state) {
 		this.currentState = state;
+	}
+	
+	private void setNewStateRoot(State newState) {
+		scene.setRoot(newState.getRoot());
+		newState.getOnActivateTransition().playFromStart();
+		newState.getRoot().requestFocus();
 	}
 	
 	/**

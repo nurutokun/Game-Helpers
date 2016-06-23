@@ -87,8 +87,6 @@ public abstract class AClient extends Proxy {
 				if(frames >= FPS_SAMPLE_RATE && totalTime > 0) {
 					averageFps = (int) (frames * TimeUnit.SECONDS.toNanos(1) / totalTime);
 					
-					Logger.log(Logger.DEBUG, "frames: " + frames + ", total time: " + totalTime);
-					
 					frames = 0;
 					totalTime = 0;
 					
