@@ -104,7 +104,7 @@ public class StateManager {
 				transition.playFromStart();
 				
 			} else {
-				Platform.runLater(() -> setNewStateRoot(newState));
+				setNewStateRoot(newState);
 			}
 			
 			setState(newState);
@@ -131,9 +131,11 @@ public class StateManager {
 	}
 	
 	private void setNewStateRoot(State newState) {
-		scene.setRoot(newState.getRoot());
-		newState.getOnActivateTransition().playFromStart();
-		newState.getRoot().requestFocus();
+		Platform.runLater(() -> {
+			scene.setRoot(newState.getRoot());
+			newState.getOnActivateTransition().playFromStart();
+			newState.getRoot().requestFocus();			
+		});
 	}
 	
 	/**

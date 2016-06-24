@@ -1,17 +1,15 @@
 package com.rawad.gamehelpers.game;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 import com.rawad.gamehelpers.log.Logger;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.util.Duration;
-
 public class GameManager {
+	
+	private static final int MAX_FPS = 120;// Works fine with 300.
 	
 	private static GameManager instance;
 	
@@ -19,7 +17,7 @@ public class GameManager {
 	
 	private Game currentGame;
 	
-	private Thread gameThread;
+	private Timer timer;
 	
 	private long sleepTime;
 	private long timePassed;
@@ -27,8 +25,9 @@ public class GameManager {
 	private GameManager() {
 		
 		games = new ArrayList<Game>();
+		timer = new Timer("Game Loop");
 		
-		setUpdateRate(120);// Works fine with 300.
+		setUpdateRate(MAX_FPS);
 		
 	}
 	
@@ -46,7 +45,7 @@ public class GameManager {
 		// Any game can only be run once but multiple games can be run concurrently.
 		if(!gameToLaunch.isRunning()) {
 			
-			gameThread = new Thread(new GameThread(currentGame), "Game Thread");
+			Thread gameThread = new Thread(new GameThread(currentGame), "Game Thread");
 			
 			gameThread.start();
 			
@@ -110,20 +109,17 @@ public class GameManager {
 				proxy.init(game);
 			}
 			
-			final Timeline gameLoop = new Timeline();
-			gameLoop.setCycleCount(Timeline.INDEFINITE);
-			
-			KeyFrame gameLoopHandler = new KeyFrame(Duration.millis(sleepTime), new EventHandler<ActionEvent>() {
+			timer.scheduleAtFixedRate(new TimerTask() {
 				
 				private long currentTime = System.currentTimeMillis();
 				private long prevTime = currentTime;// To keep the initial value limited to zero.
 				
 				@Override
-				public void handle(ActionEvent event) {
+				public void run() {
 					
 					if(!game.isRunning()) {
-						gameLoop.stop();
-						return;// stop() is asynchronous but it is called from the timeline itself but just in case.
+						timer.cancel();
+						return;
 					}
 					
 					currentTime = System.currentTimeMillis();
@@ -142,10 +138,8 @@ public class GameManager {
 					}
 					
 				}
-			});
-			
-			gameLoop.getKeyFrames().add(gameLoopHandler);
-			gameLoop.playFromStart();
+				
+			}, 0, sleepTime);
 			
 		}
 		

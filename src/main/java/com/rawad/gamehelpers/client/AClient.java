@@ -11,7 +11,6 @@ import com.rawad.gamehelpers.log.Logger;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
@@ -93,12 +92,10 @@ public abstract class AClient extends Proxy {
 				}
 				
 				if(readyToRender) {
-					Platform.runLater(() -> {
-						synchronized(game.getWorld().getEntities()) {
-							sm.getCurrentState().render();
-							frames++;
-						}
-					});
+					synchronized(game.getWorld().getEntities()) {
+						sm.getCurrentState().render();
+						frames++;
+					}
 				}
 				
 			}

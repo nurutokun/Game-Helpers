@@ -1,6 +1,7 @@
 package com.rawad.gamehelpers.game;
 
-import java.util.ArrayList;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import com.rawad.gamehelpers.fileparser.FileParser;
 import com.rawad.gamehelpers.game.world.World;
@@ -25,10 +26,7 @@ public abstract class Game {
 	protected ClassMap<FileParser> fileParsers;
 	protected ClassMap<Loader> loaders;
 	
-	protected Thread loadingThread;
-	protected Runnable loadingRunnable;
-	
-	protected ArrayList<Task<Integer>> tasks = new ArrayList<Task<Integer>>();// Might pose issue upon re-init.
+	protected Executor loadingTasksExecutor;
 	
 	protected SimpleBooleanProperty debug;
 	
@@ -66,9 +64,11 @@ public abstract class Game {
 		
 		running = true;
 		
-		loadingThread = new Thread(getLoadingRunnable(), "Loading Thread");
-		loadingThread.setDaemon(true);
-		loadingThread.start();
+		loadingTasksExecutor = Executors.newSingleThreadExecutor(task -> {
+			Thread t = new Thread(task, "Loading Thread");
+			t.setDaemon(true);
+			return t;
+		});
 		
 	}
 	
@@ -111,39 +111,8 @@ public abstract class Game {
 	
 	public abstract void registerTextures();
 	
-	public Runnable getLoadingRunnable() {
-		
-		if(loadingRunnable == null) {
-			
-			loadingRunnable = () -> {
-				
-				while(isRunning()) {
-					
-					synchronized(tasks) {
-						if(tasks.size() > 0) {
-							Task<Integer> task = tasks.get(0);
-							try {
-								task.run();
-								tasks.remove(0);
-							} catch(Exception ex) {
-								ex.printStackTrace();
-							}
-						}
-					}
-					
-				}
-			};
-			
-		}
-		
-		return loadingRunnable;
-		
-	}
-	
-	public void addTask(Task<Integer> taskToLoad) {
-		synchronized(tasks) {
-			tasks.add(taskToLoad);
-		}
+	public synchronized void addTask(Task<Void> taskToLoad) {
+		loadingTasksExecutor.execute(taskToLoad);
 	}
 	
 	public GameEngine getGameEngine() {
