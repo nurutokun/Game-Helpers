@@ -13,21 +13,6 @@ public final class Util {
 	
 	private Util() {}
 	
-	/*/
-	public static ArrayList<Class<Object>> getClassesInPackage(String packageName) {
-		
-		ClassLoader loader = Thread.currentThread().getContextClassLoader();
-		
-		ArrayList<Class<Object>> classes = new ArrayList<Class<Object>>();
-		
-		String path = packageName.replace('.', File.separatorChar);
-		
-		classes.add(Class.forName(className))
-		
-		return classes;
-		
-	}/* Worst case scenario... */
-	
 	public static double clamp(double value, double min, double max) {
 		
 		if(value < min) {

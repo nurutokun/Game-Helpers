@@ -20,7 +20,7 @@ import javafx.util.Duration;
 
 public abstract class AClient extends Proxy {
 	
-	/** How many {@code frames} to wait before calculating {@code averageFps}. */
+	/** {@code frames} to wait before calculating {@code averageFps}. */
 	private static final int FPS_SAMPLE_RATE = 30;
 	
 	protected Stage stage;

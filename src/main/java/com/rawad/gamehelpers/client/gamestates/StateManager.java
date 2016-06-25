@@ -14,7 +14,7 @@ public class StateManager {
 	
 	private State currentState;
 	
-	private Class<? extends State> requestedStateIdHolder;
+	private StateChangeRequest stateChangeRequest;
 	
 	private Game game;
 	
@@ -24,7 +24,7 @@ public class StateManager {
 		
 		states = new ClassMap<State>();
 		
-		requestedStateIdHolder = null;
+		stateChangeRequest = null;
 		
 		this.game = game;
 		
@@ -37,17 +37,17 @@ public class StateManager {
 	 */
 	public void update() {
 		
-		if(requestedStateIdHolder != null) {
+		if(stateChangeRequest != null) {
 			
-			State requestedState = states.get(requestedStateIdHolder);
+			State requestedState = states.get(stateChangeRequest.getRequestedState());
 			
 			if(requestedState != null) {
 				
 				if(!requestedState.equals(currentState)) {
-					setState(requestedState.getClass());
+					setState(stateChangeRequest);
 				}
 				
-				requestedStateIdHolder = null;// Allows it to wait until state has been initialized.
+				stateChangeRequest = null;// Allows it to wait until state has been initialized.
 				
 			}
 			
@@ -62,7 +62,7 @@ public class StateManager {
 		}
 		
 		currentState = null;
-		requestedStateIdHolder = null;
+		stateChangeRequest = null;
 		
 	}
 	
@@ -86,34 +86,36 @@ public class StateManager {
 	 * 
 	 * @param stateIdHolder
 	 */
-	public void requestStateChange(Class<? extends State> stateIdHolder) {
-		requestedStateIdHolder = stateIdHolder;
+	public void requestStateChange(StateChangeRequest stateChangeRequest) {
+		this.stateChangeRequest = stateChangeRequest;
 	}
 	
-	public void setState(Class<? extends State> stateId) {
+	public void setState(StateChangeRequest stateChangeRequest) {
+		
+		Class<? extends State> stateId = stateChangeRequest.getRequestedState();
 		
 		try {
 			
 			State newState = states.get(stateId);
 			
-			if(currentState != null) {
-				currentState.onDeactivate();
-				
-				Transition transition = currentState.getOnDeactivateTransition();
-				transition.setOnFinished(e -> setNewStateRoot(newState));
-				transition.playFromStart();
-				
-			} else {
-				setNewStateRoot(newState);
-			}
+			if(currentState != null) currentState.onDeactivate();
 			
 			setState(newState);
+			
+			Transition transition = stateChangeRequest.getOnOldStateDeactivate();
+			transition.setOnFinished(e -> {
+				Platform.runLater(() -> {// Prevent some StackOverFlow error caused by scene.setRoot().
+					scene.setRoot(newState.getRoot());
+					stateChangeRequest.getOnRequestedStateActivate().playFromStart();
+					newState.getRoot().requestFocus();
+				});
+			});
+			transition.playFromStart();
 			
 			game.getGameEngine().setGameSystems(currentState.gameSystems);
 			game.setWorld(currentState.getWorld());
 			
 			currentState.onActivate();
-			
 			
 		} catch(Exception ex) {
 			
@@ -128,14 +130,6 @@ public class StateManager {
 	
 	public void setState(State state) {
 		this.currentState = state;
-	}
-	
-	private void setNewStateRoot(State newState) {
-		Platform.runLater(() -> {
-			scene.setRoot(newState.getRoot());
-			newState.getOnActivateTransition().playFromStart();
-			newState.getRoot().requestFocus();			
-		});
 	}
 	
 	/**
