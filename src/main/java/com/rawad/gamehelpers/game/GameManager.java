@@ -119,6 +119,7 @@ public class GameManager {
 					
 					if(!game.isRunning()) {
 						timer.cancel();
+						timer.purge();
 						return;
 					}
 					

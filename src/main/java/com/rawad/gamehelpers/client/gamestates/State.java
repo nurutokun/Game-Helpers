@@ -9,7 +9,6 @@ import com.rawad.gamehelpers.game.world.World;
 import com.rawad.gamehelpers.resources.Loader;
 import com.rawad.gamehelpers.utils.ClassMap;
 
-import javafx.animation.Transition;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Label;
@@ -90,18 +89,6 @@ public abstract class State {
 	
 	public void render() {
 		masterRender.render(canvas.getGraphicsContext2D());
-	}
-	
-	public Transition getOnActivateTransition() {
-		return new Transition() {
-			@Override protected void interpolate(double frac) {}
-		};
-	}
-	
-	public Transition getOnDeactivateTransition() {
-		return new Transition() {
-			@Override protected void interpolate(double frac) {}
-		};
 	}
 	
 	/**

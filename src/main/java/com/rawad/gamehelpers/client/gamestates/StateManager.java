@@ -1,12 +1,11 @@
 package com.rawad.gamehelpers.client.gamestates;
 
+import com.rawad.gamehelpers.client.AClient;
 import com.rawad.gamehelpers.game.Game;
 import com.rawad.gamehelpers.log.Logger;
 import com.rawad.gamehelpers.utils.ClassMap;
 
-import javafx.animation.Transition;
 import javafx.application.Platform;
-import javafx.scene.Scene;
 
 public class StateManager {
 	
@@ -18,9 +17,9 @@ public class StateManager {
 	
 	private Game game;
 	
-	private Scene scene;
+	private AClient client;
 	
-	public StateManager(Game game, Scene scene) {
+	public StateManager(Game game, AClient client) {
 		
 		states = new ClassMap<State>();
 		
@@ -28,12 +27,12 @@ public class StateManager {
 		
 		this.game = game;
 		
-		this.scene = scene;
+		this.client = client;
 		
 	}
 	
 	/**
-	 * Handles changing state, should be called in postTick().
+	 * Handles changing state.
 	 */
 	public void update() {
 		
@@ -102,15 +101,11 @@ public class StateManager {
 			
 			setState(newState);
 			
-			Transition transition = stateChangeRequest.getOnOldStateDeactivate();
-			transition.setOnFinished(e -> {
-				Platform.runLater(() -> {// Prevent some StackOverFlow error caused by scene.setRoot().
-					scene.setRoot(newState.getRoot());
-					stateChangeRequest.getOnRequestedStateActivate().playFromStart();
-					newState.getRoot().requestFocus();
-				});
+			client.onStateChange();
+			
+			Platform.runLater(() -> {
+				 currentState.getRoot().requestFocus();
 			});
-			transition.playFromStart();
 			
 			game.getGameEngine().setGameSystems(currentState.gameSystems);
 			game.setWorld(currentState.getWorld());

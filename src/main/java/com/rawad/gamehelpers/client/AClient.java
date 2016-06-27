@@ -14,7 +14,7 @@ import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -42,9 +42,6 @@ public abstract class AClient extends Proxy {
 	public AClient() {
 		frames = 0;
 		targetFps = 60;
-		
-		scene = new Scene(new Pane(), Game.SCREEN_WIDTH, Game.SCREEN_HEIGHT);// Creates empty scene.
-		
 	}
 	
 	public void setTargetFps(int targetFps) {
@@ -104,13 +101,14 @@ public abstract class AClient extends Proxy {
 	}
 	
 	/**
-	 * Sets {@link #stage} to the given {@code stage} parameter. This method should be called before 
-	 * {@link #init(Game)}.
+	 * Sets {@link #stage} to the given {@code stage} parameter. This method should be called before {@link #init(Game)}.
 	 * 
 	 * @param stage
 	 */
 	public void initGui(Stage stage) {
 		this.stage = stage;
+		
+		scene = new Scene(createRoot(), Game.SCREEN_WIDTH, Game.SCREEN_HEIGHT);
 		
 		stage.setScene(scene);
 		
@@ -138,7 +136,7 @@ public abstract class AClient extends Proxy {
 		
 		initInputBindings();
 		
-		sm = new StateManager(game, scene);
+		sm = new StateManager(game, this);
 		
 		renderingLoop = new Timeline(targetFps);
 		renderingLoop.setCycleCount(Timeline.INDEFINITE);
@@ -152,6 +150,14 @@ public abstract class AClient extends Proxy {
 	}
 	
 	protected abstract void initInputBindings();
+	
+	protected abstract GridPane createRoot();
+	
+	/**
+	 * {@link StateManager#currentState} is set to the new {@code State} before calling this method.
+	 * 
+	 */
+	public abstract void onStateChange();
 	
 	public InputBindings getInputBindings() {
 		return inputBindings;
