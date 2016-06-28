@@ -13,19 +13,12 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.Scene;
-import javafx.scene.layout.GridPane;
-import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public abstract class AClient extends Proxy {
 	
 	/** {@code frames} to wait before calculating {@code averageFps}. */
 	private static final int FPS_SAMPLE_RATE = 30;
-	
-	protected Stage stage;
-	
-	protected Scene scene;
 	
 	protected StateManager sm;
 	
@@ -50,10 +43,6 @@ public abstract class AClient extends Proxy {
 	
 	public int getAverageFps() {
 		return averageFps;
-	}
-	
-	public Stage getStage() {
-		return stage;
 	}
 	
 	private final KeyFrame getRenderingKeyFrame() {
@@ -100,19 +89,16 @@ public abstract class AClient extends Proxy {
 		});
 	}
 	
-	/**
-	 * Sets {@link #stage} to the given {@code stage} parameter. This method should be called before {@link #init(Game)}.
-	 * 
-	 * @param stage
-	 */
-	public void initGui(Stage stage) {
-		this.stage = stage;
-		
-		scene = new Scene(createRoot(), Game.SCREEN_WIDTH, Game.SCREEN_HEIGHT);
-		
-		stage.setScene(scene);
-		
+	@Override
+	public void tick() {
+		sm.update();
 	}
+	
+	/**
+	 * This method should be called before {@link #preInit(Game)} and {@link #init(Game)}.
+	 * 
+	 */
+	public abstract void initGui();
 	
 	@Override
 	public void preInit(Game game) {
@@ -150,8 +136,6 @@ public abstract class AClient extends Proxy {
 	}
 	
 	protected abstract void initInputBindings();
-	
-	protected abstract GridPane createRoot();
 	
 	/**
 	 * {@link StateManager#currentState} is set to the new {@code State} before calling this method.

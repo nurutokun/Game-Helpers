@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Could make this class Thread-safe if it needs to be.
@@ -14,7 +15,8 @@ import java.util.List;
  */
 public class ClassMap<T> {
 	
-	private final HashMap<Class<? extends T>, T> map;
+	private final Map<Class<? extends T>, T> map;
+	private final Map<Class<? extends T>, T> mapUnmodifiable;
 	
 	private List<T> orderedMap;
 	private List<T> orderedMapUnmodifiable;
@@ -24,6 +26,7 @@ public class ClassMap<T> {
 	public ClassMap(boolean saveOrder) {
 		
 		map = new HashMap<Class<? extends T>, T>();
+		mapUnmodifiable = Collections.unmodifiableMap(map);
 		
 		this.saveOrder = saveOrder;
 		
@@ -71,8 +74,8 @@ public class ClassMap<T> {
 		if(saveOrder) orderedMap.clear();
 	}
 	
-	public HashMap<Class<? extends T>, T> getMap() {
-		return map;
+	public Map<Class<? extends T>, T> getMap() {
+		return mapUnmodifiable;
 	}
 	
 	public List<T> getOrderedMap() {

@@ -5,8 +5,6 @@ import com.rawad.gamehelpers.game.Game;
 import com.rawad.gamehelpers.log.Logger;
 import com.rawad.gamehelpers.utils.ClassMap;
 
-import javafx.application.Platform;
-
 public class StateManager {
 	
 	private ClassMap<State> states;
@@ -65,17 +63,11 @@ public class StateManager {
 		
 	}
 	
-	protected void addState(State state) {
-		states.put(state);
-	}
-	
-	public void initGui() {
+	public void addState(State state) {
 		
-		for(State state: states.getMap().values()) {
-			
-			if(state.getRoot() == null) state.initGui();// Avoids re-initializing LoadingState.
-			
-		}
+		states.put(state);
+		
+		state.init(this);
 		
 	}
 	
@@ -95,22 +87,22 @@ public class StateManager {
 		
 		try {
 			
+			currentState.onDeactivate();
+			
 			State newState = states.get(stateId);
 			
-			if(currentState != null) currentState.onDeactivate();
-			
-			setState(newState);
+			setCurrentState(newState);
 			
 			client.onStateChange();
-			
-			Platform.runLater(() -> {
-				 currentState.getRoot().requestFocus();
-			});
 			
 			game.getGameEngine().setGameSystems(currentState.gameSystems);
 			game.setWorld(currentState.getWorld());
 			
 			currentState.onActivate();
+			
+		} catch(NullPointerException ex) {
+			
+			Logger.log(Logger.WARNING, "Was the State set before requesting to change it?");
 			
 		} catch(Exception ex) {
 			
@@ -123,7 +115,12 @@ public class StateManager {
 		
 	}
 	
-	public void setState(State state) {
+	/**
+	 * Should be called before requesting a {@code State} change to set the intiial {@code State} value.
+	 * 
+	 * @param state
+	 */
+	public void setCurrentState(State state) {
 		this.currentState = state;
 	}
 	
@@ -134,6 +131,10 @@ public class StateManager {
 	 */
 	public Game getGame() {
 		return game;
+	}
+	
+	public ClassMap<State> getStates() {
+		return states;
 	}
 	
 	public State getCurrentState() {

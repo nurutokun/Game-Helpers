@@ -37,13 +37,7 @@ public abstract class State {
 	
 	protected World world;
 	
-	public State(StateManager sm) {
-		
-		sm.addState(this);
-		
-		this.sm = sm;
-		
-		this.game = sm.getGame();
+	public State() {
 		
 		gameSystems = new ClassMap<GameSystem>(true);
 		
@@ -89,6 +83,16 @@ public abstract class State {
 	
 	public void render() {
 		masterRender.render(canvas.getGraphicsContext2D());
+	}
+	
+	/**
+	 * Called when this {@code State} is added to a {@code StateManager}.
+	 * 
+	 * @param sm The {@code StateManager} this {@code State} is added to.
+	 */
+	public void init(StateManager sm) {
+		this.sm = sm;
+		this.game = sm.getGame();
 	}
 	
 	/**
