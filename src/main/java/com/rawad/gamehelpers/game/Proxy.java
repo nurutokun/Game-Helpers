@@ -1,5 +1,9 @@
 package com.rawad.gamehelpers.game;
 
+import com.rawad.gamehelpers.fileparser.FileParser;
+import com.rawad.gamehelpers.resources.Loader;
+import com.rawad.gamehelpers.utils.ClassMap;
+
 /**
  * Used to define either a client or server.
  * 
@@ -10,6 +14,9 @@ public abstract class Proxy {
 	
 	protected Game game;
 	
+	protected ClassMap<FileParser> fileParsers;
+	protected ClassMap<Loader> loaders;
+	
 	protected boolean readyToUpdate;
 	
 	/**
@@ -19,7 +26,11 @@ public abstract class Proxy {
 	 * @param game
 	 */
 	public void preInit(Game game) {
-		this.game = game;		
+		this.game = game;
+		
+		fileParsers = new ClassMap<FileParser>();
+		loaders = new ClassMap<Loader>();
+		
 	}
 	
 	public void init(Game game) {
@@ -34,6 +45,14 @@ public abstract class Proxy {
 	
 	public Game getGame() {
 		return game;
+	}
+	
+	public ClassMap<Loader> getLoaders() {
+		return loaders;
+	}
+	
+	public ClassMap<FileParser> getFileParsers() {
+		return fileParsers;
 	}
 	
 }

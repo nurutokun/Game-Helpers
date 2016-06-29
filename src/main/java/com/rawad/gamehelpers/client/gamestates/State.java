@@ -64,6 +64,8 @@ public abstract class State {
 		fxmlLoader.setRoot(guiContainer);
 		
 		try {
+			// TODO: Move this loading part to a separate spot and make it so that each state does this independantly.
+			// this might also allow
 			fxmlLoader.load();
 		} catch(IOException ex) {
 			ex.printStackTrace();

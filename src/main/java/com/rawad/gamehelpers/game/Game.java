@@ -1,12 +1,14 @@
 package com.rawad.gamehelpers.game;
 
+import java.util.HashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-import com.rawad.gamehelpers.fileparser.FileParser;
+import com.rawad.gamehelpers.fileparser.xml.EntityFileParser;
+import com.rawad.gamehelpers.game.entity.Blueprint;
+import com.rawad.gamehelpers.game.entity.BlueprintManager;
 import com.rawad.gamehelpers.game.world.World;
-import com.rawad.gamehelpers.resources.GameHelpersLoader;
-import com.rawad.gamehelpers.resources.Loader;
+import com.rawad.gamehelpers.log.Logger;
 import com.rawad.gamehelpers.utils.ClassMap;
 
 import javafx.beans.property.SimpleBooleanProperty;
@@ -22,9 +24,6 @@ public abstract class Game {
 	protected GameEngine gameEngine;
 	
 	protected World world;
-	
-	protected ClassMap<FileParser> fileParsers;
-	protected ClassMap<Loader> loaders;
 	
 	protected Executor loadingTasksExecutor;
 	
@@ -45,11 +44,6 @@ public abstract class Game {
 		
 		proxies = new ClassMap<Proxy>(true);
 		
-		fileParsers = new ClassMap<FileParser>();
-		loaders = new ClassMap<Loader>();
-		
-		debug = new SimpleBooleanProperty(false);
-		
 	}
 	
 	protected void init() {
@@ -57,8 +51,6 @@ public abstract class Game {
 		gameEngine = new GameEngine();
 		
 		world = new World();
-		
-		loaders.put(new GameHelpersLoader());
 		
 		stopRequested = false;
 		
@@ -68,6 +60,38 @@ public abstract class Game {
 			Thread t = new Thread(task, "Loading Thread");
 			t.setDaemon(true);
 			return t;
+		});
+		
+		addTask(new Task<Void>() {
+			@Override
+			protected Void call() throws Exception {
+				
+				Logger.log(Logger.DEBUG, "Loading entity blueprints...");
+				
+				try {
+					
+					EntityBlueprintLoadObject entityLoadObject = geEntityBlueprintLoadObject();
+					
+					for(Object entityKey: entityLoadObject.getEntityBindings().keySet()) {
+						
+						String entityName = entityLoadObject.getEntityBindings().get(entityKey);
+						
+						BlueprintManager.addBlueprint(entityKey, new Blueprint(EntityFileParser.parseEntityFile(
+								entityLoadObject.getEntityFileContext(), entityName, entityLoadObject
+								.getContextPaths())));
+						
+					}
+					
+					Logger.log(Logger.DEBUG, "Loaded all entity blueprints.");
+					
+				} catch(Exception ex) {
+					Logger.log(Logger.WARNING, "Entity blueprint loading failed");
+					ex.printStackTrace();
+				}
+				
+				return null;
+				
+			}
 		});
 		
 	}
@@ -107,9 +131,9 @@ public abstract class Game {
 		
 	}
 	
-	public abstract int getIconLocation();
+	protected abstract EntityBlueprintLoadObject geEntityBlueprintLoadObject();
 	
-	public abstract void registerTextures();
+	public abstract String getName();
 	
 	public synchronized void addTask(Task<Void> taskToLoad) {
 		loadingTasksExecutor.execute(taskToLoad);
@@ -133,24 +157,17 @@ public abstract class Game {
 		return proxies;
 	}
 	
-	public ClassMap<Loader> getLoaders() {
-		return loaders;
-	}
-	
-	public ClassMap<FileParser> getFileParsers() {
-		return fileParsers;
-	}
-	
 	public SimpleBooleanProperty debugProperty() {
+		if(debug == null) debug = new SimpleBooleanProperty(false);
 		return debug;
 	}
 	
 	public void setDebug(boolean debug) {
-		this.debug.set(debug);
+		debugProperty().set(debug);
 	}
 	
 	public boolean isDebug() {
-		return debug.get();
+		return debugProperty().get();
 	}
 	
 	public boolean isRunning() {
@@ -167,6 +184,41 @@ public abstract class Game {
 	
 	public void requestStop() {
 		stopRequested = true;
+	}
+	
+	protected static final class EntityBlueprintLoadObject {
+		
+		/**
+		 * Represents {@code Blueprint} objects bound to specific {@code Entity} names which are used as the file names 
+		 * to load these blueprints from.
+		 */
+		private final HashMap<Object, String> entityBindings;
+		private final Class<? extends Object> entityFileContext;
+		/** Passed to {@code EntityBlueprintFileParser}. */
+		private final String[] contextPaths;
+		
+		public EntityBlueprintLoadObject(HashMap<Object, String> entityBindings, Class<? extends Object> 
+				entityFileContext, String[] contextPaths) {
+			super();
+			
+			this.entityBindings = entityBindings;
+			this.entityFileContext = entityFileContext;
+			this.contextPaths = contextPaths;
+			
+		}
+		
+		public HashMap<Object, String> getEntityBindings() {
+			return entityBindings;
+		}
+		
+		public Class<? extends Object> getEntityFileContext() {
+			return entityFileContext;
+		}
+		
+		public String[] getContextPaths() {
+			return contextPaths;
+		}
+		
 	}
 	
 }

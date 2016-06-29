@@ -8,9 +8,12 @@ import com.rawad.gamehelpers.client.input.InputBindings;
 import com.rawad.gamehelpers.game.Game;
 import com.rawad.gamehelpers.game.Proxy;
 import com.rawad.gamehelpers.log.Logger;
+import com.rawad.gamehelpers.resources.ResourceManager;
+import com.rawad.gamehelpers.resources.TextureResource;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.util.Duration;
@@ -23,6 +26,8 @@ public abstract class AClient extends Proxy {
 	protected StateManager sm;
 	
 	protected InputBindings inputBindings;
+	
+	protected Task<Void> loadingTask;
 	
 	protected boolean readyToRender;
 	
@@ -133,9 +138,67 @@ public abstract class AClient extends Proxy {
 		
 		readyToRender = false;
 		
+		loadingTask = new Task<Void>() {
+			@Override
+			protected Void call() throws Exception {
+				
+				String message = "Initializing client resources...";
+				
+				updateMessage(message);
+				Logger.log(Logger.DEBUG, message);
+				
+				try {
+					initResources();
+				} catch(Exception ex) {
+					ex.printStackTrace();
+				}
+				
+				for(com.rawad.gamehelpers.client.gamestates.State state: sm.getStates().getMap().values()) {
+					state.initGui();
+				}
+				
+				message = "Loading textures...";
+				
+				updateMessage(message);
+				Logger.log(Logger.DEBUG, message);
+				
+				int progress = 0;
+				
+				for(TextureResource texture: ResourceManager.getRegisteredTextures().values()) {
+					
+					message = "Loading \"" + texture.getPath() + "\"...";
+					updateMessage(message);
+					
+					ResourceManager.loadTexture(texture);
+					
+					updateProgress(progress++, ResourceManager.getRegisteredTextures().size());
+					
+				}
+				
+				readyToRender = true;
+				
+				message = "Done!";
+				
+				updateMessage(message);
+				Logger.log(Logger.DEBUG, message);
+				
+				return null;
+				
+			}
+		};
+		
+		game.addTask(loadingTask);
+		
 	}
 	
 	protected abstract void initInputBindings();
+	
+	/**
+	 * Called from the Loading Thread to initialize anything that might take a while. Note that 
+	 * {@link com.rawad.gamehelpers.client.gamestates.State#initGui} is called immediately after this.
+	 * 
+	 */
+	protected abstract void initResources();
 	
 	/**
 	 * {@link StateManager#currentState} is set to the new {@code State} before calling this method.
