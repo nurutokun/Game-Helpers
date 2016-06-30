@@ -20,6 +20,7 @@ public class MasterRender {
 	private ClassMap<LayerRender> renders;
 	
 	public MasterRender() {
+		super();
 		
 		renders = new ClassMap<LayerRender>(true);
 		

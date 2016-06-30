@@ -95,14 +95,14 @@ public class StateManager {
 			
 			client.onStateChange();
 			
-			game.getGameEngine().setGameSystems(currentState.gameSystems);
+			game.getGameEngine().setGameSystems(currentState.getGameSystems());
 			game.setWorld(currentState.getWorld());
 			
 			currentState.onActivate();
 			
 		} catch(NullPointerException ex) {
 			
-			Logger.log(Logger.WARNING, "Was the State set before requesting to change it?");
+			Logger.log(Logger.WARNING, "Was the State set before requesting to change to a different State?");
 			
 		} catch(Exception ex) {
 			

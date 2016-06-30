@@ -25,7 +25,8 @@ import javafx.scene.image.WritableImage;
 
 public class ResourceManager {
 	
-	/** Second path used when/if games are released; should be checked on other OS's. */
+	/** Second path used when/if games are released. On second thought, this is stupid right here. */
+	// TODO: Remove this "Multiple Repositories" mess.
 	private static final String[] REPOSITORIES;
 	
 	private static boolean devEnv;

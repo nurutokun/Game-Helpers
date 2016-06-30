@@ -1,6 +1,8 @@
 package com.rawad.gamehelpers.client;
 
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 import com.rawad.gamehelpers.client.gamestates.StateManager;
@@ -11,12 +13,7 @@ import com.rawad.gamehelpers.log.Logger;
 import com.rawad.gamehelpers.resources.ResourceManager;
 import com.rawad.gamehelpers.resources.TextureResource;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.concurrent.Task;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.util.Duration;
 
 public abstract class AClient extends Proxy {
 	
@@ -31,7 +28,7 @@ public abstract class AClient extends Proxy {
 	
 	protected boolean readyToRender;
 	
-	private Timeline renderingLoop;
+	private Timer renderingTimer;
 	
 	private int frames;
 	private int targetFps;
@@ -50,8 +47,8 @@ public abstract class AClient extends Proxy {
 		return averageFps;
 	}
 	
-	private final KeyFrame getRenderingKeyFrame() {
-		return new KeyFrame(Duration.ONE, new EventHandler<ActionEvent>() {
+	private final TimerTask getRenderingTask() {
+		return new TimerTask() {
 			
 			private long totalTime = 0;
 			
@@ -59,10 +56,11 @@ public abstract class AClient extends Proxy {
 			private long prevTime = currentTime;
 			
 			@Override
-			public void handle(ActionEvent event) {
+			public void run() {
 				
 				if(!game.isRunning()) {
-					renderingLoop.stop();
+					renderingTimer.cancel();
+					renderingTimer.purge();
 					return;
 				}
 				
@@ -84,14 +82,14 @@ public abstract class AClient extends Proxy {
 				
 				if(readyToRender) {
 					synchronized(game.getWorld().getEntities()) {
-						sm.getCurrentState().render();
+						render();
 						frames++;
 					}
 				}
 				
 			}
 			
-		});
+		};
 	}
 	
 	@Override
@@ -129,12 +127,8 @@ public abstract class AClient extends Proxy {
 		
 		sm = new StateManager(game, this);
 		
-		renderingLoop = new Timeline(targetFps);
-		renderingLoop.setCycleCount(Timeline.INDEFINITE);
-		
-		renderingLoop.getKeyFrames().add(getRenderingKeyFrame());
-		
-		renderingLoop.playFromStart();
+		renderingTimer = new Timer("Rendering Thread", true);
+		renderingTimer.scheduleAtFixedRate(getRenderingTask(), 0, TimeUnit.SECONDS.toMillis(1) / targetFps);
 		
 		readyToRender = false;
 		
@@ -171,7 +165,7 @@ public abstract class AClient extends Proxy {
 					
 					ResourceManager.loadTexture(texture);
 					
-					updateProgress(progress++, ResourceManager.getRegisteredTextures().size());
+					updateProgress(++progress, ResourceManager.getRegisteredTextures().size());
 					
 				}
 				
@@ -199,6 +193,8 @@ public abstract class AClient extends Proxy {
 	 * 
 	 */
 	protected abstract void initResources();
+	
+	protected abstract void render();
 	
 	/**
 	 * {@link StateManager#currentState} is set to the new {@code State} before calling this method.
