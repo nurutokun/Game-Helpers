@@ -25,10 +25,6 @@ import javafx.scene.image.WritableImage;
 
 public class ResourceManager {
 	
-	/** Second path used when/if games are released. On second thought, this is stupid right here. */
-	// TODO: Remove this "Multiple Repositories" mess.
-	private static final String[] REPOSITORIES;
-	
 	private static boolean devEnv;
 	
 	private static final String BUNDLE_NAME = "com.rawad.gamehelpers.resources.strings_resources"; //$NON-NLS-1$
@@ -48,20 +44,13 @@ public class ResourceManager {
 	
 	static {
 		
-		String userDir = Util.getDefaultDirectory("");// This gives the current user directory (relative to where this
+		String programDir = Util.getDefaultDirectory("");// This gives the current user directory (relative to where this
 		// program was started from) because that's what it defaults to when nothing else is found.
 		
-		String allProjectsDir = userDir.substring(0, userDir.lastIndexOf(File.separatorChar) + 1);
+		String allGamesDir = programDir.substring(0, programDir.lastIndexOf(File.separatorChar) + 1);
 		// +1 at the end includes the last path seperator.
 		
-		String userSpecificStorageFolder = Util.getDefaultDirectory(System.getProperty("os.name"));
-		
-		String[] repos = {
-				allProjectsDir,
-				userSpecificStorageFolder + File.separatorChar + "My Game Launcher"	+ File.separatorChar
-		};
-		
-		REPOSITORIES = repos;
+		basePath = allGamesDir;
 		
 		UNKNOWN_TEXTURE_PATH = getProperPath(getString("GameHelpers.name"),
 				getString("GameHelpers.res"), getString("GameHelpers.textures"), "unknown")
@@ -87,24 +76,13 @@ public class ResourceManager {
 	
 	/**
 	 * 
-	 * Should make it so that it works with indices.
-	 * 
-	 * @param developingEnvironment
-	 * 			- Whether or not the <code>Game</code> is being run from an IDE, for example, or not.
+	 * @param developementEnvironment Whether or not the {@code Game} is being run from an IDE, for example, or not.
 	 */
-	public static void setBasePath(boolean developingEnvironment) {
-		
-		if(developingEnvironment) {
-			basePath = REPOSITORIES[0];
-			
-		} else {
-			basePath = REPOSITORIES[1];
-			
-		}
+	public static void setBasePath(boolean developementEnvironment) {
 		
 		basePath = basePath.replace('\\', '/');
 		
-		devEnv = developingEnvironment;
+		devEnv = developementEnvironment;
 		
 	}
 	
@@ -276,7 +254,8 @@ public class ResourceManager {
 		
 	}
 	
-	private static <T extends Resource> int getLowestResourceLocation(HashMap<Integer, T> resources, String resourcePath) {
+	private static <T extends Resource> int getLowestResourceLocation(HashMap<Integer, T> resources, 
+			String resourcePath) {
 		
 		int minLoc = 0;
 		int maxLoc = getMaximumResourceSize(resources.keySet());
@@ -381,15 +360,15 @@ public class ResourceManager {
 			
 		} catch(IOException ex) {
 			
-			Logger.log(Logger.WARNING, "Buffered Reader for file at \"" + file.getAbsolutePath() + "\" couldn't be opened;"
-					+ " creating an empty Buffered Reader instead.");
+			Logger.log(Logger.WARNING, "Buffered Reader for file at \"" + file.getAbsolutePath() + "\" couldn't be "
+					+ "opened; creating an empty Buffered Reader instead.");
 			
 			try {
 				reader = new BufferedReader(new FileReader(""));
-			} catch (FileNotFoundException e) {
+			} catch (FileNotFoundException ex2) {
 				
 				Logger.log(Logger.SEVERE, "Empty buffered Reader couldn't be opened because empty file wasn't found?");
-				e.printStackTrace();
+				ex2.printStackTrace();
 				
 			}
 			
@@ -401,22 +380,18 @@ public class ResourceManager {
 	
 	public static void saveFile(String filePath, String content) {
 		
-		for(String path: REPOSITORIES) {
+		String path = getFinalPath(basePath, filePath);
+		
+		// Don't append, start all over every time.
+		try (	PrintWriter writer = new PrintWriter(new FileWriter(path, false), true)
+				) {
 			
-			path = getFinalPath(path, filePath);
+			writer.write(content);
 			
-			// Don't append, start all over every time.
-			try (	PrintWriter writer = new PrintWriter(new FileWriter(path, false), true)
-					) {
-				
-				writer.write(content);
-				
-			} catch(IOException ex) {
-				
-				Logger.log(Logger.SEVERE, "Couldn't write to file at \"" + path + "\"");
-				ex.printStackTrace();
-				
-			}
+		} catch(IOException ex) {
+			
+			Logger.log(Logger.SEVERE, "Couldn't write to file at \"" + path + "\"");
+			ex.printStackTrace();
 			
 		}
 		

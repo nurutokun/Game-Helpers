@@ -1,7 +1,7 @@
 package com.rawad.gamehelpers.game;
 
 import com.rawad.gamehelpers.fileparser.FileParser;
-import com.rawad.gamehelpers.resources.Loader;
+import com.rawad.gamehelpers.resources.ALoader;
 import com.rawad.gamehelpers.utils.ClassMap;
 
 /**
@@ -15,7 +15,7 @@ public abstract class Proxy {
 	protected Game game;
 	
 	protected ClassMap<FileParser> fileParsers;
-	protected ClassMap<Loader> loaders;
+	protected ClassMap<ALoader> loaders;
 	
 	protected boolean readyToUpdate;
 	
@@ -29,7 +29,7 @@ public abstract class Proxy {
 		this.game = game;
 		
 		fileParsers = new ClassMap<FileParser>();
-		loaders = new ClassMap<Loader>();
+		loaders = new ClassMap<ALoader>();
 		
 	}
 	
@@ -47,7 +47,7 @@ public abstract class Proxy {
 		return game;
 	}
 	
-	public ClassMap<Loader> getLoaders() {
+	public ClassMap<ALoader> getLoaders() {
 		return loaders;
 	}
 	

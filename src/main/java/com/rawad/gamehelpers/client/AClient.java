@@ -10,6 +10,7 @@ import com.rawad.gamehelpers.client.input.InputBindings;
 import com.rawad.gamehelpers.game.Game;
 import com.rawad.gamehelpers.game.Proxy;
 import com.rawad.gamehelpers.log.Logger;
+import com.rawad.gamehelpers.resources.ALoader;
 import com.rawad.gamehelpers.resources.ResourceManager;
 import com.rawad.gamehelpers.resources.TextureResource;
 
@@ -58,12 +59,6 @@ public abstract class AClient extends Proxy {
 			@Override
 			public void run() {
 				
-				if(!game.isRunning()) {
-					renderingTimer.cancel();
-					renderingTimer.purge();
-					return;
-				}
-				
 				currentTime = System.nanoTime();
 				
 				long deltaTime = currentTime - prevTime;
@@ -86,6 +81,8 @@ public abstract class AClient extends Proxy {
 						frames++;
 					}
 				}
+				
+				if(!game.isRunning()) renderingTimer.cancel();
 				
 			}
 			
@@ -127,7 +124,7 @@ public abstract class AClient extends Proxy {
 		
 		sm = new StateManager(game, this);
 		
-		renderingTimer = new Timer("Rendering Thread", true);
+		renderingTimer = new Timer("Rendering Thread");
 		renderingTimer.scheduleAtFixedRate(getRenderingTask(), 0, TimeUnit.SECONDS.toMillis(1) / targetFps);
 		
 		readyToRender = false;
@@ -181,7 +178,7 @@ public abstract class AClient extends Proxy {
 			}
 		};
 		
-		game.addTask(loadingTask);
+		ALoader.addTask(loadingTask);
 		
 	}
 	

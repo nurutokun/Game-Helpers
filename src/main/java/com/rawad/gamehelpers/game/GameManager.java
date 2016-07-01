@@ -117,12 +117,6 @@ public class GameManager {
 				@Override
 				public void run() {
 					
-					if(!game.isRunning()) {
-						timer.cancel();
-						timer.purge();
-						return;
-					}
-					
 					currentTime = System.currentTimeMillis();
 					
 					long deltaTime = currentTime - prevTime;
@@ -137,6 +131,8 @@ public class GameManager {
 						Logger.log(Logger.DEBUG, "Error in game thread.");
 						ex.printStackTrace();
 					}
+					
+					if(!game.isRunning()) timer.cancel();
 					
 				}
 				

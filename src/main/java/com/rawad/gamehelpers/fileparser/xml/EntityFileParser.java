@@ -12,7 +12,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import com.rawad.gamehelpers.game.entity.Component;
 import com.rawad.gamehelpers.game.entity.Entity;
-import com.rawad.gamehelpers.resources.Loader;
+import com.rawad.gamehelpers.resources.ALoader;
 import com.rawad.gamehelpers.utils.Util;
 import com.sun.xml.internal.bind.marshaller.NamespacePrefixMapper;
 import com.sun.xml.internal.bind.v2.WellKnownNamespace;
@@ -25,9 +25,7 @@ public final class EntityFileParser {
 	private static final String ADD_STRING_PROPERTY = "com.sun.xml.internal.bind.xmlHeaders";
 	/** Sets the {@code NamespacePrefixMapper} for the {@code Marshaller}; used to remove reduntant namespaces here. */
 	private static final String NAMESPACE_PREFIX_MAPPER_PROPERTY = "com.sun.xml.internal.bind.namespacePrefixMapper";
-	private static final String DEFAULT_CONTEXT = EntityFileParser.class.getPackage().getName() + PACKAGE_SEPARATOR
-//			+ Component.class.getPackage().getName() + PACKAGE_SEPARATOR
-			;
+	private static final String DEFAULT_CONTEXT = EntityFileParser.class.getPackage().getName() + PACKAGE_SEPARATOR;
 	
 	private EntityFileParser() {}
 	
@@ -43,7 +41,7 @@ public final class EntityFileParser {
 			
 			Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
 			
-			Components components = unmarshaller.unmarshal(new StreamSource(Loader.getEntityBlueprintAsStream(
+			Components components = unmarshaller.unmarshal(new StreamSource(ALoader.getEntityBlueprintAsStream(
 					entityFileContext, entityFileName)), Components.class).getValue();
 			
 			for(Component comp: components.getComponents()) {
