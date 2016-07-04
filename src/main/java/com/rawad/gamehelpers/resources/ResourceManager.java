@@ -9,16 +9,11 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
 import java.util.Set;
-
-import javax.imageio.ImageIO;
 
 import com.rawad.gamehelpers.log.Logger;
 import com.rawad.gamehelpers.utils.Util;
 
-import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
@@ -27,14 +22,8 @@ public class ResourceManager {
 	
 	private static boolean devEnv;
 	
-	private static final String BUNDLE_NAME = "com.rawad.gamehelpers.resources.strings_resources"; //$NON-NLS-1$
-	
-	private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
-	
 	public static String basePath;
 	// Always use "/" for file paths, they are all replaced to the system-dependant file-seperator in each method.
-	
-	private static final String UNKNOWN_TEXTURE_PATH;
 	
 	private static HashMap<Integer, TextureResource> textures = new HashMap<Integer, TextureResource>();
 	
@@ -52,10 +41,6 @@ public class ResourceManager {
 		
 		basePath = allGamesDir;
 		
-		UNKNOWN_TEXTURE_PATH = getProperPath(getString("GameHelpers.name"),
-				getString("GameHelpers.res"), getString("GameHelpers.textures"), "unknown")
-				+ getString("GameHelpers.texture");
-		
 	}
 	
 	public static void init(HashMap<String, String> commands) {
@@ -72,17 +57,19 @@ public class ResourceManager {
 		
 		setBasePath(devEnv);
 		
+		registerTexture(TextureResource.UNKNOWN);
+		
 	}
 	
 	/**
 	 * 
-	 * @param developementEnvironment Whether or not the {@code Game} is being run from an IDE, for example, or not.
+	 * @param developmentEnvironment Whether or not the {@code Game} is being run from an IDE, for example, or not.
 	 */
-	public static void setBasePath(boolean developementEnvironment) {
+	public static void setBasePath(boolean developmentEnvironment) {
 		
 		basePath = basePath.replace('\\', '/');
 		
-		devEnv = developementEnvironment;
+		devEnv = developmentEnvironment;
 		
 	}
 	
@@ -90,12 +77,6 @@ public class ResourceManager {
 		return devEnv;
 	}
 	
-	public static String getString(String key) {
-		
-		return getString(RESOURCE_BUNDLE, key);
-		
-	}
-
 	/**
 	 * Final {@code String} of {@code pathParts} can be the actual file; no extensions are added at the end.
 	 * 
@@ -107,26 +88,6 @@ public class ResourceManager {
 		String path = Util.getStringFromLines(pathParts, "/", false);
 		
 		return path;
-		
-	}
-	
-	public static String getString(String bundleName, String key) {
-		
-		ResourceBundle bundle = ResourceBundle.getBundle(bundleName);
-		
-		return getString(bundle, key);
-		
-	}
-	
-	public static String getString(ResourceBundle bundle, String key) {
-		
-		try {
-			return bundle.getString(key);
-			
-		} catch (MissingResourceException e) {
-			return '!' + key + '!';
-			
-		}
 		
 	}
 	
@@ -160,41 +121,12 @@ public class ResourceManager {
 			}
 		}
 		
-		String fileFormat = UNKNOWN_TEXTURE_PATH.substring(UNKNOWN_TEXTURE_PATH.length() - 3);// "png"
-		
-		try {
-			ImageIO.write(SwingFXUtils.fromFXImage(unknownTexture, null), fileFormat, new File(getFinalPath(basePath, 
-					UNKNOWN_TEXTURE_PATH)));// excludes ".png"
-		} catch(Exception ex) {
-			Logger.log(Logger.WARNING, ex.getLocalizedMessage() + "; the \"unknown texture\" was created but "
-					+ "not saved.");
-			
-		}
-		
 		return unknownTexture;
 		
 	}
 	
 	public static double getPercentLoaded() {
 		return percentLoaded;
-	}
-	
-	public static void registerUnkownTexture() {
-		
-		TextureResource unknownTexture = getTextureObject(TextureResource.UNKNOWN);
-		
-		if(unknownTexture == null) {
-			
-			registerTexture(UNKNOWN_TEXTURE_PATH, TextureResource.UNKNOWN);
-			
-			unknownTexture = getTextureObject(TextureResource.UNKNOWN);
-			
-			if(!unknownTexture.exists()) {
-				generateUnkownTexture();
-			}
-			
-		}
-		
 	}
 	
 	public static int loadTexture(TextureResource texture) {
@@ -214,16 +146,21 @@ public class ResourceManager {
 					
 				} catch(Exception ex) {
 					
-					location = TextureResource.UNKNOWN;
+					location = TextureResource.UNKNOWN.getLocation();
 					
 					ex.printStackTrace();
 					
 				}
 				
 			} else {// Texture isn't loaded and can't be loaded.
-				location = TextureResource.UNKNOWN;
+				
+				if(location == TextureResource.UNKNOWN.getLocation()) {
+					TextureResource.UNKNOWN.setTexture(generateUnkownTexture());
+				} else {
+					location = TextureResource.UNKNOWN.getLocation();
+				}
+				
 			}
-			
 			
 		}
 		
@@ -247,11 +184,14 @@ public class ResourceManager {
 		
 		imagePath = getFinalPath(basePath, imagePath);
 		
-		textures.put(location, new TextureResource(imagePath, location));// TODO: Should make more efficient w/ the whole
+		return registerTexture(new TextureResource(imagePath, location));// TODO: Should make more efficient w/ the whole
 		// textures being checked if they exist earlier in this method's lifetime (could have a null check).
 		
-		return location;
-		
+	}
+	
+	private static int registerTexture(TextureResource texture) {
+		textures.put(texture.getLocation(), texture);
+		return texture.getLocation();
 	}
 	
 	private static <T extends Resource> int getLowestResourceLocation(HashMap<Integer, T> resources, 
@@ -319,7 +259,7 @@ public class ResourceManager {
 			
 		} catch(NullPointerException ex) {
 			
-			return getTextureObject(TextureResource.UNKNOWN).getTexture();
+			return TextureResource.UNKNOWN.getTexture();
 			
 		}
 		

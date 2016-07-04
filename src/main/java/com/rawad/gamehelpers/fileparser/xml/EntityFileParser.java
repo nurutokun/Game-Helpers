@@ -22,9 +22,9 @@ public final class EntityFileParser {
 	private static final String PACKAGE_SEPARATOR = ":";
 	
 	/** When set with {@link Marshaller#setProperty(String, Object)} as the key, the value will be placed. */
-	private static final String ADD_STRING_PROPERTY = "com.sun.xml.internal.bind.xmlHeaders";
+	private static final String PROPERTY_ADD_STRING = "com.sun.xml.internal.bind.xmlHeaders";
 	/** Sets the {@code NamespacePrefixMapper} for the {@code Marshaller}; used to remove reduntant namespaces here. */
-	private static final String NAMESPACE_PREFIX_MAPPER_PROPERTY = "com.sun.xml.internal.bind.namespacePrefixMapper";
+	private static final String PROPERTY_NAMESPACE_PREFIX_MAPPER = "com.sun.xml.internal.bind.namespacePrefixMapper";
 	private static final String DEFAULT_CONTEXT = EntityFileParser.class.getPackage().getName() + PACKAGE_SEPARATOR;
 	
 	private EntityFileParser() {}
@@ -64,10 +64,10 @@ public final class EntityFileParser {
 			
 			Marshaller marshaller = jaxbContext.createMarshaller();
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);// So format looks nice.
-			marshaller.setProperty(ADD_STRING_PROPERTY, "<!DOCTYPE " + Entity.class.getSimpleName() + ">" + Util.NL);
+			marshaller.setProperty(PROPERTY_ADD_STRING, "<!DOCTYPE " + Entity.class.getSimpleName() + ">" + Util.NL);
 			// Helps make document Valid and/or Well-formed.
 			
-			marshaller.setProperty(NAMESPACE_PREFIX_MAPPER_PROPERTY, new NamespacePrefixMapper() {
+			marshaller.setProperty(PROPERTY_NAMESPACE_PREFIX_MAPPER, new NamespacePrefixMapper() {
                 @Override
                 public String[] getPreDeclaredNamespaceUris() {
                     return new String[] { 

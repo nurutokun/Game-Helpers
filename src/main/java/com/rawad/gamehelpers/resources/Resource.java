@@ -4,18 +4,27 @@ import java.io.File;
 
 public abstract class Resource {
 	
-	private File path;
+	private File file;
 	
 	public Resource(String path) {
-		this.path = new File(path);
+		this.file = new File(path);
 	}
 	
-	public String getPath() {
-		return path.getAbsolutePath();
+	public void setFile(File file) {
+		this.file = file;
+	}
+	
+	protected File getFile() {
+		return file;
 	}
 	
 	public boolean exists() {
-		return path.exists();
+		return file.exists();
 	}
+	
+	/**
+	 * Allows changing which path is used (relative or absolute) very eaily in the future.
+	 */
+	public abstract String getPath();
 	
 }

@@ -143,7 +143,6 @@ public abstract class AClient extends Proxy {
 				} catch(Exception ex) {
 					ex.printStackTrace();
 				}
-				
 				for(com.rawad.gamehelpers.client.gamestates.State state: sm.getStates().getMap().values()) {
 					state.initGui();
 				}

@@ -13,4 +13,9 @@ public class FileReaderResource extends Resource {
 		
 	}
 	
+	@Override
+	public String getPath() {
+		return getFile().getAbsolutePath();
+	}
+	
 }

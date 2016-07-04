@@ -18,7 +18,7 @@ public abstract class GameSystem {
 	 */
 	protected GameSystem() {
 		
-		setGameEngine(GameManager.instance().getCurrentGame().getGameEngine());
+		setGameEngine(GameManager.getCurrentGame().getGameEngine());
 		
 		compatibleComponentTypes = new ArrayList<Class<? extends Component>>();
 		

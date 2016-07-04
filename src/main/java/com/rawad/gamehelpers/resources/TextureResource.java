@@ -4,7 +4,7 @@ import javafx.scene.image.Image;
 
 public class TextureResource extends Resource {
 	
-	public static final int UNKNOWN = -1;
+	public static final TextureResource UNKNOWN = new TextureResource("UNKNOWN", -1);
 	
 	private Image texture;
 	private int location;
@@ -52,6 +52,11 @@ public class TextureResource extends Resource {
 	 */
 	public void setLocation(int location) {
 		this.location = location;
+	}
+	
+	@Override
+	public String getPath() {
+		return getFile().getAbsolutePath();
 	}
 	
 }

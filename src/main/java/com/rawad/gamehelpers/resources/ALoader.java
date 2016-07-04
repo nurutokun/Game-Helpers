@@ -5,8 +5,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-
-import javafx.concurrent.Task;
+import java.util.concurrent.FutureTask;
 
 public abstract class ALoader {
 	
@@ -16,18 +15,17 @@ public abstract class ALoader {
 		return t;
 	});
 	
-	private static final String RES_FOLDER = ResourceManager.getString("GameHelpers.res");
-	
-	private static final String TEXT_FILE_EXTENSION = ResourceManager.getString("GameHelpers.text");
-	private static final String TEXTURE_FILE_EXTENSION = ResourceManager.getString("GameHelpers.texture");
-	private static final String FONT_FILE_EXTENSION = ResourceManager.getString("GameHelpers.font");
-	private static final String ENTITY_BLUEPRINT_FILE_EXTENSION = ResourceManager.getString("GameHelpers.entity");
-	
+	private static final String FOLDER_RES = "res";
 	/** Holds the name for the base texture folder. */
-	private static final String TEXTURE_FOLDER = ResourceManager.getString("GameHelpers.textures");
-	private static final String FONT_FOLDER = ResourceManager.getString("Font.base");
+	private static final String FOLDER_TEXTURE = "textures";
+	private static final String FOLDER_FONT = "fonts";
 	/** Used solely for saving {@code Entity} blueprint .xml files.*/
-	private static final String ENTITY_BLUEPRINT_FOLDER = "entity";
+	private static final String FOLDER_ENTITY_BLUEPRINT = "entity";
+	
+	private static final String EXTENSION_TEXT_FILE = ".txt";
+	private static final String EXTENSION_TEXTURE_FILE = ".png";
+	private static final String EXTENSION_FONT_FILE = ".ttf";
+	private static final String EXTENSION_ENTITY_BLUEPRINT_FILE = ".xml";
 	
 	/** Subclasses don't really need access to this... Either of the two methods below should work fine. */
 	private final String basePath;
@@ -43,7 +41,7 @@ public abstract class ALoader {
 		
 	}
 	
-	public static final synchronized void addTask(Task<Void> taskToLoad) {
+	public static final synchronized void addTask(FutureTask<Void> taskToLoad) {
 		EXECUTOR_LOADING_TASKS.execute(taskToLoad);
 	}
 	
@@ -60,8 +58,13 @@ public abstract class ALoader {
 	 * @return
 	 */
 	public int registerTexture(String subTextureFolder, String textureFile) {
-		return ResourceManager.registerTexture(ResourceManager.getProperPath(basePath, RES_FOLDER, TEXTURE_FOLDER, 
-				subTextureFolder, textureFile) + TEXTURE_FILE_EXTENSION);
+		return ResourceManager.registerTexture(ResourceManager.getProperPath(basePath, FOLDER_RES, FOLDER_TEXTURE, 
+				subTextureFolder, textureFile) + EXTENSION_TEXTURE_FILE);
+	}
+	
+	public void registerUnknownTexture(String unknownTextureFile) {
+		TextureResource.UNKNOWN.setFile(new File(ResourceManager.getProperPath(FOLDER_RES, FOLDER_TEXTURE, 
+				unknownTextureFile) + EXTENSION_TEXTURE_FILE));// Doesn't work with basePath; probably because File.
 	}
 	
 	/**
@@ -72,32 +75,32 @@ public abstract class ALoader {
 	 * @return {@code BufferedReader} that can be used to read a single line of the file at a time.
 	 */
 	public BufferedReader readFile(String folderName, String fileName) {
-		return ResourceManager.readFile(ResourceManager.getProperPath(basePath, RES_FOLDER, folderName, fileName) 
-				+ TEXT_FILE_EXTENSION);
+		return ResourceManager.readFile(ResourceManager.getProperPath(basePath, FOLDER_RES, folderName, fileName) 
+				+ EXTENSION_TEXT_FILE);
 	}
 	
 	public void saveFile(String content, String folderName, String fileName) {
-		ResourceManager.saveFile(ResourceManager.getProperPath(basePath, RES_FOLDER, folderName, fileName) 
-				+ TEXT_FILE_EXTENSION, content);
+		ResourceManager.saveFile(ResourceManager.getProperPath(basePath, FOLDER_RES, folderName, fileName) 
+				+ EXTENSION_TEXT_FILE, content);
 	}
 	
 	public File loadFontFile(String fileName) {
-		return ResourceManager.loadFile(ResourceManager.getProperPath(basePath, RES_FOLDER, FONT_FOLDER, fileName) 
-				+ FONT_FILE_EXTENSION);
+		return ResourceManager.loadFile(ResourceManager.getProperPath(basePath, FOLDER_RES, FOLDER_FONT, fileName) 
+				+ EXTENSION_FONT_FILE);
 	}
 	
 	public BufferedReader readFontFile(String fileName) {
-		return ResourceManager.readFile(ResourceManager.getProperPath(basePath, RES_FOLDER, FONT_FOLDER, fileName) 
-				+ FONT_FILE_EXTENSION);
+		return ResourceManager.readFile(ResourceManager.getProperPath(basePath, FOLDER_RES, FOLDER_FONT, fileName) 
+				+ EXTENSION_FONT_FILE);
 	}
 	
 	public String getEntityBlueprintSaveFileLocation(String fileName) {
-		return ResourceManager.getProperPath(ResourceManager.basePath, basePath, RES_FOLDER, ENTITY_BLUEPRINT_FOLDER, 
-				fileName + ENTITY_BLUEPRINT_FILE_EXTENSION);
+		return ResourceManager.getProperPath(ResourceManager.basePath, basePath, FOLDER_RES, FOLDER_ENTITY_BLUEPRINT, 
+				fileName + EXTENSION_ENTITY_BLUEPRINT_FILE);
 	}
 	
 	public static InputStream getEntityBlueprintAsStream(Class<?extends Object> clazz, String fileName) {
-		return clazz.getResourceAsStream(fileName + ENTITY_BLUEPRINT_FILE_EXTENSION);
+		return clazz.getResourceAsStream(fileName + EXTENSION_ENTITY_BLUEPRINT_FILE);
 	}
 	
 }
