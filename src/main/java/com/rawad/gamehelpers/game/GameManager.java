@@ -12,7 +12,7 @@ public class GameManager {
 	
 	private static Game currentGame;
 	
-	private static Timer timer = new Timer("Game Loop");
+	private static Timer gameTimer = new Timer("Game Thread");
 	
 	private static long sleepTime;
 	private static long timePassed;
@@ -27,17 +27,26 @@ public class GameManager {
 			
 			currentGame = game;
 			
-			game.init();
+			gameTimer.schedule(new TimerTask() {
+				
+				@Override
+				public void run() {
+					
+					game.init();
+					
+					for(Proxy proxy: game.getProxies().values()) {
+						proxy.preInit(game);
+					}
+					
+					for(Proxy proxy: game.getProxies().values()) {
+						proxy.init(game);
+					}
+					
+				}
+				
+			}, 0);
 			
-			for(Proxy proxy: game.getProxies().getOrderedMap()) {
-				proxy.preInit(game);
-			}
-			
-			for(Proxy proxy: game.getProxies().getOrderedMap()) {
-				proxy.init(game);
-			}
-			
-			timer.scheduleAtFixedRate(new TimerTask() {
+			gameTimer.scheduleAtFixedRate(new TimerTask() {
 				
 				private long currentTime = System.currentTimeMillis();
 				private long prevTime = currentTime;// To keep the initial value limited to zero.
@@ -60,7 +69,7 @@ public class GameManager {
 						ex.printStackTrace();
 					}
 					
-					if(!game.isRunning()) timer.cancel();
+					if(!game.isRunning()) gameTimer.cancel();
 					
 				}
 				

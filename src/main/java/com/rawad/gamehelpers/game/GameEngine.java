@@ -10,11 +10,11 @@ import javafx.collections.ObservableList;
 
 public class GameEngine {
 	
-	protected final ClassMap<GameSystem> gameSystems = new ClassMap<GameSystem>(true);
+	protected final ClassMap<GameSystem> gameSystems = new ClassMap<GameSystem>();
 	
 	public void tick(ObservableList<Entity> entities) {
 		
-		for(GameSystem system: gameSystems.getOrderedMap()) {
+		for(GameSystem system: gameSystems.values()) {
 			
 			system.getCompatibleEntities().clear();
 			
@@ -33,7 +33,7 @@ public class GameEngine {
 		}
 		
 		// Separate from calculating entities for system-system communication.
-		for(GameSystem gameSystem: gameSystems.getOrderedMap()) {
+		for(GameSystem gameSystem: gameSystems.values()) {
 			gameSystem.tick();
 		}
 		
@@ -43,7 +43,7 @@ public class GameEngine {
 		
 		this.gameSystems.clear();
 		
-		for(GameSystem gameSystem: gameSystems.getOrderedMap()) {
+		for(GameSystem gameSystem: gameSystems.values()) {
 			this.gameSystems.put(gameSystem);
 			gameSystem.setGameEngine(this);
 		}

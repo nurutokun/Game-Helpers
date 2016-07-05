@@ -23,7 +23,7 @@ public abstract class Resource {
 	}
 	
 	/**
-	 * Allows changing which path is used (relative or absolute) very eaily in the future.
+	 * Should make changing which path is used (relative or absolute) very easily in the future.
 	 */
 	public abstract String getPath();
 	

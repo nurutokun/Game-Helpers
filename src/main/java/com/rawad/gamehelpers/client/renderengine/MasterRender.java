@@ -22,7 +22,7 @@ public class MasterRender {
 	public MasterRender() {
 		super();
 		
-		renders = new ClassMap<LayerRender>(true);
+		renders = new ClassMap<LayerRender>();
 		
 	}
 	
@@ -30,7 +30,7 @@ public class MasterRender {
 		
 		Affine affine = g.getTransform();
 		
-		for(LayerRender render: renders.getOrderedMap()) {
+		for(LayerRender render: renders.values()) {
 			render.render(g);
 			
 			g.setTransform(affine);

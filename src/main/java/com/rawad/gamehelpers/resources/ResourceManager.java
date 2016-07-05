@@ -18,9 +18,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 
-public class ResourceManager {
-	
-	private static boolean devEnv;
+public final class ResourceManager {
 	
 	public static String basePath;
 	// Always use "/" for file paths, they are all replaced to the system-dependant file-seperator in each method.
@@ -28,6 +26,8 @@ public class ResourceManager {
 	private static HashMap<Integer, TextureResource> textures = new HashMap<Integer, TextureResource>();
 	
 	private static double percentLoaded;
+	
+	private static boolean devEnv;
 	
 	private ResourceManager() {}
 	
@@ -102,7 +102,7 @@ public class ResourceManager {
 		for(int x = 0; x < width; x++) {
 			for(int y = 0; y < height; y++) {
 				
-				int violet_rgb = 0xFA00FFFF;
+				int violet_rgb = 0xFFFA00FF;
 				
 				if(x >= width/2) {// right
 					if(y < height/2) {

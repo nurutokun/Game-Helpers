@@ -22,7 +22,7 @@ public abstract class State {
 	public State() {
 		super();
 		
-		gameSystems = new ClassMap<GameSystem>(true);
+		gameSystems = new ClassMap<GameSystem>();
 		
 		masterRender = new MasterRender();
 		

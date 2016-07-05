@@ -39,7 +39,7 @@ public abstract class Game {
 		
 		tickTime = 50;
 		
-		proxies = new ClassMap<Proxy>(true);
+		proxies = new ClassMap<Proxy>();
 		
 	}
 	
@@ -101,7 +101,7 @@ public abstract class Game {
 				}
 			}
 			
-			for(Proxy proxy: proxies.getOrderedMap()) {
+			for(Proxy proxy: proxies.values()) {
 				if(proxy.readyToUpdate) proxy.tick();
 			}
 			
@@ -111,7 +111,7 @@ public abstract class Game {
 		
 		if(stopRequested) {
 			
-			for(Proxy proxy: proxies.getOrderedMap()) {
+			for(Proxy proxy: proxies.values()) {
 				proxy.stop();
 			}
 			
