@@ -98,7 +98,7 @@ public abstract class AClient extends Proxy {
 	 * This method should be called before {@link #preInit(Game)} and {@link #init(Game)}.
 	 * 
 	 */
-	public abstract void initGui();
+	protected abstract void initGui();
 	
 	@Override
 	public void preInit(Game game) {
@@ -111,6 +111,8 @@ public abstract class AClient extends Proxy {
 				ex.printStackTrace();
 			}
 		});
+		
+		initGui();
 		
 	}
 	

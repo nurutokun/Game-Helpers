@@ -18,8 +18,8 @@ public class World {
 		entities = FXCollections.observableArrayList();
 		readOnlyEntities = FXCollections.unmodifiableObservableList(entities);
 		
-		width = 2048;
-		height = 2048;
+		width = 4096;
+		height = 4096;
 		
 	}
 	

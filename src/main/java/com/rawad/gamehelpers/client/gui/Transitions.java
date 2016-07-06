@@ -20,7 +20,7 @@ public final class Transitions {
 	public static final double SLIDE_LEFT = -1;
 	
 	/** Alpha value indicating an opaque object. */
-	public static final double OPAQUE = 1.0d;
+	public static final double SHOWING = 1.0d;
 	/** Alpha value indicating an object that is mostly hidden. */
 	public static final double HIDDEN = 0.1d;
 	
