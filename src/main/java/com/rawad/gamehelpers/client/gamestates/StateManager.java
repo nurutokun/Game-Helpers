@@ -97,6 +97,7 @@ public class StateManager {
 			
 			game.getGameEngine().setGameSystems(currentState.getGameSystems());
 			game.setWorld(currentState.getWorld());
+			game.getWorld().clearEntities();
 			
 			currentState.onActivate();
 			

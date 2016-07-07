@@ -2,6 +2,7 @@ package com.rawad.gamehelpers.utils;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -61,6 +62,10 @@ public final class Util {
 		
 		return re;
 		
+	}
+	
+	public static String getStringFromLines(ArrayList<String> lines, String regex, boolean addRegexToEnd) {
+		return getStringFromLines(lines.toArray(new String[lines.size()]), regex, addRegexToEnd);
 	}
 	
 	public static String getStringFromLines(String[] lines, String regex, boolean addRegexToEnd) {

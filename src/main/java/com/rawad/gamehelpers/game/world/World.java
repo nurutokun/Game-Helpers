@@ -1,5 +1,7 @@
 package com.rawad.gamehelpers.game.world;
 
+import java.util.Collection;
+
 import com.rawad.gamehelpers.game.entity.Entity;
 
 import javafx.collections.FXCollections;
@@ -33,6 +35,10 @@ public class World {
 	
 	public boolean removeEntity(Entity e) {
 		return entities.remove(e);
+	}
+	
+	public boolean removeAllEntities(Collection<Entity> entitiesToRemove) {
+		return entities.removeAll(entitiesToRemove);
 	}
 	
 	public ObservableList<Entity> getEntities() {
