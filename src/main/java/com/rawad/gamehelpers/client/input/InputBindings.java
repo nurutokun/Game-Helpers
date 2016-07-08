@@ -1,43 +1,50 @@
 package com.rawad.gamehelpers.client.input;
 
-import java.util.HashMap;
+import com.rawad.gamehelpers.utils.MultiMap;
 
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 
 public class InputBindings {
 	
-	private HashMap<MouseButton, Object> mouseBindings;
-	private HashMap<KeyCode, Object> keyBindings;// Don't use KeyCombination because it would complicate getting key.
+	private MultiMap<Object, MouseButton> mouseBindings;
+	private MultiMap<Object, KeyCode> keyBindings;// Don't use KeyCombination because it would complicate getting key.
 	
 	/** Gets returned instead of {@code null}. */
 	private Object defaultBinding;
 	
 	public InputBindings() {
-		mouseBindings = new HashMap<MouseButton, Object>();
-		keyBindings = new HashMap<KeyCode, Object>();
-	}
-	
-	public void put(MouseButton button, Object value) {
-		mouseBindings.put(button, value);
+		super();
 		
-		if(defaultBinding == null) defaultBinding = value;
+		mouseBindings = new MultiMap<Object, MouseButton>();
+		keyBindings = new MultiMap<Object, KeyCode>();
 		
 	}
 	
-	public Object get(MouseButton button) {
-		return mouseBindings.get(button) == null? defaultBinding:mouseBindings.get(button);
+	public void put(Object action, MouseButton button) {
+		mouseBindings.put(action, button);
+		if(defaultBinding == null) defaultBinding = action;
 	}
 	
-	public void put(KeyCode key, Object value) {
-		keyBindings.put(key, value);
-		
-		if(defaultBinding == null) defaultBinding = value;
-		
+	public Object get(MouseButton value) {
+		return mouseBindings.getKey(value) == null? defaultBinding:mouseBindings.getKey(value);
 	}
 	
-	public Object get(KeyCode key) {
-		return keyBindings.get(key) == null? defaultBinding:keyBindings.get(key);
+	public MultiMap<Object, MouseButton> getMouseBindings() {
+		return mouseBindings;
+	}
+	
+	public void put(Object action, KeyCode code) {
+		keyBindings.put(action, code);
+		if(defaultBinding == null) defaultBinding = code;
+	}
+	
+	public Object get(KeyCode value) {
+		return keyBindings.getKey(value) == null? defaultBinding:keyBindings.getKey(value);
+	}
+	
+	public MultiMap<Object, KeyCode> getKeybindings() {
+		return keyBindings;
 	}
 	
 	public void setDefaultBinding(Object defaultBinding) {

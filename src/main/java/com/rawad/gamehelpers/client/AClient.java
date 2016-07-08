@@ -95,8 +95,7 @@ public abstract class AClient extends Proxy {
 	}
 	
 	/**
-	 * This method should be called before {@link #preInit(Game)} and {@link #init(Game)}.
-	 * 
+	 * This method called from {@link #preInit(Game)}.
 	 */
 	protected abstract void initGui();
 	

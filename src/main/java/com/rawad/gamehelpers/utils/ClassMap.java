@@ -17,6 +17,7 @@ public class ClassMap<T> {
 	private final Map<Class<? extends T>, T> map;
 	
 	public ClassMap() {
+		super();
 		
 		map = new LinkedHashMap<Class<? extends T>, T>();
 		
