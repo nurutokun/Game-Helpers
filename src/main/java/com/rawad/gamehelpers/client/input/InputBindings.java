@@ -2,13 +2,9 @@ package com.rawad.gamehelpers.client.input;
 
 import com.rawad.gamehelpers.utils.MultiMap;
 
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.MouseButton;
-
 public class InputBindings {
 	
-	private MultiMap<Object, MouseButton> mouseBindings;
-	private MultiMap<Object, KeyCode> keyBindings;// Don't use KeyCombination because it would complicate getting key.
+	private final MultiMap<Object, Object> bindings;
 	
 	/** Gets returned instead of {@code null}. */
 	private Object defaultBinding;
@@ -16,35 +12,21 @@ public class InputBindings {
 	public InputBindings() {
 		super();
 		
-		mouseBindings = new MultiMap<Object, MouseButton>();
-		keyBindings = new MultiMap<Object, KeyCode>();
+		bindings = new MultiMap<Object, Object>();
 		
 	}
 	
-	public void put(Object action, MouseButton button) {
-		mouseBindings.put(action, button);
+	public void put(Object action, Object input) {
+		bindings.put(action, input);
 		if(defaultBinding == null) defaultBinding = action;
 	}
 	
-	public Object get(MouseButton value) {
-		return mouseBindings.getKey(value) == null? defaultBinding:mouseBindings.getKey(value);
+	public Object get(Object input) {
+		return bindings.getKey(input);
 	}
 	
-	public MultiMap<Object, MouseButton> getMouseBindings() {
-		return mouseBindings;
-	}
-	
-	public void put(Object action, KeyCode code) {
-		keyBindings.put(action, code);
-		if(defaultBinding == null) defaultBinding = code;
-	}
-	
-	public Object get(KeyCode value) {
-		return keyBindings.getKey(value) == null? defaultBinding:keyBindings.getKey(value);
-	}
-	
-	public MultiMap<Object, KeyCode> getKeybindings() {
-		return keyBindings;
+	public MultiMap<Object, Object> getBindingsMap() {
+		return bindings;
 	}
 	
 	public void setDefaultBinding(Object defaultBinding) {
