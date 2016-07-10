@@ -1,6 +1,7 @@
 package com.rawad.gamehelpers.client.input;
 
 import com.rawad.gamehelpers.utils.MultiMap;
+import com.rawad.gamehelpers.utils.Util;
 
 public class InputBindings {
 	
@@ -22,7 +23,7 @@ public class InputBindings {
 	}
 	
 	public Object get(Object input) {
-		return bindings.getKey(input);
+		return Util.getNullSafe(bindings.getKey(input), defaultBinding);
 	}
 	
 	public MultiMap<Object, Object> getBindingsMap() {

@@ -1,16 +1,20 @@
 package com.rawad.gamehelpers.client.renderengine;
 
-import javafx.scene.canvas.GraphicsContext;
-
 /**
- * Has an abstract {@code render(GraphicsContext)} method that is called statically by the {@code MasterRender}. Represents a
- * single, independent layer in the scene.
+ * Has an abstract {@code render()} method that is called by the {@code MasterRender}. Represents a single, independent 
+ * layer in the {@ MasterRender}.
  * 
  * @author Rawad
  *
  */
 public abstract class LayerRender extends Render {
 	
-	public abstract void render(GraphicsContext g);
+	protected MasterRender masterRender;
+	
+	public abstract void render();
+	
+	protected void setMasterRender(MasterRender masterRender) {
+		this.masterRender = masterRender;
+	}
 	
 }

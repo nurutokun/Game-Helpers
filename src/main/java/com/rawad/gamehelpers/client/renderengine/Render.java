@@ -9,6 +9,4 @@ package com.rawad.gamehelpers.client.renderengine;
  */
 public abstract class Render {
 	
-	protected Render() {}
-	
 }

@@ -1,14 +1,12 @@
 package com.rawad.gamehelpers.client.renderengine;
 
+import com.rawad.gamehelpers.client.gamestates.State;
 import com.rawad.gamehelpers.utils.ClassMap;
 
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import javafx.scene.transform.Affine;
 
 /**
- * Responsible for giving each {@code LayeredRender} its apropriate {@code Entity} objects before 
- * {@link #render(GraphicsContext, double, double)} gets called.
+ * Calls {@link LayeredRender#render()} for giving each {@code LayeredRender} from the {@link #render()} method.
  * 
  * @author Rawad
  *
@@ -17,25 +15,33 @@ public class MasterRender {
 	
 	public static final Color DEFAULT_BACKGROUND_COLOR = Color.DARKGRAY;//new Color(202, 212, 227, 25);// Has to be 0.0-1.0
 	
+	private State state;
+	
 	private ClassMap<LayerRender> renders;
 	
-	public MasterRender() {
+	public MasterRender(State state) {
 		super();
+		
+		this.state = state;
 		
 		renders = new ClassMap<LayerRender>();
 		
 	}
 	
-	public void render(GraphicsContext g) {
-		
-		Affine affine = g.getTransform();
+	public void render() {
 		
 		for(LayerRender render: renders.values()) {
-			render.render(g);
 			
-			g.setTransform(affine);
+			render.setMasterRender(this);
+			
+			render.render();
+			
 		}
 		
+	}
+	
+	public State getState() {
+		return state;
 	}
 	
 	public ClassMap<LayerRender> getRenders() {

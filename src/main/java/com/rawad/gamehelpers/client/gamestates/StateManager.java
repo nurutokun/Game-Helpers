@@ -18,6 +18,7 @@ public class StateManager {
 	private AClient client;
 	
 	public StateManager(Game game, AClient client) {
+		super();
 		
 		states = new ClassMap<State>();
 		

@@ -1,18 +1,17 @@
 package com.rawad.gamehelpers.game;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.rawad.gamehelpers.game.entity.Component;
 import com.rawad.gamehelpers.game.entity.Entity;
 import com.rawad.gamehelpers.utils.ClassMap;
 
-import javafx.collections.ObservableList;
-
 public class GameEngine {
 	
 	protected final ClassMap<GameSystem> gameSystems = new ClassMap<GameSystem>();
 	
-	public void tick(ObservableList<Entity> entities) {
+	public void tick(List<Entity> entities) {
 		
 		for(GameSystem system: gameSystems.values()) {
 			

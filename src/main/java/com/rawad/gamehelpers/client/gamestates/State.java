@@ -24,7 +24,7 @@ public abstract class State {
 		
 		gameSystems = new ClassMap<GameSystem>();
 		
-		masterRender = new MasterRender();
+		masterRender = new MasterRender(this);
 		
 		world = new World();
 		
