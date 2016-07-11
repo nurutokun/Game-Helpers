@@ -113,23 +113,6 @@ public abstract class AClient extends Proxy {
 		
 		initGui();
 		
-	}
-	
-	@Override
-	public void init(Game game) {
-		super.init(game);
-		
-		inputBindings = new InputBindings();
-		
-		initInputBindings();
-		
-		sm = new StateManager(game, this);
-		
-		renderingTimer = new Timer("Rendering Thread");
-		renderingTimer.scheduleAtFixedRate(getRenderingTask(), 0, TimeUnit.SECONDS.toMillis(1) / targetFps);
-		
-		readyToRender = false;
-		
 		loadingTask = new Task<Void>() {
 			@Override
 			protected Void call() throws Exception {
@@ -140,12 +123,15 @@ public abstract class AClient extends Proxy {
 				Logger.log(Logger.DEBUG, message);
 				
 				try {
+					
 					initResources();
+					
+					for(com.rawad.gamehelpers.client.gamestates.State state: sm.getStates().values()) {
+						state.initGui();
+					}
+				
 				} catch(Exception ex) {
 					ex.printStackTrace();
-				}
-				for(com.rawad.gamehelpers.client.gamestates.State state: sm.getStates().values()) {
-					state.initGui();
 				}
 				
 				message = "Loading textures...";
@@ -177,6 +163,23 @@ public abstract class AClient extends Proxy {
 				
 			}
 		};
+		
+	}
+	
+	@Override
+	public void init(Game game) {
+		super.init(game);
+		
+		inputBindings = new InputBindings();
+		
+		initInputBindings();
+		
+		sm = new StateManager(game, this);
+		
+		renderingTimer = new Timer("Rendering Thread");
+		renderingTimer.scheduleAtFixedRate(getRenderingTask(), 0, TimeUnit.SECONDS.toMillis(1) / targetFps);
+		
+		readyToRender = false;
 		
 		ALoader.addTask(loadingTask);
 		

@@ -3,8 +3,6 @@ package com.rawad.gamehelpers.client.renderengine;
 import com.rawad.gamehelpers.client.gamestates.State;
 import com.rawad.gamehelpers.utils.ClassMap;
 
-import javafx.scene.paint.Color;
-
 /**
  * Calls {@link LayeredRender#render()} for giving each {@code LayeredRender} from the {@link #render()} method.
  * 
@@ -12,8 +10,6 @@ import javafx.scene.paint.Color;
  *
  */
 public class MasterRender {
-	
-	public static final Color DEFAULT_BACKGROUND_COLOR = Color.DARKGRAY;//new Color(202, 212, 227, 25);// Has to be 0.0-1.0
 	
 	private State state;
 	
