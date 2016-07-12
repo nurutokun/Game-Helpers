@@ -111,6 +111,8 @@ public abstract class AClient extends Proxy {
 			}
 		});
 		
+		inputBindings = new InputBindings();
+		
 		initGui();
 		
 		loadingTask = new Task<Void>() {
@@ -170,10 +172,6 @@ public abstract class AClient extends Proxy {
 	public void init(Game game) {
 		super.init(game);
 		
-		inputBindings = new InputBindings();
-		
-		initInputBindings();
-		
 		sm = new StateManager(game, this);
 		
 		renderingTimer = new Timer("Rendering Thread");
@@ -184,8 +182,6 @@ public abstract class AClient extends Proxy {
 		ALoader.addTask(loadingTask);
 		
 	}
-	
-	protected abstract void initInputBindings();
 	
 	/**
 	 * Called from the Loading Thread to initialize anything that might take a while. Note that 

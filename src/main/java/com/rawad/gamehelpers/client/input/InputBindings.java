@@ -5,33 +5,33 @@ import com.rawad.gamehelpers.utils.Util;
 
 public class InputBindings {
 	
-	private final MultiMap<Object, Object> bindings;
+	private final MultiMap<Object, AInput> bindings;
 	
 	/** Gets returned instead of {@code null}. */
-	private Object defaultBinding;
+	private Object defaultAction;
 	
 	public InputBindings() {
 		super();
 		
-		bindings = new MultiMap<Object, Object>();
+		bindings = new MultiMap<Object, AInput>();
 		
 	}
 	
-	public void put(Object action, Object input) {
+	public void put(Object action, AInput input) {
 		bindings.put(action, input);
-		if(defaultBinding == null) defaultBinding = action;
+		if(defaultAction == null) defaultAction = action;
 	}
 	
-	public Object get(Object input) {
-		return Util.getNullSafe(bindings.getKey(input), defaultBinding);
+	public Object get(AInput input) {
+		return Util.getNullSafe(bindings.getKey(input), defaultAction);
 	}
 	
-	public MultiMap<Object, Object> getBindingsMap() {
+	public MultiMap<Object, AInput> getBindingsMap() {
 		return bindings;
 	}
 	
-	public void setDefaultBinding(Object defaultBinding) {
-		this.defaultBinding = defaultBinding;
+	public void setDefaultAction(Object defaultAction) {
+		this.defaultAction = defaultAction;
 	}
 	
 }

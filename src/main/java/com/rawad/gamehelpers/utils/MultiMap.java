@@ -1,8 +1,12 @@
 package com.rawad.gamehelpers.utils;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
+
+import com.rawad.gamehelpers.log.Logger;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 /**
  * Thin wrapper for the {@code HashMap} implementation allowing for multiple values to be bounds to a single {@code key}.
@@ -15,39 +19,48 @@ import java.util.Set;
  */
 public class MultiMap<K, V> {
 	
-	private final HashMap<K, ArrayList<V>> map;
-	/** Binds every value to a single key. Allows for easily checking is a value is bound or not. */
+	private final HashMap<K, ObservableList<V>> map;
+	/** Binds every value to a single key. Allows for easily checking if a value is bound or not. */
 	private final HashMap<V, K> singleMap;
 	
 	public MultiMap() {
 		super();
 		
-		map = new HashMap<K, ArrayList<V>>();
+		map = new HashMap<K, ObservableList<V>>();
 		singleMap = new HashMap<V, K>();
 		
 	}
 	
 	public void put(K key, V value) {
 		
-		ArrayList<V> values = map.get(key);
+		ObservableList<V> values = map.get(key);
 		
 		if(values == null) {
-			values = new ArrayList<V>();
+			values = FXCollections.<V>observableArrayList();
 			map.put(key, values);
 		}
 		
-		values.add(value);
+		if(!values.contains(value)) {
+			values.add(value);
+			singleMap.put(value, key);
+		} else {
+			Logger.log(Logger.DEBUG, value + " already bound to key " + key + "; values: " + values);
+		}
 		
-		singleMap.put(value, key);
 		
 	}
 	
 	public boolean remove(K key, V value) {
-		ArrayList<V> values = get(key);
-		return values.remove(value);
+		ObservableList<V> values = get(key);
+		
+		boolean removed = values.remove(value);
+		
+		if(removed) singleMap.remove(value);
+		
+		return removed;
 	}
 	
-	public ArrayList<V> get(K key) {
+	public ObservableList<V> get(K key) {
 		return map.get(key);// Can be null. Should be dealth with externally, though.
 	}
 	
