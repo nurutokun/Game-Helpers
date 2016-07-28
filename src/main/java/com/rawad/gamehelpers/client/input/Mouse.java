@@ -9,18 +9,21 @@ import com.rawad.gamehelpers.log.Logger;
 
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
-import javafx.scene.Parent;
 import javafx.scene.layout.Region;
 
+/**
+ * Optional implementation of a mouse that can be used with JavaFX components. Supports clamping and statically storing
+ * cursor coordinates. Since this is optional, the {@ Proxy} implementation must call the {@link #update(Region)} method
+ * from withing its {@link com.rawad.gamehelpers.game.Proxy#tick()} method (usually before anything else is updated).
+ * 
+ * @author Rawad
+ *
+ */
 public final class Mouse {
 	
 	private static Robot bot;
 	
-	private static Cursor cursor;
-	
 	private static Region region;
-	
-	private static Point mouseLocation;
 	
 	private static double x;
 	private static double y;
@@ -47,21 +50,12 @@ public final class Mouse {
 		
 	}
 	
-	public static void update(Parent parent) {
+	public static void update(Region region) {
 		
-		mouseLocation = MouseInfo.getPointerInfo().getLocation();
+		Point mouseLocation = MouseInfo.getPointerInfo().getLocation();
 		
 		x = mouseLocation.getX();
 		y = mouseLocation.getY();
-		
-		Region region = null;
-		
-		try {
-			region = (Region) parent;
-		} catch(NullPointerException | ClassCastException ex) {
-			Logger.log(Logger.DEBUG, "Parent isn't a region.");
-			ex.printStackTrace();
-		}
 		
 		if(region != null) {
 			
@@ -98,7 +92,7 @@ public final class Mouse {
 		Mouse.clampX = region.getWidth() / 2d;
 		Mouse.clampY = region.getHeight() / 2d;
 		
-		setCursor(Cursors.BLANK);
+		region.setCursor(Cursor.DISAPPEAR);
 		
 	}
 	
@@ -106,7 +100,7 @@ public final class Mouse {
 		
 		Mouse.clamped = false;
 		
-		setCursor(Cursors.DEFAULT);
+		region.setCursor(Cursor.DEFAULT);
 		
 	}
 	
@@ -136,17 +130,6 @@ public final class Mouse {
 	
 	public static boolean isClamped() {
 		return clamped;
-	}
-	
-	public static void setCursor(Cursors cursor) {
-		Mouse.cursor = cursor.getValue();
-		
-		if(region != null) region.setCursor(getCursor());
-		
-	}
-	
-	public static Cursor getCursor() {
-		return Mouse.cursor;
 	}
 	
 }

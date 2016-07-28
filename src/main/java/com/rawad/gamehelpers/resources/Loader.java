@@ -7,7 +7,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 
-public abstract class ALoader {
+public abstract class Loader {
 	
 	private static final Executor EXECUTOR_LOADING_TASKS = Executors.newSingleThreadExecutor(task -> {
 		Thread t = new Thread(task, "Loading Thread");
@@ -35,7 +35,7 @@ public abstract class ALoader {
 	 * 
 	 * @param basePathParts
 	 */
-	protected ALoader(String... basePathParts) {
+	protected Loader(String... basePathParts) {
 		
 		this.basePath = ResourceManager.getProperPath(basePathParts);
 		
@@ -93,7 +93,7 @@ public abstract class ALoader {
 		return ResourceManager.readFile(ResourceManager.getProperPath(basePath, FOLDER_RES, FOLDER_FONT, fileName) 
 				+ EXTENSION_FONT_FILE);
 	}
-	
+	/*/
 	public String getEntityBlueprintSaveFileLocation(String fileName) {
 		return ResourceManager.getProperPath(ResourceManager.basePath, basePath, FOLDER_RES, FOLDER_ENTITY_BLUEPRINT, 
 				fileName + EXTENSION_ENTITY_BLUEPRINT_FILE);
@@ -101,6 +101,6 @@ public abstract class ALoader {
 	
 	public static InputStream getEntityBlueprintAsStream(Class<?extends Object> clazz, String fileName) {
 		return clazz.getResourceAsStream(fileName + EXTENSION_ENTITY_BLUEPRINT_FILE);
-	}
+	}/**/
 	
 }

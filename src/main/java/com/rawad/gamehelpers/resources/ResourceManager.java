@@ -85,7 +85,7 @@ public final class ResourceManager {
 	 */
 	public static String getProperPath(String... pathParts) {
 		
-		String path = Util.getStringFromLines(pathParts, "/", false);
+		String path = Util.getStringFromLines("/", false, pathParts);
 		
 		return path;
 		

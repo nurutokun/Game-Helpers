@@ -64,11 +64,11 @@ public final class Util {
 		
 	}
 	
-	public static String getStringFromLines(ArrayList<String> lines, String regex, boolean addRegexToEnd) {
-		return getStringFromLines(lines.toArray(new String[lines.size()]), regex, addRegexToEnd);
+	public static String getStringFromLines(String regex, boolean addRegexToEnd, ArrayList<String> lines) {
+		return Util.getStringFromLines(regex, addRegexToEnd, lines.toArray(new String[lines.size()]));
 	}
 	
-	public static String getStringFromLines(String[] lines, String regex, boolean addRegexToEnd) {
+	public static String getStringFromLines(String regex, boolean addRegexToEnd, String... lines) {
 		
 		String re = "";
 		
@@ -121,7 +121,7 @@ public final class Util {
 		try {
 			return Double.parseDouble(potentialDouble);
 		} catch(Exception ex) {
-			return 0.0d;
+			return 0d;
 		}
 		
 	}

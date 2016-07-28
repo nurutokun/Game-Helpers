@@ -7,7 +7,7 @@ import com.rawad.gamehelpers.game.entity.Blueprint;
 import com.rawad.gamehelpers.game.entity.BlueprintManager;
 import com.rawad.gamehelpers.game.world.World;
 import com.rawad.gamehelpers.log.Logger;
-import com.rawad.gamehelpers.resources.ALoader;
+import com.rawad.gamehelpers.resources.Loader;
 import com.rawad.gamehelpers.utils.ClassMap;
 
 import javafx.beans.property.SimpleBooleanProperty;
@@ -53,7 +53,7 @@ public abstract class Game {
 		
 		running = true;
 		
-		ALoader.addTask(new Task<Void>() {
+		Loader.addTask(new Task<Void>() {
 			@Override
 			protected Void call() throws Exception {
 				

@@ -22,11 +22,7 @@ public final class Entity {
 		return components.get(compClass);
 	}
 	
-	public Collection<Component> getComponentsAsList() {
-		return components.values();
-	}
-	
-	private ClassMap<Component> getComponents() {
+	public ClassMap<Component> getComponents() {
 		return components;
 	}
 	

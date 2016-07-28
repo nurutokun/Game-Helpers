@@ -10,7 +10,7 @@ import com.rawad.gamehelpers.client.input.InputBindings;
 import com.rawad.gamehelpers.game.Game;
 import com.rawad.gamehelpers.game.Proxy;
 import com.rawad.gamehelpers.log.Logger;
-import com.rawad.gamehelpers.resources.ALoader;
+import com.rawad.gamehelpers.resources.Loader;
 import com.rawad.gamehelpers.resources.ResourceManager;
 import com.rawad.gamehelpers.resources.TextureResource;
 
@@ -179,7 +179,7 @@ public abstract class AClient extends Proxy {
 		
 		readyToRender = false;
 		
-		ALoader.addTask(loadingTask);
+		Loader.addTask(loadingTask);
 		
 	}
 	
