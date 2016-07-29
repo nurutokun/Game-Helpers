@@ -1,6 +1,5 @@
 package com.rawad.gamehelpers.client.gamestates;
 
-import com.rawad.gamehelpers.client.AClient;
 import com.rawad.gamehelpers.game.Game;
 import com.rawad.gamehelpers.log.Logger;
 import com.rawad.gamehelpers.utils.ClassMap;
@@ -15,9 +14,7 @@ public class StateManager {
 	
 	private Game game;
 	
-	private AClient client;
-	
-	public StateManager(Game game, AClient client) {
+	public StateManager(Game game) {
 		super();
 		
 		states = new ClassMap<State>();
@@ -25,8 +22,6 @@ public class StateManager {
 		stateChangeRequest = null;
 		
 		this.game = game;
-		
-		this.client = client;
 		
 	}
 	
@@ -94,8 +89,6 @@ public class StateManager {
 			
 			setCurrentState(newState);
 			
-			client.onStateChange();
-			
 			game.getGameEngine().setGameSystems(currentState.getGameSystems());
 			game.setWorld(currentState.getWorld());
 			game.getWorld().clearEntities();
@@ -104,7 +97,7 @@ public class StateManager {
 			
 		} catch(NullPointerException ex) {
 			
-			Logger.log(Logger.WARNING, "Was the State set before requesting to change to a different State?");
+			Logger.log(Logger.WARNING, "Was the State set initially before requesting to change to a different State?");
 			
 		} catch(Exception ex) {
 			

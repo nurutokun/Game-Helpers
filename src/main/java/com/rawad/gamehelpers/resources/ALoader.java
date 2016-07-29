@@ -2,12 +2,11 @@ package com.rawad.gamehelpers.resources;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStream;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 
-public abstract class Loader {
+public abstract class ALoader {
 	
 	private static final Executor EXECUTOR_LOADING_TASKS = Executors.newSingleThreadExecutor(task -> {
 		Thread t = new Thread(task, "Loading Thread");
@@ -19,13 +18,10 @@ public abstract class Loader {
 	/** Holds the name for the base texture folder. */
 	private static final String FOLDER_TEXTURE = "textures";
 	private static final String FOLDER_FONT = "fonts";
-	/** Used solely for saving {@code Entity} blueprint .xml files.*/
-	private static final String FOLDER_ENTITY_BLUEPRINT = "entity";
 	
 	private static final String EXTENSION_TEXT_FILE = ".txt";
 	private static final String EXTENSION_TEXTURE_FILE = ".png";
 	private static final String EXTENSION_FONT_FILE = ".ttf";
-	private static final String EXTENSION_ENTITY_BLUEPRINT_FILE = ".xml";
 	
 	/** Subclasses don't really need access to this... Either of the two methods below should work fine. */
 	private final String basePath;
@@ -35,7 +31,7 @@ public abstract class Loader {
 	 * 
 	 * @param basePathParts
 	 */
-	protected Loader(String... basePathParts) {
+	protected ALoader(String... basePathParts) {
 		
 		this.basePath = ResourceManager.getProperPath(basePathParts);
 		
@@ -74,14 +70,14 @@ public abstract class Loader {
 	 * @param fileName
 	 * @return {@code BufferedReader} that can be used to read a single line of the file at a time.
 	 */
-	public BufferedReader readFile(String folderName, String fileName) {
+	public BufferedReader readFile(String folderName, String fileName, String extension) {
 		return ResourceManager.readFile(ResourceManager.getProperPath(basePath, FOLDER_RES, folderName, fileName) 
-				+ EXTENSION_TEXT_FILE);
+				+ extension);
 	}
 	
-	public void saveFile(String content, String folderName, String fileName) {
+	public void saveFile(String content, String folderName, String fileName, String extension) {
 		ResourceManager.saveFile(ResourceManager.getProperPath(basePath, FOLDER_RES, folderName, fileName) 
-				+ EXTENSION_TEXT_FILE, content);
+				+ extension, content);
 	}
 	
 	public File loadFontFile(String fileName) {
@@ -93,14 +89,5 @@ public abstract class Loader {
 		return ResourceManager.readFile(ResourceManager.getProperPath(basePath, FOLDER_RES, FOLDER_FONT, fileName) 
 				+ EXTENSION_FONT_FILE);
 	}
-	/*/
-	public String getEntityBlueprintSaveFileLocation(String fileName) {
-		return ResourceManager.getProperPath(ResourceManager.basePath, basePath, FOLDER_RES, FOLDER_ENTITY_BLUEPRINT, 
-				fileName + EXTENSION_ENTITY_BLUEPRINT_FILE);
-	}
-	
-	public static InputStream getEntityBlueprintAsStream(Class<?extends Object> clazz, String fileName) {
-		return clazz.getResourceAsStream(fileName + EXTENSION_ENTITY_BLUEPRINT_FILE);
-	}/**/
 	
 }

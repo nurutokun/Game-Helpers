@@ -39,7 +39,7 @@ public class GameManager {
 					}
 					
 					for(Proxy proxy: game.getProxies().values()) {
-						proxy.init(game);
+						proxy.init();
 					}
 					
 				}

@@ -1,17 +1,9 @@
 package com.rawad.gamehelpers.game;
 
-import java.util.HashMap;
-
-import com.rawad.gamehelpers.fileparser.xml.EntityFileParser;
-import com.rawad.gamehelpers.game.entity.Blueprint;
-import com.rawad.gamehelpers.game.entity.BlueprintManager;
 import com.rawad.gamehelpers.game.world.World;
-import com.rawad.gamehelpers.log.Logger;
-import com.rawad.gamehelpers.resources.Loader;
 import com.rawad.gamehelpers.utils.ClassMap;
 
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.concurrent.Task;
 
 public abstract class Game {
 	
@@ -53,38 +45,6 @@ public abstract class Game {
 		
 		running = true;
 		
-		Loader.addTask(new Task<Void>() {
-			@Override
-			protected Void call() throws Exception {
-				
-				Logger.log(Logger.DEBUG, "Loading entity blueprints...");
-				
-				try {
-					
-					EntityBlueprintLoadObject entityLoadObject = geEntityBlueprintLoadObject();
-					
-					for(Object entityKey: entityLoadObject.getEntityBindings().keySet()) {
-						
-						String entityName = entityLoadObject.getEntityBindings().get(entityKey);
-						
-						BlueprintManager.addBlueprint(entityKey, new Blueprint(EntityFileParser.parseEntityFile(
-								entityLoadObject.getEntityFileContext(), entityName, entityLoadObject
-								.getContextPaths())));
-						
-					}
-					
-					Logger.log(Logger.DEBUG, "Loaded all entity blueprints.");
-					
-				} catch(Exception ex) {
-					Logger.log(Logger.WARNING, "Entity blueprint loading failed");
-					ex.printStackTrace();
-				}
-				
-				return null;
-				
-			}
-		});
-		
 	}
 	
 	public final void update(long timePassed) {
@@ -102,7 +62,7 @@ public abstract class Game {
 			}
 			
 			for(Proxy proxy: proxies.values()) {
-				if(proxy.readyToUpdate) proxy.tick();
+				if(proxy.shouldUpdate()) proxy.tick();
 			}
 			
 		}
@@ -121,8 +81,6 @@ public abstract class Game {
 		}
 		
 	}
-	
-	protected abstract EntityBlueprintLoadObject geEntityBlueprintLoadObject();
 	
 	public abstract String getName();
 	
@@ -171,41 +129,6 @@ public abstract class Game {
 	
 	public void requestStop() {
 		stopRequested = true;
-	}
-	
-	protected static final class EntityBlueprintLoadObject {
-		
-		/**
-		 * Represents {@code Blueprint} objects bound to specific {@code Entity} names which are used as the file names 
-		 * to load these blueprints from.
-		 */
-		private final HashMap<Object, String> entityBindings;
-		private final Class<? extends Object> entityFileContext;
-		/** Passed to {@code EntityBlueprintFileParser}. */
-		private final String[] contextPaths;
-		
-		public EntityBlueprintLoadObject(HashMap<Object, String> entityBindings, Class<? extends Object> 
-				entityFileContext, String[] contextPaths) {
-			super();
-			
-			this.entityBindings = entityBindings;
-			this.entityFileContext = entityFileContext;
-			this.contextPaths = contextPaths;
-			
-		}
-		
-		public HashMap<Object, String> getEntityBindings() {
-			return entityBindings;
-		}
-		
-		public Class<? extends Object> getEntityFileContext() {
-			return entityFileContext;
-		}
-		
-		public String[] getContextPaths() {
-			return contextPaths;
-		}
-		
 	}
 	
 }

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import com.rawad.gamehelpers.log.Logger;
+import com.rawad.gamehelpers.utils.Util;
 
 public abstract class FileParser {
 	
@@ -36,6 +37,8 @@ public abstract class FileParser {
 			}
 			
 		}
+		
+		Util.silentClose(reader);
 		
 		stop();
 		
