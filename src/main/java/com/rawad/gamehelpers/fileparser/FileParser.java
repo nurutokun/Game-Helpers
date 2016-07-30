@@ -19,23 +19,34 @@ public abstract class FileParser {
 		
 	}
 	
-	public void parseFile(BufferedReader reader) throws IOException {
+	/**
+	 * 
+	 * @param reader
+	 * 				- Represents the object to read the file from.
+	 */
+	public void parseFile(BufferedReader reader) {
 		
 		start();
 		
-		for(String line = reader.readLine(); line != null; line = reader.readLine()) {
-			
-			if(line.isEmpty()) continue;// For using comments, consider how to keep them when file is saved.
-			
-			try {
+		try {
+			for(String line = reader.readLine(); line != null; line = reader.readLine()) {
 				
-				parseLine(line);
+				if(line.isEmpty()) continue;// For using comments, consider how to keep them when file is saved.
 				
-			} catch (Exception ex) {
-				Logger.log(Logger.WARNING, "Coulnd't read line from file.");
-//				ex.printStackTrace();
+				try {
+					
+					parseLine(line);
+					
+				} catch (Exception ex) {
+					Logger.log(Logger.WARNING, "Couldn't read line from file.");
+	//				ex.printStackTrace();
+				}
+				
 			}
 			
+		} catch(IOException ex) {
+			Logger.log(Logger.WARNING, "Error parsing file.");
+			ex.printStackTrace();
 		}
 		
 		Util.silentClose(reader);
