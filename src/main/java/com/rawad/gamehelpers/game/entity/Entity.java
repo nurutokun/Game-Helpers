@@ -11,7 +11,10 @@ public final class Entity {
 	private ClassMap<Component> components;
 	
 	private Entity() {
+		super();
+		
 		components = new ClassMap<Component>();
+		
 	}
 	
 	public void addComponent(Component comp) {
@@ -28,11 +31,12 @@ public final class Entity {
 	
 	public static Entity createEntity(Entity e, Object blueprintId) {
 		
-		Entity newEntity = createEntity(blueprintId);// Creates new Entity with empty components.
+		Entity newEntity = Entity.createEntity(blueprintId);// Creates new Entity with empty components.
 		
 		Entity.copyComponentData(newEntity, e);
 		
 		return newEntity;
+		
 	}
 	
 	/**
@@ -51,6 +55,7 @@ public final class Entity {
 	 * @return
 	 */
 	public static Entity createEntity(Object blueprintId) {
+		
 		Entity e = Entity.createEntity();
 		
 		if(blueprintId == null) return e;

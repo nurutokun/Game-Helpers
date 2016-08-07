@@ -45,6 +45,8 @@ public class EntityFileParser extends FileParser {
 	@Override
 	public void parseFile(BufferedReader reader) {
 		
+		e = Entity.createEntity();
+		
 		try {
 			
 			JAXBContext jaxbContext = JAXBContext.newInstance(DEFAULT_CONTEXT + 
@@ -55,7 +57,7 @@ public class EntityFileParser extends FileParser {
 			Components components = (Components) unmarshaller.unmarshal(reader);
 			
 			for(Component comp: components.getComponents()) {
-				e.getComponents().put(comp);
+				e.addComponent(comp);
 			}
 			
 		} catch(JAXBException ex) {

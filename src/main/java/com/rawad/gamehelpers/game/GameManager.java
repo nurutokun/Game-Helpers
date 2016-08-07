@@ -63,7 +63,7 @@ public class GameManager {
 					prevTime = currentTime;
 					
 					try {
-						game.update(getTimePassed());
+						game.update(GameManager.getTimePassed());
 					} catch(Exception ex) {
 						Logger.log(Logger.DEBUG, "Error in game thread.");
 						ex.printStackTrace();
