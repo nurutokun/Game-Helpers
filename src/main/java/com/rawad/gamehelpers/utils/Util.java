@@ -10,9 +10,28 @@ import com.rawad.gamehelpers.log.Logger;
 
 public final class Util {
 	
-	public static final String NL = "\r\n";// System.lineSeperator(); // Current one much better and more consistent.
+	/** New-line string that should be used anytime a new-line is required. This should work with almost every operating
+	 * system and allows for consistency. */
+	public static final String NL = "\r\n";
 	
 	private Util() {}
+	
+	/**
+	 * Returns {@code false} if either {@code a} or {@code b} are {@code null} or they are not equal and {@code true} if 
+	 * they are equal. Can be considered an 'exclusive equals'.
+	 * 
+	 * @param a
+	 * @param b
+	 * @return
+	 */
+	public static boolean equals(Object a, Object b) {
+		
+		if(a == null || b == null) return false;
+		if(a.equals(b)) return true;
+		
+		return false;
+		
+	}
 	
 	public static double clamp(double value, double min, double max) {
 		
@@ -122,6 +141,16 @@ public final class Util {
 			return Double.parseDouble(potentialDouble);
 		} catch(Exception ex) {
 			return 0d;
+		}
+		
+	}
+	
+	public static float parseFloat(String potentialFloat) {
+		
+		try {
+			return Float.parseFloat(potentialFloat);
+		} catch(Exception ex) {
+			return 0f;
 		}
 		
 	}

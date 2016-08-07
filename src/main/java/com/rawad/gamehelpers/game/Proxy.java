@@ -21,7 +21,7 @@ public abstract class Proxy {
 	protected ClassMap<FileParser> fileParsers;
 	protected ClassMap<ALoader> loaders;
 	
-	private boolean update;
+	protected boolean update;
 	
 	/**
 	 * Provides an extra layer of control for initializing, especially useful now that there is support for multiple

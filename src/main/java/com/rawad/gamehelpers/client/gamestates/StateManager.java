@@ -14,7 +14,9 @@ public class StateManager {
 	
 	private Game game;
 	
-	public StateManager(Game game) {
+	private IStateChangeListener stateChangeListener;
+	
+	public StateManager(Game game, IStateChangeListener stateChangeListener) {
 		super();
 		
 		states = new ClassMap<State>();
@@ -22,6 +24,8 @@ public class StateManager {
 		stateChangeRequest = null;
 		
 		this.game = game;
+		
+		this.stateChangeListener = stateChangeListener;
 		
 	}
 	
@@ -63,7 +67,15 @@ public class StateManager {
 		
 		states.put(state);
 		
-		state.init(this);
+		state.init(this, game);
+		
+	}
+	
+	public void initGui() {
+		
+		for(State state: states.values()) {
+			state.initGui();
+		}
 		
 	}
 	
@@ -86,6 +98,8 @@ public class StateManager {
 			currentState.onDeactivate();
 			
 			State newState = states.get(stateId);
+			
+			stateChangeListener.onStateChange(currentState, newState);
 			
 			setCurrentState(newState);
 			
@@ -119,21 +133,12 @@ public class StateManager {
 		this.currentState = state;
 	}
 	
-	/**
-	 * Mainly for convenience.
-	 * 
-	 * @return {@code Game} for which this {@code StateManager} is managing {@code State} objects for.
-	 */
-	public Game getGame() {
-		return game;
+	public State getCurrentState() {
+		return currentState;
 	}
 	
 	public ClassMap<State> getStates() {
 		return states;
-	}
-	
-	public State getCurrentState() {
-		return currentState;
 	}
 	
 }

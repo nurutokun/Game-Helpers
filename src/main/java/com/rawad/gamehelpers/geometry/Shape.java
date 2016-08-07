@@ -2,7 +2,7 @@ package com.rawad.gamehelpers.geometry;
 
 public abstract class Shape {
 	
-	public boolean contains(Point point) {
+	public boolean contains(Point2d point) {
 		return this.contains(point.getX(), point.getY());
 	}
 	

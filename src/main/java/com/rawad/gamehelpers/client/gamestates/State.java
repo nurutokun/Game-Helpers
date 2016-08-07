@@ -29,6 +29,7 @@ public abstract class State {
 		world = new World();
 		
 	}
+	
 	public abstract void initGui();
 	
 	protected void onActivate() {}
@@ -39,10 +40,11 @@ public abstract class State {
 	 * Called when this {@code State} is added to a {@code StateManager}.
 	 * 
 	 * @param sm The {@code StateManager} this {@code State} is added to.
+	 * @param game
 	 */
-	public void init(StateManager sm) {
+	public void init(StateManager sm, Game game) {
 		this.sm = sm;
-		this.game = sm.getGame();
+		this.game = game;
 	}
 	
 	public ClassMap<GameSystem> getGameSystems() {

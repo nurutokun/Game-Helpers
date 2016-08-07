@@ -1,10 +1,16 @@
 package com.rawad.gamehelpers.resources;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 
+import com.rawad.gamehelpers.log.Logger;
 import com.rawad.gamehelpers.utils.Util;
 
 public abstract class ALoader {
@@ -18,14 +24,7 @@ public abstract class ALoader {
 		return t;
 	});
 	
-	private static final String FOLDER_TEXTURE = "textures";
-	private static final String FOLDER_FONT = "fonts";
-	
-	private static final String EXTENSION_TEXT_FILE = "txt";
-	private static final String EXTENSION_TEXTURE_FILE = "png";
-	private static final String EXTENSION_FONT_FILE = "ttf";
-	
-	protected final String basePath;
+	private final String basePath;
 	
 	/**
 	 * Takes parts representing the path to the directory this {@code Loader} should load from.
@@ -33,13 +32,55 @@ public abstract class ALoader {
 	 * @param basePathParts
 	 */
 	protected ALoader(String... basePathParts) {
+		super();
 		
 		this.basePath = ALoader.getPathFromParts(basePathParts);
 		
 	}
 	
-	public static final synchronized void addTask(FutureTask<Void> taskToLoad) {
-		EXECUTOR_LOADING_TASKS.execute(taskToLoad);
+	protected BufferedReader readFile(String extension, String... pathParts) {
+		
+		String fullPath = getFilePathFromParts(extension, pathParts);
+		
+		return readFile(fullPath);
+		
+	}
+	
+	protected BufferedReader readFile(String fullPath) {
+		
+		BufferedReader reader = null;
+		
+		try {
+			
+			reader = new BufferedReader(new FileReader(fullPath));
+			
+		} catch(IOException ex) {
+			
+			Logger.log(Logger.SEVERE, "File at: \"" + fullPath + "\", could not be opened.");
+			ex.printStackTrace();
+			
+		}
+		
+		return reader;
+		
+	}
+	
+	protected void saveFile(String content, String extension, String... pathParts) {
+		
+		String fullPath = getFilePathFromParts(extension, pathParts);
+		
+		try (	PrintWriter writer = new PrintWriter(new FileWriter(fullPath, false), true);
+				) {
+			
+			writer.write(content);
+			
+		} catch(IOException ex) {
+			
+			Logger.log(Logger.WARNING, "Could not save file to: \"" + fullPath + "\".");
+			ex.printStackTrace();
+			
+		}
+		
 	}
 	
 	/**
@@ -47,15 +88,22 @@ public abstract class ALoader {
 	 * Concatenates the given {@code parts} into a single {@code String} that represents a full path. {@code parts} should
 	 * end in actual name of the file and {@code extension} shouldn't contain a period as that is added by default.
 	 * 
+	 * Ex.
+	 * <p> Input: <code>extension="txt", parts = {"dirA", "dirB", "dirC", "file"}</code></p>
+	 * <p> Output: <code>"basePath/dirA/dirB/dirC/file.txt"</code></p>
+	 * 
+	 * The "/" seperator will depend on the operating system and the "." is specified by {@link ALoader#REGEX_EXTENSION}.
+	 * 
 	 * @param extension
 	 * @param parts
 	 * @return
 	 * 
-	 * @see #REGEX_EXTENSION
+	 * @see ALoader#REGEX_EXTENSION
+	 * @see ALoader#basePath
 	 * 
 	 */
-	public static final String getFilePathFromParts(String extension, String... parts) {
-		return ALoader.getPathFromParts(parts) + REGEX_EXTENSION + extension;
+	public String getFilePathFromParts(String extension, String... parts) {
+		return ALoader.getPathFromParts(basePath, ALoader.getPathFromParts(parts)) + REGEX_EXTENSION + extension;
 	}
 	
 	/**
@@ -71,6 +119,10 @@ public abstract class ALoader {
 	 */
 	public static final String getPathFromParts(String... parts) {
 		return Util.getStringFromLines(File.separator, false, parts);
+	}
+	
+	public static final synchronized void addTask(FutureTask<Void> taskToLoad) {
+		EXECUTOR_LOADING_TASKS.execute(taskToLoad);
 	}
 	
 	/**

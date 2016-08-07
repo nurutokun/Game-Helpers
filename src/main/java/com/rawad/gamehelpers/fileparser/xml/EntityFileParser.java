@@ -2,7 +2,6 @@ package com.rawad.gamehelpers.fileparser.xml;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.PrintWriter;
 
 import javax.xml.XMLConstants;
@@ -20,12 +19,14 @@ import com.sun.xml.internal.bind.v2.WellKnownNamespace;
 
 public class EntityFileParser extends FileParser {
 	
+	
 	private static final String PACKAGE_SEPARATOR = ":";
 	
 	/** When set with {@link Marshaller#setProperty(String, Object)} as the key, the value will be placed. */
 	private static final String PROPERTY_ADD_STRING = "com.sun.xml.internal.bind.xmlHeaders";
 	/** Sets the {@code NamespacePrefixMapper} for the {@code Marshaller}; used to remove reduntant namespaces here. */
 	private static final String PROPERTY_NAMESPACE_PREFIX_MAPPER = "com.sun.xml.internal.bind.namespacePrefixMapper";
+	
 	private static final String DEFAULT_CONTEXT = EntityFileParser.class.getPackage().getName() + PACKAGE_SEPARATOR;
 	
 	private Entity e;
@@ -42,12 +43,12 @@ public class EntityFileParser extends FileParser {
 	}
 	
 	@Override
-	public void parseFile(BufferedReader reader) throws IOException {
+	public void parseFile(BufferedReader reader) {
 		
 		try {
 			
-			JAXBContext jaxbContext = JAXBContext.newInstance(DEFAULT_CONTEXT + Util.getStringFromLines(
-					PACKAGE_SEPARATOR, false, contextPaths));
+			JAXBContext jaxbContext = JAXBContext.newInstance(DEFAULT_CONTEXT + 
+					Util.getStringFromLines(PACKAGE_SEPARATOR, false, contextPaths));
 			
 			Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
 			
@@ -57,7 +58,7 @@ public class EntityFileParser extends FileParser {
 				e.getComponents().put(comp);
 			}
 			
-		} catch (JAXBException ex) {
+		} catch(JAXBException ex) {
 			ex.printStackTrace();
 		}
 		
@@ -71,12 +72,12 @@ public class EntityFileParser extends FileParser {
 		return null;
 	}
 	
-	public static void saveEntityBlueprint(Entity e, String entitySaveFileLocation, String... contextPaths) {
+	public void saveEntityBlueprint(Entity e, String entitySaveFileLocation) {
 		
 		try {
 			
-			JAXBContext jaxbContext = JAXBContext.newInstance(DEFAULT_CONTEXT + Util.getStringFromLines(
-					PACKAGE_SEPARATOR, false, contextPaths));
+			JAXBContext jaxbContext = JAXBContext.newInstance(DEFAULT_CONTEXT + 
+					Util.getStringFromLines(PACKAGE_SEPARATOR, false, contextPaths));
 			
 			Marshaller marshaller = jaxbContext.createMarshaller();
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);// So format looks nice.
@@ -84,22 +85,22 @@ public class EntityFileParser extends FileParser {
 			// Helps make document Valid and/or Well-formed.
 			
 			marshaller.setProperty(PROPERTY_NAMESPACE_PREFIX_MAPPER, new NamespacePrefixMapper() {
-                @Override
-                public String[] getPreDeclaredNamespaceUris() {
-                    return new String[] { 
-                        XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI
-                    };
-                }
-                
-                @Override
-                public String getPreferredPrefix(String namespaceUri, String suggestion, boolean requirePrefix) {
-                    if (namespaceUri.equals(XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI)) return "xsi";
-                    if (namespaceUri.equals(XMLConstants.W3C_XML_SCHEMA_NS_URI)) return "xs";
-                    if (namespaceUri.equals(WellKnownNamespace.XML_MIME_URI)) return "xmime";
-                    return suggestion;
-                    
-                }
-            });
+				
+				@Override
+				public String[] getPreDeclaredNamespaceUris() {
+					return new String[] {
+							XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI
+					};
+				}
+				
+				@Override
+				public String getPreferredPrefix(String namespaceUri, String suggestion, boolean requirePrefix) {
+					if (namespaceUri.equals(XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI)) return "xsi";
+					if (namespaceUri.equals(XMLConstants.W3C_XML_SCHEMA_NS_URI)) return "xs";
+					if (namespaceUri.equals(WellKnownNamespace.XML_MIME_URI)) return "xmime";
+					return suggestion;
+				}
+			});
 			
 			Components components = new Components();
 			components.getComponents().addAll(e.getComponents().values());
