@@ -1,4 +1,4 @@
-package com.rawad.gamehelpers.game.world;
+package com.rawad.gamehelpers.game;
 
 import java.util.ArrayList;
 import java.util.Collection;

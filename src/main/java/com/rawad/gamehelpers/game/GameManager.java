@@ -32,15 +32,7 @@ public class GameManager {
 				@Override
 				public void run() {
 					
-					game.init();
-					
-					for(Proxy proxy: game.getProxies().values()) {
-						proxy.preInit(game);
-					}
-					
-					for(Proxy proxy: game.getProxies().values()) {
-						proxy.init();
-					}
+					game.initialize();
 					
 				}
 				
@@ -69,7 +61,12 @@ public class GameManager {
 						ex.printStackTrace();
 					}
 					
-					if(!game.isRunning()) gameTimer.cancel();
+					if(!game.isRunning()) {
+						
+						game.terminate();
+						
+						gameTimer.cancel();
+					}
 					
 				}
 				
@@ -81,7 +78,7 @@ public class GameManager {
 		
 	}
 	
-	public static final Game getCurrentGame() {
+	public static Game getCurrentGame() {
 		return currentGame;
 	}
 	

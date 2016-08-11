@@ -3,7 +3,7 @@ package com.rawad.gamehelpers.client.gamestates;
 import com.rawad.gamehelpers.client.renderengine.MasterRender;
 import com.rawad.gamehelpers.game.Game;
 import com.rawad.gamehelpers.game.GameSystem;
-import com.rawad.gamehelpers.game.world.World;
+import com.rawad.gamehelpers.game.World;
 import com.rawad.gamehelpers.utils.ClassMap;
 
 public abstract class State {
@@ -30,21 +30,35 @@ public abstract class State {
 		
 	}
 	
-	public abstract void initGui();
-	
-	protected void onActivate() {}
-	
-	protected void onDeactivate() {}
-	
 	/**
-	 * Called when this {@code State} is added to a {@code StateManager}.
+	 * Called when this {@code State} is added to a {@code StateManager}. Calls the {@link State#initialize()} method
+	 * overriding this method unnecessary.
 	 * 
 	 * @param sm The {@code StateManager} this {@code State} is added to.
-	 * @param game
+	 * @param game The {@code Game} this {@code State} is associated with.
 	 */
-	public void init(StateManager sm, Game game) {
+	protected final void onAdd(StateManager sm, Game game) {
 		this.sm = sm;
 		this.game = game;
+	}
+	
+	/**
+	 * Called to initialize this {@code State}, usually right after it is added to a {@code StateManager}.
+	 */
+	public abstract void initialize();
+	
+	public abstract void terminate();
+	
+	protected abstract void onActivate();
+	
+	protected abstract void onDeactivate();
+	
+	public void setGame(Game game) {
+		this.game = game;
+	}
+	
+	public void setStateManager(StateManager sm) {
+		this.sm = sm;
 	}
 	
 	public ClassMap<GameSystem> getGameSystems() {

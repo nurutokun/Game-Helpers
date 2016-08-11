@@ -52,11 +52,21 @@ public class StateManager {
 		
 	}
 	
-	public void stop() {
+	/**
+	 * Renders {@link StateManager#currentState} while synchronizing on 
+	 * {@link com.rawad.gamehelpers.game.World#getEntities()} of {@link StateManager#game}.
+	 */
+	public void render() {
 		
-		if(currentState != null) {
-			currentState.onDeactivate();
+		synchronized(game.getWorld().getEntities()) {
+			currentState.getMasterRender().render();
 		}
+		
+	}
+	
+	public void terminate() {
+		
+		if(currentState != null) currentState.onDeactivate();
 		
 		currentState = null;
 		stateChangeRequest = null;
@@ -67,15 +77,10 @@ public class StateManager {
 		
 		states.put(state);
 		
-		state.init(this, game);
+		state.setStateManager(this);
+		state.setGame(game);
 		
-	}
-	
-	public void initGui() {
-		
-		for(State state: states.values()) {
-			state.initGui();
-		}
+		state.initialize();
 		
 	}
 	

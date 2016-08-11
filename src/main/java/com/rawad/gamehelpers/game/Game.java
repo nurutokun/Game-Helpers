@@ -1,6 +1,5 @@
 package com.rawad.gamehelpers.game;
 
-import com.rawad.gamehelpers.game.world.World;
 import com.rawad.gamehelpers.utils.ClassMap;
 
 import javafx.beans.property.SimpleBooleanProperty;
@@ -35,7 +34,7 @@ public abstract class Game {
 		
 	}
 	
-	protected void init() {
+	protected void initialize() {
 		
 		gameEngine = new GameEngine();
 		
@@ -44,6 +43,22 @@ public abstract class Game {
 		stopRequested = false;
 		
 		running = true;
+		
+		for(Proxy proxy: proxies.values()) {
+			proxy.preInitialize(this);
+		}
+		
+		for(Proxy proxy: proxies.values()) {
+			proxy.initialize();
+		}
+		
+	}
+	
+	protected void terminate() {
+		
+		for(Proxy proxy: proxies.values()) {
+			proxy.terminate();
+		}
 		
 	}
 	
@@ -72,7 +87,7 @@ public abstract class Game {
 		if(stopRequested) {
 			
 			for(Proxy proxy: proxies.values()) {
-				proxy.stop();
+				proxy.terminate();
 			}
 			
 			running = false;

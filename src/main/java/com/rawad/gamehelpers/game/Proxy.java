@@ -29,7 +29,8 @@ public abstract class Proxy {
 	 * 
 	 * @param game
 	 */
-	public void preInit(Game game) {
+	public void preInitialize(Game game) {
+		
 		this.game = game;
 		
 		Thread.currentThread().setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
@@ -42,7 +43,6 @@ public abstract class Proxy {
 		
 		fileParsers = new ClassMap<FileParser>();
 		loaders = new ClassMap<ALoader>();
-		// Add default entity file parser here.
 		
 		fileParsers.put(new EntityFileParser());
 		
@@ -50,11 +50,11 @@ public abstract class Proxy {
 		
 	}
 	
-	public abstract void init();
+	public abstract void initialize();
 	
 	public abstract void tick();
 	
-	public abstract void stop();
+	public abstract void terminate();
 	
 	public Game getGame() {
 		return game;

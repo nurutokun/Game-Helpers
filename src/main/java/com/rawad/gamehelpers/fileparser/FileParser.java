@@ -21,8 +21,7 @@ public abstract class FileParser {
 	
 	/**
 	 * 
-	 * @param reader
-	 * 				- Represents the object to read the file from.
+	 * @param reader Represents the object to read the file from.
 	 */
 	public void parseFile(BufferedReader reader) {
 		
@@ -38,8 +37,8 @@ public abstract class FileParser {
 					parseLine(line);
 					
 				} catch (Exception ex) {
-					Logger.log(Logger.WARNING, "Couldn't read line from file.");
-	//				ex.printStackTrace();
+					Logger.log(Logger.WARNING, "Couldn't read line from file: " + line);
+//					ex.printStackTrace();
 				}
 				
 			}
