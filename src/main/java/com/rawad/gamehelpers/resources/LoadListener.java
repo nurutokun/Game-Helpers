@@ -1,7 +1,7 @@
 package com.rawad.gamehelpers.resources;
 
 @FunctionalInterface
-public interface ILoadListener <T extends Resource> {
+public interface LoadListener <T extends Resource> {
 	
 	public void onLoad(T resource);
 	

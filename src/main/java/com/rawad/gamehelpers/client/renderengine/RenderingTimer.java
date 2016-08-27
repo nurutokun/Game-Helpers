@@ -1,7 +1,8 @@
 package com.rawad.gamehelpers.client.renderengine;
 
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import com.rawad.gamehelpers.log.Logger;
@@ -11,9 +12,9 @@ public final class RenderingTimer {
 	/** Frames to wait before calculating {@code averageFps}. */
 	private static final int FPS_SAMPLE_RATE = 30;
 	
-	private final Timer timer;
+	private final ScheduledExecutorService executor;
 	
-	private final IRenderable renderable;
+	private final Renderable renderable;
 	
 	private final int targetFps;
 	
@@ -27,10 +28,12 @@ public final class RenderingTimer {
 	
 	private boolean running;
 	
-	public RenderingTimer(IRenderable renderable, int targetFps) {
+	public RenderingTimer(Renderable renderable, int targetFps) {
 		super();
 		
-		timer = new Timer("Rendering Thread");
+		executor = Executors.newSingleThreadScheduledExecutor(task -> {
+			return new Thread(task, "Rendering Timer");
+		});
 		
 		this.renderable = renderable;
 		
@@ -51,41 +54,48 @@ public final class RenderingTimer {
 		currentTime = System.nanoTime();
 		prevTime = currentTime;
 		
-		timer.scheduleAtFixedRate(new TimerTask() {
+		executor.scheduleAtFixedRate(() -> {
 			
-			@Override
-			public void run() {
+			currentTime = System.nanoTime();
+			
+			long deltaTime = currentTime - prevTime;
+			
+			totalTime += (deltaTime <= 0? 1:deltaTime);// timePassed in ().
+			
+			prevTime = currentTime;
+			
+			if(frames >= FPS_SAMPLE_RATE && totalTime > 0) {
+				averageFps = (int) (frames * TimeUnit.SECONDS.toNanos(1) / totalTime);
 				
-				currentTime = System.nanoTime();
-				
-				long deltaTime = currentTime - prevTime;
-				
-				totalTime += (deltaTime <= 0? 1:deltaTime);// timePassed in ().
-				
-				prevTime = currentTime;
-				
-				if(frames >= FPS_SAMPLE_RATE && totalTime > 0) {
-					averageFps = (int) (frames * TimeUnit.SECONDS.toNanos(1) / totalTime);
-					
-					frames = 0;
-					totalTime = 0;
-					
-				}
-				
-				renderable.render();
-				frames++;
+				frames = 0;
+				totalTime = 0;
 				
 			}
 			
-		}, 0, TimeUnit.SECONDS.toMillis(1) / targetFps);
+			renderable.render();
+			frames++;
+			
+		}, 0, TimeUnit.SECONDS.toMillis(1) / targetFps, TimeUnit.MILLISECONDS);
+		
 	}
 	
 	public void stop() {
 		
-		timer.cancel();
+		executor.shutdown();
 		
 		running = false;
 		
+	}
+	
+	/**
+	 * Submits the {@code task} to this {@code RenderingTimer}'s {@code executor} to be run on the {@code Rendering 
+	 * Thread}.
+	 * 
+	 * @param task
+	 * @return
+	 */
+	public Future<?> submit(Runnable task) {
+		return executor.submit(task);
 	}
 	
 	public int getAverageFps() {

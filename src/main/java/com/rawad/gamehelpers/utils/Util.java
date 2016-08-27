@@ -14,6 +14,9 @@ public final class Util {
 	 * system and allows for consistency. */
 	public static final String NL = "\r\n";
 	
+	/** Holds the number of virtual processors available to the JVM. */
+	public static final int PROCESSORS = Runtime.getRuntime().availableProcessors();
+	
 	private Util() {}
 	
 	/**

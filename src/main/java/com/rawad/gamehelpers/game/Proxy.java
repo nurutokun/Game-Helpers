@@ -5,7 +5,7 @@ import java.lang.Thread.UncaughtExceptionHandler;
 import com.rawad.gamehelpers.fileparser.FileParser;
 import com.rawad.gamehelpers.fileparser.xml.EntityFileParser;
 import com.rawad.gamehelpers.log.Logger;
-import com.rawad.gamehelpers.resources.ALoader;
+import com.rawad.gamehelpers.resources.AbstractLoader;
 import com.rawad.gamehelpers.utils.ClassMap;
 
 /**
@@ -19,7 +19,7 @@ public abstract class Proxy {
 	protected Game game;
 	
 	protected ClassMap<FileParser> fileParsers;
-	protected ClassMap<ALoader> loaders;
+	protected ClassMap<AbstractLoader> loaders;
 	
 	protected boolean update;
 	
@@ -29,7 +29,7 @@ public abstract class Proxy {
 	 * 
 	 * @param game
 	 */
-	public void preInitialize(Game game) {
+	public void preInit(Game game) {
 		
 		this.game = game;
 		
@@ -42,7 +42,7 @@ public abstract class Proxy {
 		});
 		
 		fileParsers = new ClassMap<FileParser>();
-		loaders = new ClassMap<ALoader>();
+		loaders = new ClassMap<AbstractLoader>();
 		
 		fileParsers.put(new EntityFileParser());
 		
@@ -50,7 +50,7 @@ public abstract class Proxy {
 		
 	}
 	
-	public abstract void initialize();
+	public abstract void init();
 	
 	public abstract void tick();
 	
@@ -60,7 +60,7 @@ public abstract class Proxy {
 		return game;
 	}
 	
-	public ClassMap<ALoader> getLoaders() {
+	public ClassMap<AbstractLoader> getLoaders() {
 		return loaders;
 	}
 	

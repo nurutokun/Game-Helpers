@@ -7,7 +7,7 @@ package com.rawad.gamehelpers.client.renderengine;
  * @author Rawad
  *
  */
-public abstract class LayerRender extends Render implements IRenderable {
+public abstract class LayerRender extends Render implements Renderable {
 	
 	protected MasterRender masterRender;
 	

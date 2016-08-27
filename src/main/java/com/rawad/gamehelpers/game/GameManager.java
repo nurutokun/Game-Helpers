@@ -32,7 +32,7 @@ public class GameManager {
 				@Override
 				public void run() {
 					
-					game.initialize();
+					game.init();
 					
 				}
 				

@@ -1,6 +1,6 @@
 package com.rawad.gamehelpers.client.gui;
 
-public interface IHideable {
+public interface Hideable {
 	
 	public void show();
 	

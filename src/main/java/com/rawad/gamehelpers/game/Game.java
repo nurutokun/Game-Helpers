@@ -34,7 +34,7 @@ public abstract class Game {
 		
 	}
 	
-	protected void initialize() {
+	protected void init() {
 		
 		gameEngine = new GameEngine();
 		
@@ -45,11 +45,11 @@ public abstract class Game {
 		running = true;
 		
 		for(Proxy proxy: proxies.values()) {
-			proxy.preInitialize(this);
+			proxy.preInit(this);
 		}
 		
 		for(Proxy proxy: proxies.values()) {
-			proxy.initialize();
+			proxy.init();
 		}
 		
 	}

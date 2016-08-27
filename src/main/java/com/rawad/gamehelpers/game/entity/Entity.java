@@ -17,8 +17,14 @@ public final class Entity {
 		
 	}
 	
-	public void addComponent(Component comp) {
+	/**
+	 * 
+	 * @param comp
+	 * @return {@code this} to allow for easily chaining multiple calls to this method.
+	 */
+	public Entity addComponent(Component comp) {
 		components.put(comp);
+		return this;
 	}
 	
 	public <T extends Component> T getComponent(Class<T> compClass) {

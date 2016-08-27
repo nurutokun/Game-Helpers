@@ -1,7 +1,7 @@
 package com.rawad.gamehelpers.client.renderengine;
 
 @FunctionalInterface
-public interface IRenderable {
+public interface Renderable {
 	
 	public void render();
 	

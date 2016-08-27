@@ -31,7 +31,7 @@ public abstract class State {
 	}
 	
 	/**
-	 * Called when this {@code State} is added to a {@code StateManager}. Calls the {@link State#initialize()} method
+	 * Called when this {@code State} is added to a {@code StateManager}. Calls the {@link State#init()} method
 	 * overriding this method unnecessary.
 	 * 
 	 * @param sm The {@code StateManager} this {@code State} is added to.
@@ -45,7 +45,7 @@ public abstract class State {
 	/**
 	 * Called to initialize this {@code State}, usually right after it is added to a {@code StateManager}.
 	 */
-	public abstract void initialize();
+	public abstract void init();
 	
 	public abstract void terminate();
 	

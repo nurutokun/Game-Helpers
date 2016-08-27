@@ -14,9 +14,9 @@ public class StateManager {
 	
 	private Game game;
 	
-	private IStateChangeListener stateChangeListener;
+	private StateChangeListener stateChangeListener;
 	
-	public StateManager(Game game, IStateChangeListener stateChangeListener) {
+	public StateManager(Game game, StateChangeListener stateChangeListener) {
 		super();
 		
 		states = new ClassMap<State>();
@@ -80,7 +80,7 @@ public class StateManager {
 		state.setStateManager(this);
 		state.setGame(game);
 		
-		state.initialize();
+		state.init();
 		
 	}
 	
@@ -134,7 +134,7 @@ public class StateManager {
 	 * 
 	 * @param state
 	 */
-	public void setCurrentState(State state) {
+	public void setCurrentState(State state) {// TODO: Remove.
 		this.currentState = state;
 	}
 	
