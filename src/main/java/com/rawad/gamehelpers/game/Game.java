@@ -2,8 +2,6 @@ package com.rawad.gamehelpers.game;
 
 import com.rawad.gamehelpers.utils.ClassMap;
 
-import javafx.beans.property.SimpleBooleanProperty;
-
 public abstract class Game {
 	
 	public static final int SCREEN_WIDTH = 640;// 640
@@ -15,7 +13,7 @@ public abstract class Game {
 	
 	protected World world;
 	
-	protected SimpleBooleanProperty debug;
+	protected boolean debug;
 	
 	/** Time a single tick lasts in milliseconds. */
 	private long tickTime;
@@ -27,6 +25,7 @@ public abstract class Game {
 	private boolean stopRequested;
 	
 	public Game() {
+		super();
 		
 		tickTime = 50;
 		
@@ -70,6 +69,8 @@ public abstract class Game {
 			
 			totalTime -= tickTime;
 			
+			// TODO: Redo wholepaused thing. Should NOT be per-game (e.g. if GUI companents are entities, game would 
+			// not function properly).
 			if(!isPaused()) {
 				synchronized(world.getEntities()) {
 					gameEngine.tick(world.getEntities());// Populates GameSystem objects with entities to work with.
@@ -117,17 +118,12 @@ public abstract class Game {
 		return proxies;
 	}
 	
-	public SimpleBooleanProperty debugProperty() {
-		if(debug == null) debug = new SimpleBooleanProperty(false);
-		return debug;
-	}
-	
 	public void setDebug(boolean debug) {
-		debugProperty().set(debug);
+		this.debug = debug;
 	}
 	
 	public boolean isDebug() {
-		return debugProperty().get();
+		return debug;
 	}
 	
 	public boolean isRunning() {

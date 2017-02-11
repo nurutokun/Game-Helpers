@@ -47,7 +47,18 @@ public final class Util {
 		return value;
 		
 	}
-	
+
+	public static float clamp(float value, float min, float max) {
+		
+		if(value < min) {
+			return min;
+		} else if(value > max) {
+			return max;
+		}
+		
+		return value;
+		
+	}
 	public static HashMap<String, String> parseCommandLineArguments(String... args) {
 		
 		HashMap<String, String> commands = new HashMap<String, String>();
