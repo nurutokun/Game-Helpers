@@ -1,4 +1,4 @@
-package com.rawad.gamehelpers.game.entity.event;
+package com.rawad.gamehelpers.game.event;
 
 @FunctionalInterface
 public interface Listener {

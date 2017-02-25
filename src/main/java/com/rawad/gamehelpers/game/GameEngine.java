@@ -7,16 +7,15 @@ import java.util.Map;
 
 import com.rawad.gamehelpers.game.entity.Component;
 import com.rawad.gamehelpers.game.entity.Entity;
-import com.rawad.gamehelpers.game.entity.event.Event;
-import com.rawad.gamehelpers.game.entity.event.Listener;
+import com.rawad.gamehelpers.game.event.Event;
+import com.rawad.gamehelpers.game.event.Listener;
 import com.rawad.gamehelpers.utils.ClassMap;
 
 public class GameEngine {
 	
 	protected final ClassMap<GameSystem> gameSystems = new ClassMap<GameSystem>();
 	
-	private final Map<Class<? extends Component>, ArrayList<Listener>> listeners = 
-			new HashMap<Class<? extends Component>, ArrayList<Listener>>();
+	private final Map<Object, ArrayList<Listener>> listeners = new HashMap<Object, ArrayList<Listener>>();
 	
 	private final List<Event> eventQueue = new ArrayList<Event>();
 	
@@ -64,13 +63,13 @@ public class GameEngine {
 		
 	}
 	
-	public void registerListener(Class<? extends Component> comp, Listener l) {
+	public void registerListener(Object eventType, Listener l) {
 		
-		ArrayList<Listener> compListeners = listeners.get(comp);
+		ArrayList<Listener> compListeners = listeners.get(eventType);
 		
 		if(compListeners == null) {
 			compListeners = new ArrayList<Listener>();
-			listeners.put(comp, compListeners);
+			listeners.put(eventType, compListeners);
 		}
 		
 		compListeners.add(l);
@@ -97,8 +96,8 @@ public class GameEngine {
 	
 	private void processEvent(Event e) {
 		
-		if(listeners.containsKey(e.getCompClass())) {
-			for(Listener l: listeners.get(e.getCompClass())) {
+		if(listeners.containsKey(e.getEventType())) {
+			for(Listener l: listeners.get(e.getEventType())) {
 				if(l != null) l.onEvent(e);
 			}
 		}
