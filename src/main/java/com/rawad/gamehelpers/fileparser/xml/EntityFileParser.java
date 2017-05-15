@@ -11,8 +11,10 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import com.rawad.gamehelpers.fileparser.FileParser;
+import com.rawad.gamehelpers.fileparser.event.FileParseEvent;
 import com.rawad.gamehelpers.game.entity.Component;
 import com.rawad.gamehelpers.game.entity.Entity;
+import com.rawad.gamehelpers.game.event.EventManager;
 import com.rawad.gamehelpers.utils.Util;
 import com.sun.xml.internal.bind.marshaller.NamespacePrefixMapper;
 import com.sun.xml.internal.bind.v2.WellKnownNamespace;
@@ -29,18 +31,11 @@ public class EntityFileParser extends FileParser {
 	
 	private static final String DEFAULT_CONTEXT = EntityFileParser.class.getPackage().getName() + PACKAGE_SEPARATOR;
 	
-	private Entity e;
+	private Entity e = Entity.createEntity();
 	
-	private String[] contextPaths;
+	private EventManager eventManager = new EventManager();
 	
-	public EntityFileParser() {
-		super();
-		
-		e = Entity.createEntity();
-		
-		contextPaths = new String[0];
-		
-	}
+	private String[] contextPaths = new String[0];
 	
 	@Override
 	public void parseFile(BufferedReader reader) {
@@ -57,7 +52,11 @@ public class EntityFileParser extends FileParser {
 			Components components = (Components) unmarshaller.unmarshal(reader);
 			
 			for(Component comp: components.getComponents()) {
+				
+				eventManager.submitEvent(new FileParseEvent(e, comp));
+				
 				e.addComponent(comp);
+				
 			}
 			
 		} catch(JAXBException ex) {
@@ -120,6 +119,13 @@ public class EntityFileParser extends FileParser {
 	
 	public Entity getEntity() {
 		return e;
+	}
+	
+	/**
+	 * @return the eventManager
+	 */
+	public EventManager getEventManager() {
+		return eventManager;
 	}
 	
 }

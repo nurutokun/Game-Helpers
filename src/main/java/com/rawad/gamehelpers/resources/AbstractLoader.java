@@ -14,6 +14,10 @@ import com.rawad.gamehelpers.utils.Util;
 
 public abstract class AbstractLoader {
 	
+	/* TODO: Maybe add a third overloaded getFileFromPathFromParts(String protocol, String extension, String... paths).
+	 * The protocol, so far, is mainly for something like javafx which needs it to load images; <protocol>:<filepath>.
+	 */
+	
 	/** Regex added after final path, right before the extension is added. */
 	public static final String REGEX_EXTENSION = ".";
 	

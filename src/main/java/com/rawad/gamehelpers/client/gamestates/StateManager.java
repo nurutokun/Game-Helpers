@@ -58,7 +58,7 @@ public class StateManager {
 	 */
 	public void render() {
 		
-		synchronized(game.getWorld().getEntities()) {
+		synchronized(currentState.getGameEngine().getEntities()) {
 			currentState.getMasterRender().render();
 		}
 		
@@ -94,23 +94,32 @@ public class StateManager {
 		this.stateChangeRequest = stateChangeRequest;
 	}
 	
+	/**
+	 * This will deactivate the current {@code State}, if it is not null, and will set the new {@code State} to be the one 
+	 * specified by {@link #stateChangeRequest}) and activates it.
+	 * 
+	 * @param stateChangeRequest
+	 */
 	public void setState(StateChangeRequest stateChangeRequest) {
 		
 		Class<? extends State> stateId = stateChangeRequest.getRequestedState();
 		
 		try {
 			
-			currentState.onDeactivate();
-			
 			State newState = states.get(stateId);
 			
+			if(currentState == null) {
+				currentState = newState;
+			} else {
+				currentState.onDeactivate();
+			}
+			
+			// Definitely submit the onStateChange event here.
 			stateChangeListener.onStateChange(currentState, newState);
 			
 			setCurrentState(newState);
 			
-			game.getGameEngine().setGameSystems(currentState.getGameSystems());
-			game.setWorld(currentState.getWorld());
-			game.getWorld().clearEntities();
+			game.setGameEngine(currentState.getGameEngine());
 			
 			currentState.onActivate();
 			
@@ -130,11 +139,10 @@ public class StateManager {
 	}
 	
 	/**
-	 * Should be called before requesting a {@code State} change to set the intiial {@code State} value.
 	 * 
 	 * @param state
 	 */
-	public void setCurrentState(State state) {// TODO: Remove.
+	private void setCurrentState(State state) {
 		this.currentState = state;
 	}
 	

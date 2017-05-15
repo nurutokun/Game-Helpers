@@ -8,7 +8,7 @@ import com.rawad.gamehelpers.log.Logger;
 
 public class GameManager {
 	
-	private static final int MAX_FPS = 120;// Works fine with 300.
+	private static final int MAX_UPDATE_RATE = 120;// Works fine with 300.
 	
 	private static Game currentGame;
 	
@@ -18,7 +18,7 @@ public class GameManager {
 	private static long timePassed;
 	
 	static {
-		setUpdateRate(MAX_FPS);
+		setUpdateRate(MAX_UPDATE_RATE);
 	}
 	
 	public static void launchGame(Game game) {
@@ -32,13 +32,17 @@ public class GameManager {
 				@Override
 				public void run() {
 					
-					game.init();
+					currentGame.init();
 					
 				}
 				
 			}, 0);
 			
-			gameTimer.scheduleAtFixedRate(new TimerTask() {
+			// The game isn't actually running until after initialization.
+			currentGame.setRunning(true);
+			
+			// Do not use fixed rate. Tries to catch up when falls behind (relative to initial start time).
+			gameTimer.schedule(new TimerTask() {
 				
 				private long currentTime = System.currentTimeMillis();
 				private long prevTime = currentTime;// To keep the initial value limited to zero.
@@ -46,7 +50,7 @@ public class GameManager {
 				@Override
 				public void run() {
 					
-					currentTime = System.currentTimeMillis();
+					currentTime = TimeUnit.NANOSECONDS.toMillis(System.nanoTime());
 					
 					long deltaTime = currentTime - prevTime;
 					
@@ -55,17 +59,18 @@ public class GameManager {
 					prevTime = currentTime;
 					
 					try {
-						game.update(GameManager.getTimePassed());
+						currentGame.update(GameManager.getTimePassed());
 					} catch(Exception ex) {
 						Logger.log(Logger.DEBUG, "Error in game thread.");
 						ex.printStackTrace();
 					}
 					
-					if(!game.isRunning()) {
+					if(!currentGame.isRunning()) {
 						
-						game.terminate();
+						currentGame.terminate();
 						
 						gameTimer.cancel();
+						
 					}
 					
 				}
@@ -83,14 +88,26 @@ public class GameManager {
 	}
 	
 	/**
-	 * Number of times this {@code GameManager} tries to update the {@code currentGame} every second (in Hz).
+	 * Number of times this {@code GameManager} tries to update the {@code currentGame} every second (in Hz). This will have
+	 * to reset the {@link java.util.Timer} rspondible for updating the game.
 	 * 
 	 * @param updateRate
 	 */
 	public static void setUpdateRate(long updateRate) {
 		
+		if(currentGame != null && currentGame.isRunning()) {
+			throw new IllegalStateException("Can't set upadte rate while game is running.");
+		}
+		
 		sleepTime = TimeUnit.SECONDS.toMillis(1) / updateRate;
 		
+	}
+	
+	/**
+	 * @return the sleepTime
+	 */
+	public static long getUpdateRate() {
+		return sleepTime;
 	}
 	
 	/**
@@ -100,6 +117,14 @@ public class GameManager {
 	 */
 	public static long getTimePassed() {
 		return timePassed;
+	}
+	
+	/**
+	 * Scheduless a {@code TimerTask} on the game thread.
+	 * @param task
+	 */
+	public static void scheduleTask(TimerTask task) {
+		gameTimer.schedule(task, 0);
 	}
 	
 }

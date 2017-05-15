@@ -144,13 +144,7 @@ public final class Entity {
 	 * 			{@code false} otherwise.
 	 */
 	public static boolean contains(Entity e, Collection<Class<? extends Component>> comps) {
-		
-		for(Class<? extends Component> compClazz: comps) {
-			if(e.getComponent(compClazz) == null) return false;
-		}
-		
-		return true;
-		
+		return e.getComponents().keySet().containsAll(comps);
 	}
 	
 	@Override

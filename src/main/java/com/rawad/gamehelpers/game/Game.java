@@ -4,19 +4,15 @@ import com.rawad.gamehelpers.utils.ClassMap;
 
 public abstract class Game {
 	
-	public static final int SCREEN_WIDTH = 640;// 640
-	public static final int SCREEN_HEIGHT = 480;// 480
-	
-	protected ClassMap<Proxy> proxies;
+	protected ClassMap<Proxy> proxies = new ClassMap<Proxy>();
 	
 	protected GameEngine gameEngine;
-	
-	protected World world;
 	
 	protected boolean debug;
 	
 	/** Time a single tick lasts in milliseconds. */
-	private long tickTime;
+	protected long tickTime = 50;
+	
 	private long totalTime;
 	private long remainingTime;
 	
@@ -24,24 +20,11 @@ public abstract class Game {
 	private boolean paused;
 	private boolean stopRequested;
 	
-	public Game() {
-		super();
-		
-		tickTime = 50;
-		
-		proxies = new ClassMap<Proxy>();
-		
-	}
-	
 	protected void init() {
 		
 		gameEngine = new GameEngine();
 		
-		world = new World();
-		
 		stopRequested = false;
-		
-		running = true;
 		
 		for(Proxy proxy: proxies.values()) {
 			proxy.preInit(this);
@@ -69,12 +52,8 @@ public abstract class Game {
 			
 			totalTime -= tickTime;
 			
-			// TODO: Redo wholepaused thing. Should NOT be per-game (e.g. if GUI companents are entities, game would 
-			// not function properly).
-			if(!isPaused()) {
-				synchronized(world.getEntities()) {
-					gameEngine.tick(world.getEntities());// Populates GameSystem objects with entities to work with.
-				}
+			if(!isPaused() && gameEngine != null) {
+				gameEngine.tick();// Populates GameSystem objects with entities to work with.
 			}
 			
 			for(Proxy proxy: proxies.values()) {
@@ -91,7 +70,8 @@ public abstract class Game {
 				proxy.terminate();
 			}
 			
-			running = false;
+			setRunning(false);
+			
 			stopRequested = false;
 			
 		}
@@ -100,18 +80,15 @@ public abstract class Game {
 	
 	public abstract String getName();
 	
+	/**
+	 * @param gameEngine the gameEngine to set
+	 */
+	public void setGameEngine(GameEngine gameEngine) {
+		this.gameEngine = gameEngine;
+	}
+	
 	public GameEngine getGameEngine() {
 		return gameEngine;
-	}
-	
-	public void setWorld(World world) {
-		if(world == null) return;
-		
-		this.world = world;
-	}
-	
-	public World getWorld() {
-		return world;
 	}
 	
 	public ClassMap<Proxy> getProxies() {
@@ -124,6 +101,13 @@ public abstract class Game {
 	
 	public boolean isDebug() {
 		return debug;
+	}
+	
+	/**
+	 * @param running the running to set
+	 */
+	protected void setRunning(boolean running) {
+		this.running = running;
 	}
 	
 	public boolean isRunning() {

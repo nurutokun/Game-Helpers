@@ -21,13 +21,22 @@ public class Logger {
 		
 	}
 	
-	public static void log(int code, String message) {
+	/**
+	 * Prints to all {@code PrintStream} objects in {@link Logger#printStreams} using the
+	 * {@link PrintStream#printf(String, Object...)} functions, passing it {@code message} and {@code args}.
+	 * 
+	 * @param code
+	 * @param message
+	 * @param args
+	 */
+	public static void log(int code, String message, Object... args) {
 		
 		String output = "[" + timeFormat.format(Calendar.getInstance().getTime()) + "] " 
 				+ "[" + Thread.currentThread().getName() + "]" + " Code: " + code + " Message: " + message;
 		
 		for(PrintStream printStream: printStreams) {
-			printStream.println(output);
+			printStream.printf(output, args);
+			printStream.println();
 		}
 		
 	}

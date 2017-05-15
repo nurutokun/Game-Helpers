@@ -36,12 +36,18 @@ public class MasterRender {
 		
 	}
 	
-	public State getState() {
-		return state;
-	}
-	
+	/**
+	 * @return the renders
+	 */
 	public ClassMap<LayerRender> getRenders() {
 		return renders;
+	}
+	
+	/**
+	 * @return the state
+	 */
+	public State getState() {
+		return state;
 	}
 	
 }

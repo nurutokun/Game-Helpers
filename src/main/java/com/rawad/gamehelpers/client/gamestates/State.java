@@ -2,31 +2,29 @@ package com.rawad.gamehelpers.client.gamestates;
 
 import com.rawad.gamehelpers.client.renderengine.MasterRender;
 import com.rawad.gamehelpers.game.Game;
-import com.rawad.gamehelpers.game.GameSystem;
-import com.rawad.gamehelpers.game.World;
-import com.rawad.gamehelpers.utils.ClassMap;
+import com.rawad.gamehelpers.game.GameEngine;
+import com.rawad.gamehelpers.game.event.EventManager;
 
 public abstract class State {
-	
-	/** Each {@code State} can have its own set of {@code GameSystem} objects; order of adding them is maintained. */
-	protected final ClassMap<GameSystem> gameSystems;
 	
 	protected StateManager sm;
 	
 	protected Game game;
 	
-	protected MasterRender masterRender;
+	protected final GameEngine gameEngine;
 	
-	protected World world;
+	protected final EventManager eventManager;// This is purely for convenience.
+	
+	protected MasterRender masterRender;
 	
 	public State() {
 		super();
 		
-		gameSystems = new ClassMap<GameSystem>();
+		gameEngine = new GameEngine();
+		
+		this.eventManager = gameEngine.getEventManager();
 		
 		masterRender = new MasterRender(this);
-		
-		world = new World();
 		
 	}
 	
@@ -61,16 +59,15 @@ public abstract class State {
 		this.sm = sm;
 	}
 	
-	public ClassMap<GameSystem> getGameSystems() {
-		return gameSystems;
-	}
-	
 	public MasterRender getMasterRender() {
 		return masterRender;
 	}
 	
-	public World getWorld() {
-		return world;
+	/**
+	 * @return the gameEngine
+	 */
+	public GameEngine getGameEngine() {
+		return gameEngine;
 	}
 	
 }

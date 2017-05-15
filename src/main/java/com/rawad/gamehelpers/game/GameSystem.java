@@ -7,24 +7,12 @@ import com.rawad.gamehelpers.game.entity.Entity;
 
 public abstract class GameSystem {
 	
-	protected GameEngine gameEngine;
+	protected final ArrayList<Class<? extends Component>> compatibleComponentTypes = 
+			new ArrayList<Class<? extends Component>>();
 	
-	protected final ArrayList<Class<? extends Component>> compatibleComponentTypes;
+	protected ArrayList<Entity> compatibleEntities = new ArrayList<Entity>();
 	
-	protected ArrayList<Entity> compatibleEntities;
-	
-	/**
-	 * Add compatible component types here.
-	 */
-	protected GameSystem() {
-		
-		setGameEngine(GameManager.getCurrentGame().getGameEngine());
-		
-		compatibleComponentTypes = new ArrayList<Class<? extends Component>>();
-		
-		compatibleEntities = new ArrayList<Entity>();
-		
-	}
+	// Consider an initCompatibleEntities() method (instead of doing it in constructor).
 	
 	/**
 	 * Loops through all the compatible {@code Entity} objects stored in {@code compatibleEntities} and forwards them to 
@@ -46,10 +34,6 @@ public abstract class GameSystem {
 	
 	public ArrayList<Entity> getCompatibleEntities() {
 		return compatibleEntities;
-	}
-	
-	protected void setGameEngine(GameEngine gameEngine) {
-		this.gameEngine = gameEngine;
 	}
 	
 }
