@@ -1,4 +1,4 @@
-package com.rawad.gamehelpers.client.gamestates;
+package com.rawad.gamehelpers.client.states;
 
 import com.rawad.gamehelpers.client.renderengine.MasterRender;
 import com.rawad.gamehelpers.game.Game;

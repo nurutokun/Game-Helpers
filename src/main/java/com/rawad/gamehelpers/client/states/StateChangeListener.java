@@ -1,4 +1,4 @@
-package com.rawad.gamehelpers.client.gamestates;
+package com.rawad.gamehelpers.client.states;
 
 @FunctionalInterface
 public interface StateChangeListener {

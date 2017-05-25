@@ -10,21 +10,12 @@ public abstract class Game {
 	
 	protected boolean debug;
 	
-	/** Time a single tick lasts in milliseconds. */
-	protected long tickTime = 50;
-	
-	private long totalTime;
-	private long remainingTime;
-	
-	private boolean running;
-	private boolean paused;
-	private boolean stopRequested;
+	protected boolean running = false;
+	protected boolean paused = false;
 	
 	protected void init() {
 		
 		gameEngine = new GameEngine();
-		
-		stopRequested = false;
 		
 		for(Proxy proxy: proxies.values()) {
 			proxy.preInit(this);
@@ -44,39 +35,7 @@ public abstract class Game {
 		
 	}
 	
-	public final void update(long timePassed) {
-		
-		totalTime = timePassed + remainingTime;
-		
-		while(totalTime >= tickTime) {
-			
-			totalTime -= tickTime;
-			
-			if(!isPaused() && gameEngine != null) {
-				gameEngine.tick();// Populates GameSystem objects with entities to work with.
-			}
-			
-			for(Proxy proxy: proxies.values()) {
-				if(proxy.shouldUpdate()) proxy.tick();
-			}
-			
-		}
-		
-		remainingTime = totalTime;
-		
-		if(stopRequested) {
-			
-			for(Proxy proxy: proxies.values()) {
-				proxy.terminate();
-			}
-			
-			setRunning(false);
-			
-			stopRequested = false;
-			
-		}
-		
-	}
+	public abstract void update(long timePassed);
 	
 	public abstract String getName();
 	
@@ -118,12 +77,8 @@ public abstract class Game {
 		this.paused = paused;
 	}
 	
-	private boolean isPaused() {
-		return paused;
-	}
-	
 	public void requestStop() {
-		stopRequested = true;
+		running = false;
 	}
 	
 }

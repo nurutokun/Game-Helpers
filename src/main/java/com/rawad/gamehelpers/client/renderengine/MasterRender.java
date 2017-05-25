@@ -1,6 +1,6 @@
 package com.rawad.gamehelpers.client.renderengine;
 
-import com.rawad.gamehelpers.client.gamestates.State;
+import com.rawad.gamehelpers.client.states.State;
 import com.rawad.gamehelpers.utils.ClassMap;
 
 /**
