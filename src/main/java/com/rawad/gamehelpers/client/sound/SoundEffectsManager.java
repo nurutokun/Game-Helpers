@@ -25,17 +25,25 @@ public class SoundEffectsManager {
 	
 	private static final EventManager SOUND_EVENT_MANAGER = new EventManager();
 	
+	private static final HashMap<Object, Clip> SOUND_EFFECTS = new HashMap<Object, Clip>();
+	
+	private static boolean running = false;
+	
 	private static final Thread SOUND_THREAD = new Thread(() -> {
 		
-		while(true) {
+		while(running) {
 			SOUND_EVENT_MANAGER.processQueuedEvents();
 		}
 		
 	}, "Sound Thread");
 	
-	private static final HashMap<Object, Clip> SOUND_EFFECTS = new HashMap<Object, Clip>();
-	
-	static {
+	public static void initialize() {
+		
+		if(running) {
+			throw new IllegalStateException("Sound Effect Manager already initialized.");
+		}
+		
+		running = true;
 		
 		SOUND_EVENT_MANAGER.registerListener(SOUND_EVENT, (Event e) -> {
 			
@@ -63,7 +71,25 @@ public class SoundEffectsManager {
 		
 	}
 	
+	public static void terminate() {
+		
+		running = false;
+		
+		for(Object key: SOUND_EFFECTS.keySet()) {
+			SOUND_EFFECTS.put(key, null);
+		}
+		
+		// Empties queud events. They are all null at this point so nothing will happen.
+		SOUND_EVENT_MANAGER.processQueuedEvents();
+		
+	}
+	
 	public static void loadSoundEffect(File soundEffectFile, Object key) {
+		
+		if(!running) {
+			Logger.log(Logger.WARNING, "SoundEffectsManager should be initialized before trying to load a sound effect.");
+			return;
+		}
 		
 		AbstractLoader.addTask(() -> {
 
@@ -87,7 +113,19 @@ public class SoundEffectsManager {
 	}
 	
 	public static void playSoundEffect(Object key) {
-		SOUND_EVENT_MANAGER.queueEvent(new SoundEvent(key));
+		// Only consider sound effect requests when manager is running.
+		if(running) SOUND_EVENT_MANAGER.queueEvent(new SoundEvent(key));
+		else Logger.log(Logger.WARNING, "SoundEffectsManager should be initialized before trying to play a sound effect.");
+	}
+	
+	/**
+	 * Allows for retrieval of stored {@code Clip} object for fully customizing sound effect.
+	 * 
+	 * @param key
+	 * @return
+	 */
+	public static Clip getClip(Object key) {
+		return SOUND_EFFECTS.get(key);
 	}
 	
 }
